@@ -1,0 +1,8 @@
+1. Alles-in-1-huishoud app
+	Applicatie voor het bijhouden van uitgaven, klusjes, schoonmaaktaken etc. etc. in bijvoorbeeld een studentenhuis.
+2. Squad-goals App
+	Applicatie voor groepen, om samen bepaalde activiteiten te doen (bijvoorbeel paintballen, bergbeklimmen, ...). De groep kan dan samen 'achievements halen'. Voor bedrijven ook interessant: Misshien groepsdeals aanbieden via deze app?
+3. Huizen-tinder (?)
+4. Wachtrij-App voor restaurants: Eten bestellen, en wachten op notificatie telefoon.
+5. Gametized cooking
+6. Money-visualization app, misschien wat doen met milieuimpact van je uitgaven?
