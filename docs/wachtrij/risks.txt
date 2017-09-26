@@ -1,0 +1,21 @@
+Dit zijn de aannames die we doen zodat ons product succesvol wordt:
+
+### Desirable ###
+1. Reizigers/werkenden hebben geen interesse in een applicatie waarmee ze dingen kunnen bestellen.
+2. Er zijn nauwelijks wachtrijen, bestaande rijen zijn erg snel
+3. De doelgroep lost dit nu op door zelf dingen mee te nemen van huis
+4. De doelgroep heeft de tijd mom te wachten op het station, of wacht normaal nauwelijks
+5. De doelgroep gebruikt onze oplossing omdat het tijd scheelt en makkelijk in gebruik is
+
+### Feasible ###
+1. Grootste uitdaging is het verbinden met verschillende winkels/horeca gelegenheden op stations
+2. Funding: Komt van bedrijven die mee willen doen met het platform
+3. We zijn in een unieke positie om dit op te starten omdat ...
+
+### Viable ###
+1. Klanten worden aangetrokken via reclame in horecagelegenheden op stations en via folders op stations
+2. Klanten gebruiken de oplossing bijna dagelijks om zo hun benodigde eten/drinken op reis te achterhalen
+3. Klanten gebruiken mond-op-mond reclamen omdat de applicatie hen zoveel tijd scheelt en het erg makkelijk is in gebruik
+4. Een mogelijke competitor in thuisbezorgd.nl, omdat ze al de benodigde connecties hebben met bedrijven.
+5. We genereren omzet door een klein aandeel in elke tranactie
+
