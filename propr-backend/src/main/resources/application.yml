@@ -1,0 +1,23 @@
+server:
+  port: 8000
+
+logging:
+    level.nl.giphouse.propr: DEBUG
+    level.org.springframework: DEBUG
+    level.org.springframework.security.oauth2: DEBUG
+
+# Data source properties
+spring:
+  jpa.show-sql: true
+  jpa.database: POSTGRESQL
+  datasource.platform: postgres
+  datasource.name: postgresdb
+  datasource.username: propr
+  datasource.password: propr
+  datasource.url: jdbc:postgresql://localhost:5432/propr
+
+propr:
+  clientId: app
+  clientSecret: secret
+
+security.oauth2.resource.id: oauth2_id
