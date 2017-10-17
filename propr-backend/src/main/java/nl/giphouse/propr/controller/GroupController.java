@@ -1,11 +1,11 @@
 package nl.giphouse.propr.controller;
 
+import javax.inject.Inject;
+
 import nl.giphouse.propr.repository.GroupRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.inject.Inject;
 
 /**
  * @author haye.
@@ -19,6 +19,6 @@ public class GroupController {
 
 	@RequestMapping("/create")
 	public ResponseEntity createGroup(){
-
+		return ResponseEntity.ok("ok");
 	}
 }
