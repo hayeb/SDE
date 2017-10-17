@@ -3,8 +3,8 @@ server:
 
 logging:
     level.nl.giphouse.propr: DEBUG
-    level.org.springframework: DEBUG
-    level.org.springframework.security.oauth2: DEBUG
+    level.org.springframework: INFO
+    level.org.springframework.security.oauth2: INFO
 
 # Data source properties
 spring:

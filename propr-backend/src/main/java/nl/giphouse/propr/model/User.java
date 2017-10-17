@@ -25,10 +25,12 @@ import java.util.Collections;
 @Setter
 @NoArgsConstructor
 public class User implements UserDetails {
+	
+	public static final String PROPERTY_ID = "user_id";
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name = "user_id", nullable = false, updatable = false)
+	@Column(name = PROPERTY_ID, nullable = false, updatable = false)
 	private Long id;
 
 	@Column(name = "username", nullable = false, unique = true)
