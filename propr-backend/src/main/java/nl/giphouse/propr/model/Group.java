@@ -1,5 +1,6 @@
 package nl.giphouse.propr.model;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -24,7 +25,12 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
+@EqualsAndHashCode(of = {"id"})
 public class Group {
+
+	public static final String PROPERTY_ID = "id";
+
+	private static final long serialVersionUID = 0L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -37,11 +43,20 @@ public class Group {
 	private String inviteCode;
 
 	@ManyToOne
-	@JoinColumn(name = User.PROPERTY_ID)
+	@JoinColumn(name = "admin")
 	private User admin;
 
 	@OneToMany
-	@JoinTable
+	@JoinTable(name = "users_groups",
+			joinColumns = {@JoinColumn(name = "group_id")},
+			inverseJoinColumns = {@JoinColumn(name = "user_id")})
 	private List<User> users;
+
+	public Group(final String name, final String inviteCode, final User admin, final List<User> users) {
+		this.name = name;
+		this.inviteCode = inviteCode;
+		this.admin = admin;
+		this.users = users;
+	}
 
 }

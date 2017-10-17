@@ -34,7 +34,7 @@ public class TempActivity extends Activity {
 
 			@Override
 			protected String doInBackground(final Void... voids) {
-				return new TempBackendService().getBackendMessage(TempActivity.this);
+				return new TempBackendService(accountManager, TempActivity.this.getString(R.string.backend_url)).getBackendMessage();
 			}
 
 			// Wordt uitgevoerd op het UI-thread, dus we mogen het text element updaten.

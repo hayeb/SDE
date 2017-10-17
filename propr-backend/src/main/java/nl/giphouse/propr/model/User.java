@@ -1,5 +1,7 @@
 package nl.giphouse.propr.model;
 
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,6 +15,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -24,7 +27,11 @@ import java.util.Collections;
 @Getter
 @Setter
 @NoArgsConstructor
-public class User implements UserDetails {
+@AllArgsConstructor
+@EqualsAndHashCode(of = {"id"})
+public class User implements UserDetails, Serializable {
+
+	private static final long serialVersionUID = 0L;
 	
 	public static final String PROPERTY_ID = "user_id";
 

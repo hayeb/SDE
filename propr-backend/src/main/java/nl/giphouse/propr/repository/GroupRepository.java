@@ -11,7 +11,6 @@ import java.util.List;
  */
 public interface GroupRepository extends JpaRepository<Group, Long> {
 
-	List<Group> findGroupsByAdmin_Id(final User admin);
 
 	List<Group> findGroupsByUsers(final User user);
 }

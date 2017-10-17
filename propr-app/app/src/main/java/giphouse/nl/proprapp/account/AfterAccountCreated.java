@@ -5,5 +5,5 @@ package giphouse.nl.proprapp.account;
  */
 public interface AfterAccountCreated {
 
-    void afterAccountCreated();
+	void afterAccountCreated();
 }

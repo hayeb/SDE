@@ -1,6 +1,7 @@
 package nl.giphouse.propr.controller;
 
 import nl.giphouse.propr.model.User;
+import nl.giphouse.propr.model.UserDTO;
 import nl.giphouse.propr.repository.UserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

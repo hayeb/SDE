@@ -31,10 +31,10 @@
 	<string name="connection_failed">Connection failed</string>
 	<string name="title_activity_group_overview">GroupOverviewActivity</string>
 	<string name="action_settings">Settings</string>
-	<string name="title_activity_main">MainActivity</string>
+	<string name="title_activity_main">Propr</string>
 
 	<string name="navigation_drawer_open">Open navigation drawer</string>
 	<string name="navigation_drawer_close">Close navigation drawer</string>
-	<string name="login_title">Enter your account detail</string>
-	<string name="register_account_title">Register a new account</string>
+	<string name="login_title">Login to your Propr account</string>
+	<string name="register_account_title">Register a new Propr account</string>
 </resources>

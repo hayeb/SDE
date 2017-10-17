@@ -5,9 +5,10 @@ import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountManager;
 import android.accounts.OperationCanceledException;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.os.AsyncTask;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -19,16 +20,16 @@ import android.widget.EditText;
 
 import org.apache.commons.lang3.StringUtils;
 
-import giphouse.nl.proprapp.account.BackendAuthenticator;
 import giphouse.nl.proprapp.R;
 import giphouse.nl.proprapp.account.AccountUtils;
+import giphouse.nl.proprapp.account.BackendAuthenticator;
 
 /**
  * A login screen that offers login via email/password.
  */
 public class LoginActivity extends AccountAuthenticatorActivity {
 
-	private UserLoginTask mAuthTask = null;
+	private UserLoginTask userLoginTask = null;
 
 	private AccountManager mAccountManager;
 	private String authToken;
@@ -40,6 +41,12 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 	@Override
 	protected void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		userLoginTask = (UserLoginTask) getLastNonConfigurationInstance();
+
+		if (userLoginTask != null) {
+			userLoginTask.mActivity = this;
+		}
 
 		authToken = null;
 		mAccountManager = AccountManager.get(this);
@@ -93,14 +100,21 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 		mRegisterAccountButton.setOnClickListener(view -> createAccount());
 	}
 
+	@Override
+	public Object onRetainNonConfigurationInstance() {
+		return userLoginTask;
+	}
 
-	/**
-	 * Attempts to sign in the account specified by the login form.
-	 * If there are form errors (invalid email, missing fields, etc.), the
-	 * errors are presented and no actual login attempt is made.
-	 */
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		if (userLoginTask != null) {
+			userLoginTask.mActivity = null;
+		}
+	}
+
 	private void attemptLogin() {
-		if (mAuthTask != null) {
+		if (userLoginTask != null) {
 			return;
 		}
 
@@ -134,8 +148,8 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 		if (cancel) {
 			focusView.requestFocus();
 		} else {
-			mAuthTask = new UserLoginTask(username, password);
-			mAuthTask.execute((Void) null);
+			userLoginTask = new UserLoginTask(username, password, this);
+			userLoginTask.execute();
 		}
 	}
 
@@ -147,7 +161,6 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 	}
 
 	private boolean isUsernameValid(final String username) {
-		//TODO: Replace this with your own logic
 		return username.length() > 5;
 	}
 
@@ -155,42 +168,43 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 		return password.length() > 7;
 	}
 
-	public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
-
+	static class UserLoginTask extends AsyncTask<Void, Void, Boolean>
+	{
 		private final String mUsername;
+
 		private final String mPassword;
 
-		UserLoginTask(final String username, final String password) {
+		@SuppressLint("StaticFieldLeak")
+		private LoginActivity mActivity;
+
+		UserLoginTask(final String username, final String password, final LoginActivity activity) {
 			mUsername = username;
 			mPassword = password;
+			mActivity = activity;
 		}
 
 		@Override
-		protected Boolean doInBackground(final Void... params) {
+		protected Boolean doInBackground(final Void... accountManagers) {
+			if (accountManagers == null || accountManagers.length != 1)
+			{
+				throw new IllegalArgumentException("A single account manager should be passed in!");
+			}
+
 			Log.e("Propr", "Logging in as: " + mUsername + " with password " + mPassword);
 
-			final String authToken = new BackendAuthenticator().signIn(LoginActivity.this.getString(R.string.backend_url), mUsername, mPassword);
+			final String authToken = new BackendAuthenticator().signIn(mActivity.getString(R.string.backend_url), mUsername, mPassword);
 
 			if (StringUtils.isEmpty(authToken)) {
 				return false;
 			}
 
+			final AccountManager accountManager = AccountManager.get(mActivity);
 			final Account acc = new Account(mUsername, AccountUtils.ACCOUNT_TYPE);
-			final AccountManager accountManager = AccountManager.get(LoginActivity.this);
 			accountManager.addAccountExplicitly(acc, mPassword, null);
-			accountManager.setAuthToken(acc, "full_access", authToken);
+			accountManager.setAuthToken(acc, AccountUtils.AUTH_TOKEN_TYPE, authToken);
 			return true;
 		}
-
-		@Override
-		protected void onPostExecute(final Boolean success) {
-			if (success) {
-				finish();
-			} else {
-				mPasswordView.setError(getString(R.string.error_incorrect_password));
-				mPasswordView.requestFocus();
-			}
-		}
 	}
+
 }
 

@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 
 import giphouse.nl.proprapp.R;
+import giphouse.nl.proprapp.ui.account.LoginActivity;
 import giphouse.nl.proprapp.ui.account.RegisterAccountActivity;
 
 /**
@@ -74,7 +75,7 @@ public class ProprAuthenticator extends AbstractAccountAuthenticator {
 			result.putString(AccountManager.KEY_AUTHTOKEN, authToken);
 			return result;
 		}
-		final Intent intent = new Intent(mContext, RegisterAccountActivity.class);
+		final Intent intent = new Intent(mContext, LoginActivity.class);
 		intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
 		intent.putExtra(AccountUtils.ARG_ACCOUNT_TYPE, account.type);
 		intent.putExtra(AccountUtils.ARG_AUTH_TYPE, authTokenType);

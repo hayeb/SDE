@@ -34,9 +34,4 @@ public class UserRegisterTask extends AsyncTask<Context, Void, Boolean> {
 		((AfterAccountCreated) params[0]).afterAccountCreated();
 		return true;
 	}
-
-	@Override
-	protected void onPostExecute(Boolean aBoolean) {
-		super.onPostExecute(aBoolean);
-	}
 }

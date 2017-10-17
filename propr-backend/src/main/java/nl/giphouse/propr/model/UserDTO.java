@@ -1,4 +1,4 @@
-package nl.giphouse.propr.controller;
+package nl.giphouse.propr.model;
 
 import lombok.Getter;
 import lombok.Setter;
