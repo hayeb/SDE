@@ -20,7 +20,7 @@ public class ProprAuthenticator extends AbstractAccountAuthenticator {
 
 	private final Context mContext;
 
-	private BackendAuthenticator backendAuthenticator;
+	private final BackendAuthenticator backendAuthenticator;
 
 	public ProprAuthenticator(final Context context) {
 		super(context);
@@ -38,16 +38,10 @@ public class ProprAuthenticator extends AbstractAccountAuthenticator {
 	public Bundle addAccount(final AccountAuthenticatorResponse response, final String accountType, final String authTokenType, final String[] requiredFeatures, final Bundle options) throws NetworkErrorException {
 		final Intent intent = new Intent(mContext, RegisterAccountActivity.class);
 
-		// This key can be anything. Try to use your domain/package
 		intent.putExtra(AccountUtils.ARG_ACCOUNT_TYPE, accountType);
-
-		// This key can be anything too. It's just a way of identifying the token's type (used when there are multiple permissions)
 		intent.putExtra(AccountUtils.ARG_AUTH_TYPE, authTokenType);
-
-		// This key can be anything too. Used for your reference. Can skip it too.
 		intent.putExtra(AccountUtils.ARG_IS_ADDING_NEW_ACCOUNT, true);
 
-		// Copy this exactly from the line below.
 		intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
 
 		final Bundle bundle = new Bundle();

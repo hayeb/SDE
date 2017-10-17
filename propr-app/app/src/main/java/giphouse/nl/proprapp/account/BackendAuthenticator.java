@@ -8,7 +8,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -24,7 +23,7 @@ public class BackendAuthenticator {
 
 	private static final String TAG = "BackendAuthenticator";
 
-	private static final OkHttpClient client = new OkHttpClient.Builder().connectTimeout(500, TimeUnit.SECONDS).readTimeout(50, TimeUnit.SECONDS).writeTimeout(500, TimeUnit.SECONDS).build();
+	private static final OkHttpClient client = new OkHttpClient.Builder().build();
 
 	private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
@@ -60,18 +59,14 @@ public class BackendAuthenticator {
 
 			final Response response = client.newCall(request).execute();
 
-			if (!response.isSuccessful()) {
-				Log.e(TAG, "Unable to get initial token from backend. Response: [" + response.code() + "] " + response.body().string());
-				return null;
-			}
+			final String responseString = getBodyString(response);
 
-			final ResponseBody body = response.body();
-			if (body == null) {
-				Log.e(TAG, "Response body was null");
+			if (!response.isSuccessful()) {
+				Log.e(TAG, "Unable to get initial token from backend. Response: [" + response.code() + "] " + responseString);
 				return null;
 			}
 			Log.d(TAG, "Got client token from backend");
-			return new JSONObject(body.string()).getString("access_token");
+			return new JSONObject(responseString).getString("access_token");
 		} catch (JSONException | IOException e) {
 			e.printStackTrace();
 		}
@@ -90,14 +85,9 @@ public class BackendAuthenticator {
 					.post(RequestBody.create(JSON, jsonObject.toString()))
 					.build();
 			final Response response = client.newCall(request).execute();
-			final ResponseBody body = response.body();
-
-			if (body == null) {
-				Log.e(TAG, "Unable to get responsebody");
-			}
 
 			if (!response.isSuccessful()) {
-				Log.e(TAG, "Unable to register user with backend. Response: [" + response.code() + "] " + body.string());
+				Log.e(TAG, "Unable to register user with backend. Response: [" + response.code() + "] " + getBodyString(response));
 				return false;
 
 			}
@@ -118,16 +108,30 @@ public class BackendAuthenticator {
 					.build();
 
 			final Response response = client.newCall(request).execute();
+			final String responseBody = getBodyString(response);
 
 			if (!response.isSuccessful()) {
-				Log.e(TAG, String.format("Unable to log in using [%s:%s] using token %s. Response: %s", username, password, CLIENT_NAME, response.body().string()));
+				Log.e(TAG, String.format("Unable to log in using [%s:%s] using token %s. Response: %s", username, password, CLIENT_NAME, responseBody));
 				return null;
 			}
+
 			Log.d(TAG, "Signed in as " + username);
-			return new JSONObject(response.body().string()).getString("access_token");
+			return new JSONObject(responseBody).getString("access_token");
 		} catch (JSONException | IOException e) {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	private String getBodyString(final Response response)
+	{
+		final ResponseBody body = response.body();
+		if (body == null) { return null;}
+		try {
+			return body.string();
+		} catch (final IOException e) {
+			Log.e(TAG, "Unable to get responsebody");
+			return null;
+		}
 	}
 }

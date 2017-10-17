@@ -13,7 +13,7 @@ import okhttp3.ResponseBody;
  */
 public class TempBackendService extends AbstractBackendService {
 
-	private final String TAG = "TempBackendService";
+	private static final String TAG = "TempBackendService";
 
 	// TODO: Blegh, try-catch. Misschien een async-library (Retrofit?)
 	public String getBackendMessage(final Context context)

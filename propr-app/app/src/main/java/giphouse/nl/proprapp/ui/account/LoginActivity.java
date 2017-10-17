@@ -4,14 +4,10 @@ import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountManager;
 import android.accounts.OperationCanceledException;
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.annotation.TargetApi;
 
 import android.content.Intent;
 import android.os.AsyncTask;
 
-import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -23,7 +19,6 @@ import android.widget.EditText;
 
 import org.apache.commons.lang3.StringUtils;
 
-import giphouse.nl.proprapp.AuthPreferences;
 import giphouse.nl.proprapp.account.BackendAuthenticator;
 import giphouse.nl.proprapp.R;
 import giphouse.nl.proprapp.account.AccountUtils;
@@ -33,13 +28,9 @@ import giphouse.nl.proprapp.account.AccountUtils;
  */
 public class LoginActivity extends AccountAuthenticatorActivity {
 
-	/**
-	 * Keep track of the login task to ensure we can cancel it if requested.
-	 */
 	private UserLoginTask mAuthTask = null;
 
 	private AccountManager mAccountManager;
-	private AuthPreferences mAuthPreferences;
 	private String authToken;
 
 	// UI references.
@@ -51,7 +42,6 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 		super.onCreate(savedInstanceState);
 
 		authToken = null;
-		mAuthPreferences = new AuthPreferences(this);
 		mAccountManager = AccountManager.get(this);
 
 		mAccountManager.getAuthTokenByFeatures(AccountUtils.ACCOUNT_TYPE, AccountUtils.AUTH_TOKEN_TYPE, null, this, null, null, result -> {
@@ -65,10 +55,6 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 				} else {
 					authToken = bundle.getString(AccountManager.KEY_AUTHTOKEN);
 					final String accountName = bundle.getString(AccountManager.KEY_ACCOUNT_NAME);
-
-					// Save session username & auth token
-					mAuthPreferences.setAuthToken(authToken);
-					mAuthPreferences.setUsername(accountName);
 
 					// If the logged account didn't exist, we need to create it on the device
 					Account account = AccountUtils.getAccount(LoginActivity.this, accountName);
@@ -169,10 +155,6 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 		return password.length() > 7;
 	}
 
-	/**
-	 * Represents an asynchronous login/registration task used to authenticate
-	 * the user.
-	 */
 	public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 
 		private final String mUsername;
@@ -202,19 +184,12 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 
 		@Override
 		protected void onPostExecute(final Boolean success) {
-			mAuthTask = null;
-
 			if (success) {
 				finish();
 			} else {
 				mPasswordView.setError(getString(R.string.error_incorrect_password));
 				mPasswordView.requestFocus();
 			}
-		}
-
-		@Override
-		protected void onCancelled() {
-			mAuthTask = null;
 		}
 	}
 }

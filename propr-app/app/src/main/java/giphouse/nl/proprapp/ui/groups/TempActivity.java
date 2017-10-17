@@ -1,5 +1,6 @@
 package giphouse.nl.proprapp.ui.groups;
 
+import android.accounts.AccountManager;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.AsyncTask;
@@ -16,6 +17,9 @@ import giphouse.nl.proprapp.service.TempBackendService;
 public class TempActivity extends Activity {
 
 	private TextView text;
+
+	private AccountManager accountManager;
+
 	@SuppressLint("StaticFieldLeak")
 	@Override
 	protected void onCreate(final Bundle savedInstane) {
@@ -23,6 +27,7 @@ public class TempActivity extends Activity {
 		setContentView(R.layout.activity_temp);
 
 		text = findViewById(R.id.backend_response_text);
+		accountManager = AccountManager.get(this);
 
 		new AsyncTask<Void, Void, String>()
 		{
@@ -47,6 +52,4 @@ public class TempActivity extends Activity {
 			text.setText(message);
 		}
 	}
-
-
 }

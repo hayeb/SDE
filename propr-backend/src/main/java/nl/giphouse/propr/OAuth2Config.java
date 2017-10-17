@@ -1,8 +1,10 @@
 package nl.giphouse.propr;
 
 import javax.inject.Inject;
+import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -13,14 +15,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
-import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
-import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
-import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
-import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
-import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
+import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
 
 /**
  * @author haye.
@@ -43,6 +41,17 @@ public class OAuth2Config extends AuthorizationServerConfigurerAdapter {
 
 	@Value("${security.oauth2.resource.id}")
 	private String resourceId;
+
+	private String oauthClass;
+
+	@Value("${spring.datasource.url}")
+	private String oauthUrl;
+
+	@Value("${spring.datasource.username}")
+	private String user;
+
+	@Value("${spring.datasource.password}")
+	private String password;
 
 	@Bean
 	public PasswordEncoder passwordEncoder()
@@ -71,12 +80,16 @@ public class OAuth2Config extends AuthorizationServerConfigurerAdapter {
 			.secret(proprConfiguration.getClientSecret());
 	}
 
-	// TODO: Store token in database
 	@Bean
 	public TokenStore tokenStore() {
-		return new InMemoryTokenStore();
+		final DataSource tokenDatasource = DataSourceBuilder.create()
+			.driverClassName("org.postgresql.Driver")
+			.username(user)
+			.password(password)
+			.url(oauthUrl)
+			.build();
+		return new JdbcTokenStore(tokenDatasource);
 	}
-
 
 	@Bean
 	@Primary
