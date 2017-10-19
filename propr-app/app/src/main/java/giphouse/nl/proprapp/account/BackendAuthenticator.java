@@ -9,6 +9,8 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 
+import giphouse.nl.proprapp.ProprConfiguration;
+import okhttp3.FormBody;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -25,13 +27,11 @@ public class BackendAuthenticator {
 
 	private static final OkHttpClient client = new OkHttpClient.Builder().build();
 
+	private static final MediaType FORM_ENCODED = MediaType.parse("application/x-www-form-urlencoded; charset=utf-8");
+
 	private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
-	private static final String CLIENT_NAME = "app";
-
-	private static final String CLIENT_SECRET = "secret";
-
-	public String signUp(final String email, final String username, final String password, final String backendUrl) {
+	public Token signUp(final String email, final String username, final String password, final String backendUrl) {
 		// 1. Get initial token from backend
 		final String clientToken = getInitialClientToken(backendUrl);
 		if (StringUtils.isEmpty(clientToken)) {
@@ -53,8 +53,8 @@ public class BackendAuthenticator {
 		try {
 			final Request request = new Request.Builder()
 					.url(backendUrl + "/oauth/token?grant_type=client_credentials")
-					.post(RequestBody.create(JSON, ""))
-					.header("Authorization", "Basic " + Base64.encodeToString((CLIENT_NAME + ":" + CLIENT_SECRET).getBytes(), Base64.NO_WRAP))
+					.post(RequestBody.create(FORM_ENCODED, ""))
+					.header("Authorization", "Basic " + Base64.encodeToString((ProprConfiguration.CLIENT_ID + ":" + ProprConfiguration.CLIENT_SECRET).getBytes(), Base64.NO_WRAP))
 					.build();
 
 			final Response response = client.newCall(request).execute();
@@ -80,8 +80,8 @@ public class BackendAuthenticator {
 			jsonObject.put("email", email);
 			jsonObject.put("password", password);
 			final Request request = new Request.Builder()
-					.header("Authorization", "Bearer " + clientToken)
 					.url(backendUrl + "/api/users/register")
+					.header("Authorization", "Bearer " + clientToken)
 					.post(RequestBody.create(JSON, jsonObject.toString()))
 					.build();
 			final Response response = client.newCall(request).execute();
@@ -99,34 +99,54 @@ public class BackendAuthenticator {
 		return false;
 	}
 
-	public String signIn(final String backendUrl, final String username, final String password) {
+	public Token signIn(final String backendUrl, final String username, final String password) {
+		final Request loginRequest = createLoginRequest(backendUrl, username, password);
+		final Response loginResponse;
 		try {
-			final Request request = new Request.Builder()
-					.url(backendUrl + "/oauth/token?grant_type=password&username=" + username + "&password=" + password)
-					.header("Authorization", "Basic " + Base64.encodeToString((CLIENT_NAME + ":" + CLIENT_SECRET).getBytes(), Base64.NO_WRAP))
-					.post(RequestBody.create(JSON, ""))
-					.build();
-
-			final Response response = client.newCall(request).execute();
-			final String responseBody = getBodyString(response);
-
-			if (!response.isSuccessful()) {
-				Log.e(TAG, String.format("Unable to log in using [%s:%s] using token %s. Response: %s", username, password, CLIENT_NAME, responseBody));
-				return null;
-			}
-
-			Log.d(TAG, "Signed in as " + username);
-			return new JSONObject(responseBody).getString("access_token");
-		} catch (JSONException | IOException e) {
+			loginResponse = client.newCall(loginRequest).execute();
+		} catch (final IOException e) {
 			e.printStackTrace();
+			Log.e(TAG, "Unable to make request to " + backendUrl);
+			return null;
+		}
+
+		if (loginResponse.isSuccessful()) {
+			return handleLoginResponse(loginResponse);
+		}
+
+		return null;
+	}
+
+	private Token handleLoginResponse(final Response response) {
+		try {
+			final JSONObject body = new JSONObject(getBodyString(response));
+			return new Token(body.getString("access_token"), body.getString("refresh_token"));
+		} catch (final JSONException e) {
+			Log.e(TAG, "Unable to get body from response " + response);
 		}
 		return null;
 	}
 
-	private String getBodyString(final Response response)
-	{
+	private Request createLoginRequest(final String url, final String username, final String password) {
+		final RequestBody body = new FormBody.Builder()
+				.addEncoded("username", username)
+				.addEncoded("password", password)
+				.build();
+
+		final String authorizationHeader = "Basic " + Base64.encodeToString((ProprConfiguration.CLIENT_ID + ":" + ProprConfiguration.CLIENT_SECRET).getBytes(), Base64.NO_WRAP);
+
+		return new Request.Builder()
+				.url(url + "/oauth/token?grant_type=password")
+				.header("Authorization", authorizationHeader)
+				.post(body)
+				.build();
+	}
+
+	private String getBodyString(final Response response) {
 		final ResponseBody body = response.body();
-		if (body == null) { return null;}
+		if (body == null) {
+			return null;
+		}
 		try {
 			return body.string();
 		} catch (final IOException e) {

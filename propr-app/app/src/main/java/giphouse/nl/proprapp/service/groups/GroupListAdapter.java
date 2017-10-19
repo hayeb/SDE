@@ -22,8 +22,7 @@ public class GroupListAdapter extends BaseAdapter {
 
 	private List<GroupDto> groupDtos = new ArrayList<>();
 
-	public GroupListAdapter(final LayoutInflater layoutInflater)
-	{
+	public GroupListAdapter(final LayoutInflater layoutInflater) {
 		this.mLayoutInflater = layoutInflater;
 	}
 
@@ -65,8 +64,7 @@ public class GroupListAdapter extends BaseAdapter {
 		return itemView;
 	}
 
-	public void updateEntries(final List<GroupDto> dtos)
-	{
+	void updateEntries(final List<GroupDto> dtos) {
 		this.groupDtos = dtos;
 		notifyDataSetChanged();
 	}

@@ -1,11 +1,8 @@
 package giphouse.nl.proprapp.service.groups;
 
-import android.accounts.AccountManager;
-import android.util.Log;
-
-import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.util.List;
 
 import giphouse.nl.proprapp.service.AbstractBackendService;
@@ -14,21 +11,18 @@ import okhttp3.Request;
 /**
  * @author haye
  */
-public class GroupBackendService extends AbstractBackendService {
+public class GroupBackendService extends AbstractBackendService<List<GroupDto>> {
 
-	private final String TAG = "GroupBackendService";
+	private static final String TAG = "GroupBackendService";
 
-	public GroupBackendService(final AccountManager accountManager, final String backendUrl) {
-		super(accountManager, backendUrl);
+	List<GroupDto> getGroups() {
+		final Request.Builder requestBuilder = buildBackendCall("/api/group").get();
+		return doCall(requestBuilder);
 	}
 
-	public List<GroupDto> getGroupsForUser() {
-		final Request.Builder requestBuilder = buildBackendCall("/api/group").get();
-		final String response = doCall(requestBuilder);
-
-		Log.d(TAG, "Got response from server: " + response);
-
-		// Hier gebruiken we Gson om JSON om te zetten naar iets bruikbaars. De gekke typeconstructie zorgt ervoor dat om zetten van de lijst goed gaat
-		return new Gson().fromJson(response, new TypeToken<List<GroupDto>>() {}.getType());
+	@Override
+	protected Type getType() {
+		return new TypeToken<List<GroupDto>>() {
+		}.getType();
 	}
 }

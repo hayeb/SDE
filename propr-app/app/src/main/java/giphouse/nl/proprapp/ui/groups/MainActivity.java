@@ -1,14 +1,13 @@
 package giphouse.nl.proprapp.ui.groups;
 
-import android.accounts.AccountManager;
 import android.app.ListActivity;
 import android.app.LoaderManager;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -23,6 +22,7 @@ import giphouse.nl.proprapp.service.groups.LoadGroupData;
 
 /**
  * Main layout using a DrawerLayout (https://developer.android.com/training/implementing-navigation/nav-drawer.html#DrawerLayout)
+ *
  * @author haye
  */
 public class MainActivity extends ListActivity
@@ -52,7 +52,7 @@ public class MainActivity extends ListActivity
 		final GroupListAdapter adapter = new GroupListAdapter(this.getLayoutInflater());
 		setListAdapter(adapter);
 
-		final LoadGroupData loadGroupData = new LoadGroupData(new GroupBackendService(AccountManager.get(this), getString(R.string.backend_url)), adapter);
+		final LoadGroupData loadGroupData = new LoadGroupData(new GroupBackendService(), adapter);
 		loadGroupData.execute();
 	}
 

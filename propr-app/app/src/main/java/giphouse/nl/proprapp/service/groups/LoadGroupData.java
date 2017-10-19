@@ -20,7 +20,7 @@ public class LoadGroupData extends AsyncTask<Void, Void, List<GroupDto>> {
 
 	@Override
 	protected List<GroupDto> doInBackground(final Void... voids) {
-		return groupBackendService.getGroupsForUser();
+		return groupBackendService.getGroups();
 	}
 
 	@Override

@@ -8,7 +8,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="giphouse.nl.proprapp.ui.account.LoginActivity">
+    tools:context="giphouse.nl.proprapp.account.ui.LoginActivity">
 
     <!-- Login progress -->
     <ProgressBar

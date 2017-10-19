@@ -1,75 +1,39 @@
 package giphouse.nl.proprapp.service;
 
-import android.accounts.Account;
-import android.accounts.AccountManager;
-import android.accounts.AuthenticatorException;
-import android.accounts.OperationCanceledException;
-
-import org.apache.commons.lang3.ArrayUtils;
+import com.google.gson.Gson;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 
-import giphouse.nl.proprapp.account.AccountUtils;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
+import giphouse.nl.proprapp.NetworkClientHolder;
 import okhttp3.Request;
 import okhttp3.ResponseBody;
 
 /**
  * @author haye
  */
-public class AbstractBackendService {
+public abstract class AbstractBackendService<T> {
 
-	protected static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-
-	private static final OkHttpClient client = new OkHttpClient.Builder().build();
-
-	private final AccountManager accountManager;
-
-	private final String backendUrl;
-
-	public AbstractBackendService(final AccountManager accountManager, final String backendUrl) {
-		this.accountManager = accountManager;
-		this.backendUrl = backendUrl;
-	}
+	private static final String TAG = "AbstractBackendService";
 
 	protected Request.Builder buildBackendCall(final String url) {
-		final Account[] proprAccounts = accountManager.getAccountsByType(AccountUtils.ACCOUNT_TYPE);
-
-		if (ArrayUtils.isEmpty(proprAccounts))
-		{
-			throw new IllegalStateException("No account present when making backend call!");
-		}
-
-		final String authToken;
-		try {
-			// TODO: Dit vraagt niet opnieuw naar credentials als de token niet meer geldig is..
-			authToken = accountManager.blockingGetAuthToken(accountManager.getAccountsByType(AccountUtils.ACCOUNT_TYPE)[0], AccountUtils.AUTH_TOKEN_TYPE, false);
-		} catch (OperationCanceledException | IOException | AuthenticatorException e) {
-			e.printStackTrace();
-			return null;
-		}
-
-		if (authToken == null) {
-			return null;
-		}
 
 		return new Request.Builder()
-			.url(backendUrl + url)
-			.header("Authorization", "Bearer " + authToken);
+				.url(NetworkClientHolder.get().getConfiguration().getBackendUrl() + url);
 	}
 
-	protected String doCall(final Request.Builder builder)
-	{
+	protected T doCall(final Request.Builder builder) {
 		try {
-			final ResponseBody body = client.newCall(builder.build()).execute().body();
-			if (body == null)
-			{
+			final ResponseBody body = NetworkClientHolder.get().getOkHttpClient().newCall(builder.build()).execute().body();
+			if (body == null) {
 				return null;
 			}
-			return body.string();
+			final String content = body.string();
+			return new Gson().fromJson(content, getType());
 		} catch (final IOException e) {
 			return null;
 		}
 	}
+
+	protected abstract Type getType();
 }

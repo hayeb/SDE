@@ -1,4 +1,4 @@
-package giphouse.nl.proprapp.ui.account;
+package giphouse.nl.proprapp.account.ui;
 
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
@@ -15,16 +15,14 @@ import android.widget.TextView;
 
 import giphouse.nl.proprapp.R;
 import giphouse.nl.proprapp.account.AccountUtils;
-import giphouse.nl.proprapp.account.task.UserRegisterTask;
-import giphouse.nl.proprapp.account.AfterAccountCreated;
+import giphouse.nl.proprapp.account.Token;
 
 /**
  * @author haye
  */
-public class RegisterAccountActivity extends AccountAuthenticatorActivity implements AfterAccountCreated {
+public class RegisterAccountActivity extends AccountAuthenticatorActivity {
 
 	private static final String TAG = "RegisterAccountActivity";
-	private UserRegisterTask mRegisterTask;
 
 	private TextView mUsernameField;
 	private TextView mEmailField;
@@ -51,9 +49,6 @@ public class RegisterAccountActivity extends AccountAuthenticatorActivity implem
 
 	@SuppressLint("StaticFieldLeak")
 	private void registerAccount() {
-		if (mRegisterTask != null) {
-			return;
-		}
 
 		mUsernameField.setError(null);
 		mEmailField.setError(null);
@@ -92,11 +87,11 @@ public class RegisterAccountActivity extends AccountAuthenticatorActivity implem
 
 				@Override
 				protected Intent doInBackground(final Void... voids) {
-					final String authToken = AccountUtils.mServerAuthenticator.signUp(email, username, password, backendUrl);
+					final Token token = AccountUtils.mServerAuthenticator.signUp(email, username, password, backendUrl);
 					final Intent res = new Intent();
 					res.putExtra(AccountManager.KEY_ACCOUNT_NAME, username);
 					res.putExtra(AccountManager.KEY_ACCOUNT_TYPE, AccountUtils.ACCOUNT_TYPE);
-					res.putExtra(AccountManager.KEY_AUTHTOKEN, authToken);
+					res.putExtra(AccountManager.KEY_AUTHTOKEN, token.getAuthToken());
 					res.putExtra("user_password", password);
 					return res;
 				}
@@ -111,18 +106,17 @@ public class RegisterAccountActivity extends AccountAuthenticatorActivity implem
 		}
 	}
 
-	public void finishLogin(final Intent intent)
-	{
+	/**
+	 * Finish the login procedure. We create an account and register it with the account manager, and signal that we've succeeded.
+	 */
+	private void finishLogin(final Intent intent) {
 		final String accountName = intent.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
 		final String accountPassword = intent.getStringExtra("user_password");
 		final Account account = new Account(accountName, intent.getStringExtra(AccountManager.KEY_ACCOUNT_TYPE));
-		if (getIntent().getBooleanExtra(AccountUtils.ARG_IS_ADDING_NEW_ACCOUNT, false)) {
-			final String authtoken = intent.getStringExtra(AccountManager.KEY_AUTHTOKEN);
-			mAccountManager.addAccountExplicitly(account, accountPassword, null);
-			mAccountManager.setAuthToken(account,  AccountUtils.AUTH_TOKEN_TYPE, authtoken);
-		} else {
-			mAccountManager.setPassword(account, accountPassword);
-		}
+		final String authtoken = intent.getStringExtra(AccountManager.KEY_AUTHTOKEN);
+		mAccountManager.addAccountExplicitly(account, accountPassword, null);
+		mAccountManager.setAuthToken(account, AccountUtils.AUTH_TOKEN_TYPE, authtoken);
+
 		setAccountAuthenticatorResult(intent.getExtras());
 		setResult(RESULT_OK, intent);
 		finish();
@@ -142,10 +136,5 @@ public class RegisterAccountActivity extends AccountAuthenticatorActivity implem
 
 	private boolean validateMatchingPasswords(final String password, final String passwordRepeated) {
 		return password.equals(passwordRepeated);
-	}
-
-	@Override
-	public void afterAccountCreated() {
-		mRegisterTask = null;
 	}
 }
