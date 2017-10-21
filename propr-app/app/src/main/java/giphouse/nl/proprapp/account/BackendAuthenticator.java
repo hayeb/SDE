@@ -41,7 +41,7 @@ public class BackendAuthenticator {
 		this.client = client;
 	}
 
-	public Token signUp(final String email, final String username, final String password) {
+	public Token signUp(final UserAccountDto accountDto) {
 		// 1. Get initial token from backend
 		final String clientToken = getInitialClientToken();
 		if (StringUtils.isEmpty(clientToken)) {
@@ -50,13 +50,13 @@ public class BackendAuthenticator {
 		}
 
 		// 2. Create user using initial token, and authenticate.
-		final boolean userCreated = createUser(clientToken, username, password, email);
+		final boolean userCreated = createUser(accountDto, clientToken);
 		if (!userCreated) {
 			return null;
 		}
 
 		// 3. Sign in, get user token and create account in account manager.
-		return signIn(username, password);
+		return signIn(accountDto.getUsername(), accountDto.getPassword());
 	}
 
 	private String getInitialClientToken() {
@@ -83,12 +83,12 @@ public class BackendAuthenticator {
 		return null;
 	}
 
-	private boolean createUser(final String clientToken, final String username, final String password, final String email) {
+	private boolean createUser(final UserAccountDto accountDto, final String clientToken) {
 		try {
 			final JSONObject jsonObject = new JSONObject();
-			jsonObject.put("username", username);
-			jsonObject.put("email", email);
-			jsonObject.put("password", password);
+			jsonObject.put("username", accountDto.getUsername());
+			jsonObject.put("email", accountDto.getEmail());
+			jsonObject.put("password", accountDto.getPassword());
 			final Request request = new Request.Builder()
 				.url(proprConfiguration.getBackendUrl() + "/api/users/register")
 				.header("Authorization", "Bearer " + clientToken)
@@ -101,7 +101,7 @@ public class BackendAuthenticator {
 				return false;
 
 			}
-			Log.d(TAG, "Created user " + username);
+			Log.d(TAG, "Created user " + accountDto.getUsername());
 			return true;
 		} catch (JSONException | IOException e) {
 			e.printStackTrace();

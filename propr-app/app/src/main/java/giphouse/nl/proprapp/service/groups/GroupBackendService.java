@@ -16,5 +16,5 @@ public interface GroupBackendService {
 	Call<List<GroupDto>> listGroups();
 
 	@POST("/api/group/create")
-	Call<GroupDto> createGroup(@Body final GroupDto groupDto);
+	Call<Void> createGroup(@Body final GroupAddDto groupAddDto);
 }

@@ -56,11 +56,19 @@ public class GroupListActivity extends ListActivity
 		final NavigationView navigationView = findViewById(R.id.nav_view);
 		navigationView.setNavigationItemSelectedListener(this);
 
-		final GroupListAdapter adapter = new GroupListAdapter(this.getLayoutInflater());
-		setListAdapter(adapter);
+		setListAdapter(new GroupListAdapter(this.getLayoutInflater(), this));
 
-		final LoadGroupData loadGroupData = new LoadGroupData(groupBackendService, adapter);
+		final LoadGroupData loadGroupData = new LoadGroupData(groupBackendService, (GroupListAdapter) getListAdapter());
 		loadGroupData.execute();
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+
+		// Reload the group list overview
+		new LoadGroupData(groupBackendService, (GroupListAdapter) getListAdapter()).execute();
+
 	}
 
 	@Override

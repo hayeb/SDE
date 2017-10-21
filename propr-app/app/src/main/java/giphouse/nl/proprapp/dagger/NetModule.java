@@ -9,6 +9,8 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.util.logging.Level;
+
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -19,6 +21,7 @@ import giphouse.nl.proprapp.account.OAuthRequestInterceptor;
 import giphouse.nl.proprapp.account.ProprAuthenticator;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -68,6 +71,7 @@ public class NetModule {
 		final OkHttpClient client = new OkHttpClient.Builder()
 			.cache(cache)
 			.addInterceptor(interceptor)
+			.addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
 			.build();
 
 		interceptor.initHttpClient(client);

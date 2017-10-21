@@ -1,0 +1,1 @@
+ALTER TABLE groups DROP CONSTRAINT groups_invite_code_key;
