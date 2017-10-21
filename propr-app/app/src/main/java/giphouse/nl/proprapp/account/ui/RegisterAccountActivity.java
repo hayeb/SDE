@@ -5,6 +5,7 @@ import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountManager;
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -13,8 +14,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import javax.inject.Inject;
+
+import giphouse.nl.proprapp.ProprApplication;
 import giphouse.nl.proprapp.R;
 import giphouse.nl.proprapp.account.AccountUtils;
+import giphouse.nl.proprapp.account.BackendAuthenticator;
 import giphouse.nl.proprapp.account.Token;
 
 /**
@@ -23,6 +28,12 @@ import giphouse.nl.proprapp.account.Token;
 public class RegisterAccountActivity extends AccountAuthenticatorActivity {
 
 	private static final String TAG = "RegisterAccountActivity";
+
+	@Inject
+	BackendAuthenticator backendAuthenticator;
+
+	@Inject
+	SharedPreferences sharedPreferences;
 
 	private TextView mUsernameField;
 	private TextView mEmailField;
@@ -34,6 +45,8 @@ public class RegisterAccountActivity extends AccountAuthenticatorActivity {
 	@Override
 	protected void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		((ProprApplication) getApplication()).getComponent().inject(this);
 		setContentView(R.layout.activity_create_account);
 
 		mUsernameField = findViewById(R.id.username);
@@ -78,8 +91,6 @@ public class RegisterAccountActivity extends AccountAuthenticatorActivity {
 			view = mUsernameField;
 		}
 
-		final String backendUrl = getString(R.string.backend_url);
-
 		if (view == null) {
 			Log.d(TAG, String.format("Registering account [%s, %s]", username, email));
 
@@ -87,12 +98,13 @@ public class RegisterAccountActivity extends AccountAuthenticatorActivity {
 
 				@Override
 				protected Intent doInBackground(final Void... voids) {
-					final Token token = AccountUtils.mServerAuthenticator.signUp(email, username, password, backendUrl);
+					final Token token = backendAuthenticator.signUp(email, username, password);
 					final Intent res = new Intent();
 					res.putExtra(AccountManager.KEY_ACCOUNT_NAME, username);
 					res.putExtra(AccountManager.KEY_ACCOUNT_TYPE, AccountUtils.ACCOUNT_TYPE);
 					res.putExtra(AccountManager.KEY_AUTHTOKEN, token.getAuthToken());
 					res.putExtra("user_password", password);
+					res.putExtra(AccountUtils.KEY_REFRESH_TOKEN, token.getRefreshToken());
 					return res;
 				}
 
@@ -114,8 +126,14 @@ public class RegisterAccountActivity extends AccountAuthenticatorActivity {
 		final String accountPassword = intent.getStringExtra("user_password");
 		final Account account = new Account(accountName, intent.getStringExtra(AccountManager.KEY_ACCOUNT_TYPE));
 		final String authtoken = intent.getStringExtra(AccountManager.KEY_AUTHTOKEN);
+
 		mAccountManager.addAccountExplicitly(account, accountPassword, null);
 		mAccountManager.setAuthToken(account, AccountUtils.AUTH_TOKEN_TYPE, authtoken);
+
+		sharedPreferences.edit()
+			.putString(AccountUtils.PREF_REFRESH_TOKEN, intent.getStringExtra(AccountUtils.KEY_REFRESH_TOKEN))
+			.putString(AccountUtils.PREF_AUTH_TOKEN, authtoken)
+			.apply();
 
 		setAccountAuthenticatorResult(intent.getExtras());
 		setResult(RESULT_OK, intent);

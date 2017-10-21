@@ -10,6 +10,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 
+import javax.inject.Inject;
+
 import giphouse.nl.proprapp.R;
 import giphouse.nl.proprapp.account.ui.LoginActivity;
 
@@ -22,11 +24,12 @@ public class ProprAuthenticator extends AbstractAccountAuthenticator {
 
 	private final BackendAuthenticator backendAuthenticator;
 
-	public ProprAuthenticator(final Context context) {
+	@Inject
+	public ProprAuthenticator(final Context context, final BackendAuthenticator backendAuthenticator) {
 		super(context);
 
 		mContext = context;
-		backendAuthenticator = new BackendAuthenticator();
+		this.backendAuthenticator = backendAuthenticator;
 	}
 
 	@Override
@@ -59,13 +62,13 @@ public class ProprAuthenticator extends AbstractAccountAuthenticator {
 	public Bundle getAuthToken(final AccountAuthenticatorResponse response, final Account account, final String authTokenType, final Bundle options) throws NetworkErrorException {
 		final AccountManager am = AccountManager.get(mContext);
 		String authToken = am.peekAuthToken(account, authTokenType);
-		String refreshToken = null;
-		final Token token;
+		String refreshToken = am.getUserData(account, AccountUtils.KEY_REFRESH_TOKEN);
+
 
 		if (TextUtils.isEmpty(authToken)) {
 			final String password = am.getPassword(account);
 			if (password != null) {
-				token = backendAuthenticator.signIn(mContext.getString(R.string.backend_url), account.name, password);
+				final Token token = backendAuthenticator.signIn(account.name, password);
 				authToken = token.getAuthToken();
 				refreshToken = token.getRefreshToken();
 			}
@@ -92,7 +95,7 @@ public class ProprAuthenticator extends AbstractAccountAuthenticator {
 
 	@Override
 	public String getAuthTokenLabel(final String authTokenType) {
-		return null;
+		return "Propr token";
 	}
 
 	@Override

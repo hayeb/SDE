@@ -5,6 +5,7 @@ import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountManager;
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -15,6 +16,9 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 
+import javax.inject.Inject;
+
+import giphouse.nl.proprapp.ProprApplication;
 import giphouse.nl.proprapp.R;
 import giphouse.nl.proprapp.account.AccountUtils;
 import giphouse.nl.proprapp.account.BackendAuthenticator;
@@ -27,6 +31,12 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 
 	private static final String TAG = "LoginActivity";
 
+	@Inject
+	BackendAuthenticator backendAuthenticator;
+
+	@Inject
+	SharedPreferences sharedPreferences;
+
 	// UI references.
 	private AutoCompleteTextView mUsernameTextView;
 	private EditText mPasswordView;
@@ -34,6 +44,8 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 	@Override
 	protected void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		((ProprApplication) getApplication()).getComponent().inject(this);
 
 		setContentView(R.layout.activity_login);
 		// Set up the login form.
@@ -91,15 +103,20 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 
 				@Override
 				protected Intent doInBackground(final Void... voids) {
-					Log.i(TAG, "Logging in as: " + username + " with password " + password);
+					Log.i(TAG, "Logging in as: " + username);
 
-					final Token authToken = new BackendAuthenticator().signIn(LoginActivity.this.getString(R.string.backend_url), username, password);
+					final Token authToken = backendAuthenticator.signIn(username, password);
 
 					if (authToken == null) {
 						return null;
 					}
 
 					Log.i(TAG, "Authentication succeeded");
+
+					sharedPreferences.edit()
+						.putString(AccountUtils.PREF_AUTH_TOKEN, authToken.getAuthToken())
+						.putString(AccountUtils.PREF_REFRESH_TOKEN, authToken.getRefreshToken())
+						.apply();
 
 					final Intent intent = new Intent();
 					intent.putExtra(AccountManager.KEY_ACCOUNT_NAME, username);

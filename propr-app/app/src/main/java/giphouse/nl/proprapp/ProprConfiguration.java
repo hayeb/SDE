@@ -1,21 +1,18 @@
 package giphouse.nl.proprapp;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
 /**
  * @author haye
  */
+@AllArgsConstructor
+@Getter
 public class ProprConfiguration {
 
+	private final String clientId;
+
+	private final String clientSecret;
+
 	private final String backendUrl;
-
-	public static final String CLIENT_ID = "app";
-
-	public static final String CLIENT_SECRET = "secret";
-
-	ProprConfiguration(final String backendUrl) {
-		this.backendUrl = backendUrl;
-	}
-
-	public String getBackendUrl() {
-		return backendUrl;
-	}
 }

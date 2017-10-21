@@ -1,28 +1,20 @@
 package giphouse.nl.proprapp.service.groups;
 
-import com.google.gson.reflect.TypeToken;
-
-import java.lang.reflect.Type;
 import java.util.List;
 
-import giphouse.nl.proprapp.service.AbstractBackendService;
-import okhttp3.Request;
+import retrofit2.Call;
+import retrofit2.http.Body;
+import retrofit2.http.GET;
+import retrofit2.http.POST;
 
 /**
  * @author haye
  */
-public class GroupBackendService extends AbstractBackendService<List<GroupDto>> {
+public interface GroupBackendService {
 
-	private static final String TAG = "GroupBackendService";
+	@GET("/api/group")
+	Call<List<GroupDto>> listGroups();
 
-	List<GroupDto> getGroups() {
-		final Request.Builder requestBuilder = buildBackendCall("/api/group").get();
-		return doCall(requestBuilder);
-	}
-
-	@Override
-	protected Type getType() {
-		return new TypeToken<List<GroupDto>>() {
-		}.getType();
-	}
+	@POST("/api/group/create")
+	Call<GroupDto> createGroup(@Body final GroupDto groupDto);
 }
