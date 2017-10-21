@@ -2,6 +2,7 @@ package giphouse.nl.proprapp.ui.groups;
 
 import android.app.ListActivity;
 import android.app.LoaderManager;
+import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -42,16 +43,13 @@ public class GroupListActivity extends ListActivity
 		((ProprApplication) getApplication()).getComponent().inject(this);
 
 		setContentView(R.layout.activity_group_list);
-		final Toolbar toolbar = findViewById(R.id.toolbar);
-		//setSupportActionBar(toolbar);
 
 		final FloatingActionButton fab = findViewById(R.id.fab);
-		fab.setOnClickListener(view -> Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-			.setAction("Action", null).show());
+		fab.setOnClickListener(view -> startActivity(new Intent(this, GroupAddActivity.class)));
 
 		final DrawerLayout drawer = findViewById(R.id.drawer_layout);
 		final ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-			this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+			this, drawer, findViewById(R.id.toolbar), R.string.navigation_drawer_open, R.string.navigation_drawer_close);
 		drawer.addDrawerListener(toggle);
 		toggle.syncState();
 

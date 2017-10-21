@@ -37,4 +37,16 @@
 	<string name="navigation_drawer_close">Close navigation drawer</string>
 	<string name="login_title">Login to your Propr account</string>
 	<string name="register_account_title">Register a new Propr account</string>
+	<string name="title_activity_group_add">Add a Propr group</string>
+	<string name="content_description_group_name">The name for your group</string>
+	<string name="hint_group_name">Group name</string>
+	<string name="hint_group_password">Group code</string>
+	<string name="button_text_create_group">Create group</string>
+	<string name="group_add_description">Please enter a name and code for your group. The code is used to secure the group.</string>
+	<string name="add_group">Add group</string>
+	<string name="content_description_group_members">Group members</string>
+	<string name="group_members">Group members</string>
+	<string name="group_image">Group image</string>
+	<string name="register">Register account</string>
+	<string name="loading">Loading…</string>
 </resources>

@@ -1,5 +1,6 @@
 package giphouse.nl.proprapp.service.groups;
 
+import android.support.constraint.ConstraintLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,13 +44,13 @@ public class GroupListAdapter extends BaseAdapter {
 
 	@Override
 	public View getView(final int position, final View convertView, final ViewGroup parent) {
-		final RelativeLayout itemView;
+		final ConstraintLayout itemView;
 		if (convertView == null) {
-			itemView = (RelativeLayout) mLayoutInflater.inflate(
+			itemView = (ConstraintLayout) mLayoutInflater.inflate(
 					R.layout.group_list_item, parent, false);
 
 		} else {
-			itemView = (RelativeLayout) convertView;
+			itemView = (ConstraintLayout) convertView;
 		}
 
 		final TextView titleText = itemView.findViewById(R.id.listTitle);
@@ -58,7 +59,7 @@ public class GroupListAdapter extends BaseAdapter {
 		final String title = groupDtos.get(position).getGroupName();
 		titleText.setText(title);
 
-		final String description = "Leden: " + groupDtos.get(position).getUsernames().stream().collect(Collectors.joining(", "));
+		final String description = groupDtos.get(position).getUsernames().stream().collect(Collectors.joining(", "));
 		descriptionText.setText(description);
 
 		return itemView;

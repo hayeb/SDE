@@ -23,7 +23,7 @@ public class SplashActivity extends AppCompatActivity {
 	@Override
 	protected void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_splash2);
+		setContentView(R.layout.activity_splash);
 
 		final AccountManager accountManager = AccountManager.get(this);
 		final Account[] accounts = accountManager.getAccountsByType(AccountUtils.ACCOUNT_TYPE);
