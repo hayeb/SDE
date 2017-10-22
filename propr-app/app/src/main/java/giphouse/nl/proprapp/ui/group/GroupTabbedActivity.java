@@ -1,4 +1,4 @@
-package giphouse.nl.proprapp.ui.groups;
+package giphouse.nl.proprapp.ui.group;
 
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;

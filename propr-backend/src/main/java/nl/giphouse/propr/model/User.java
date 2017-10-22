@@ -59,10 +59,10 @@ public class User implements UserDetails, Serializable {
 	@Column(name = "enabled", nullable = false)
 	private boolean enabled;
 
-	public User(final String username, final String password, final String email, final boolean enabled) {
+	public User(final String username, final String password, final String email, final String firstname, final String lastname) {
 		this.username = username;
 		this.password = password;
-		this.enabled = enabled;
+		this.enabled = true;
 		this.email = email;
 	}
 

@@ -1,4 +1,4 @@
-package giphouse.nl.proprapp.service.groups;
+package giphouse.nl.proprapp.service.group;
 
 import java.util.List;
 

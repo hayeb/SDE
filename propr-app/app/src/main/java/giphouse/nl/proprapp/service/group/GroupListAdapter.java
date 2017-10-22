@@ -1,4 +1,4 @@
-package giphouse.nl.proprapp.service.groups;
+package giphouse.nl.proprapp.service.group;
 
 import android.content.Context;
 import android.content.Intent;
@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import giphouse.nl.proprapp.R;
-import giphouse.nl.proprapp.ui.groups.GroupTabbedActivity;
+import giphouse.nl.proprapp.ui.group.GroupTabbedActivity;
 
 /**
  * @author haye

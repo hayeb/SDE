@@ -87,7 +87,7 @@ public class OAuthRequestInterceptor implements Interceptor {
 		}
 
 		if (sharedPreferences.getString(AccountUtils.PREF_AUTH_TOKEN, null) != null) { //retry requires new auth token,
-			setAuthHeader(builder, sharedPreferences.getString(AccountUtils.PREF_AUTH_TOKEN, null)); //set auth token to updated
+			setAuthHeader(builder, sharedPreferences.getString(AccountUtils.PREF_AUTH_TOKEN, null)); //set auth token to updateds
 			request = builder.build();
 			return chain.proceed(request); //repeat request with new token
 		}

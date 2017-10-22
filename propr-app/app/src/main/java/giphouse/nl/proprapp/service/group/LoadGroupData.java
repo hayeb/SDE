@@ -1,4 +1,4 @@
-package giphouse.nl.proprapp.service.groups;
+package giphouse.nl.proprapp.service.group;
 
 import android.os.AsyncTask;
 import android.util.Log;
@@ -12,24 +12,24 @@ import java.util.List;
  */
 public class LoadGroupData extends AsyncTask<Void, Void, List<GroupDto>> {
 
-	private final GroupBackendService groupBackendService;
+	private final GroupService groupService;
 
 	private final GroupListAdapter groupListAdapter;
 
-	public LoadGroupData(final GroupBackendService groupBackendService, final GroupListAdapter groupListAdapter) {
-		this.groupBackendService = groupBackendService;
+	public LoadGroupData(final GroupService groupService, final GroupListAdapter groupListAdapter) {
+		this.groupService = groupService;
 		this.groupListAdapter = groupListAdapter;
 	}
 
 	@Override
 	protected List<GroupDto> doInBackground(final Void... voids) {
 		try {
-			final List<GroupDto> dtos = groupBackendService.listGroups().execute().body();
+			final List<GroupDto> dtos = groupService.listGroups().execute().body();
 			if (dtos == null) {
 				Log.e("LoadGroupData", "No response from server!");
 				return Collections.emptyList();
 			}
-			return groupBackendService.listGroups().execute().body();
+			return dtos;
 		} catch (final IOException e) {
 			e.printStackTrace();
 		}

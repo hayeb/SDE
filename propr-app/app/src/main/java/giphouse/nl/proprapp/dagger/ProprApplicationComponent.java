@@ -6,8 +6,8 @@ import dagger.Component;
 import giphouse.nl.proprapp.account.service.AuthenticatorService;
 import giphouse.nl.proprapp.account.ui.LoginActivity;
 import giphouse.nl.proprapp.account.ui.RegisterAccountActivity;
-import giphouse.nl.proprapp.ui.groups.GroupAddActivity;
-import giphouse.nl.proprapp.ui.groups.GroupListActivity;
+import giphouse.nl.proprapp.ui.group.GroupAddActivity;
+import giphouse.nl.proprapp.ui.group.GroupListActivity;
 
 /**
  * @author haye

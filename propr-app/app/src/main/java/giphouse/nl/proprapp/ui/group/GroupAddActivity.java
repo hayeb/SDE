@@ -1,4 +1,4 @@
-package giphouse.nl.proprapp.ui.groups;
+package giphouse.nl.proprapp.ui.group;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -20,9 +20,8 @@ import javax.inject.Inject;
 
 import giphouse.nl.proprapp.ProprApplication;
 import giphouse.nl.proprapp.R;
-import giphouse.nl.proprapp.service.groups.GroupAddDto;
-import giphouse.nl.proprapp.service.groups.GroupBackendService;
-import giphouse.nl.proprapp.service.groups.GroupDto;
+import giphouse.nl.proprapp.service.group.GroupAddDto;
+import giphouse.nl.proprapp.service.group.GroupService;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -32,7 +31,7 @@ public class GroupAddActivity extends AppCompatActivity {
 	private static final String TAG = "GroupAddActivity";
 
 	@Inject
-	GroupBackendService groupBackendService;
+	GroupService groupService;
 
 	private TextInputEditText groupNameEdit;
 	private TextInputEditText groupCodeEdit;
@@ -84,7 +83,7 @@ public class GroupAddActivity extends AppCompatActivity {
 			return;
 		}
 
-		groupBackendService.createGroup(new GroupAddDto(groupname, groupCode, null)).enqueue(new Callback<Void>() {
+		groupService.createGroup(new GroupAddDto(groupname, groupCode, null)).enqueue(new Callback<Void>() {
 			@Override
 			public void onResponse(@NonNull final Call<Void> call, @NonNull final Response<Void> response) {
 				if (!response.isSuccessful()) {

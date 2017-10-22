@@ -108,10 +108,21 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 					final Token authToken = backendAuthenticator.signIn(username, password);
 
 					if (authToken == null) {
+						Log.d(TAG, "Signing in unsuccessful. Token is null");
 						return null;
 					}
 
-					Log.i(TAG, "Authentication succeeded");
+					if (authToken.getAuthToken() == null) {
+						Log.d(TAG, "Signing in seems successful, but auth token is null");
+						return null;
+					}
+
+					if (authToken.getRefreshToken() == null) {
+						Log.d(TAG, "Signing in seems successful, but refresh token is null");
+						return null;
+
+					}
+					Log.d(TAG, "Authentication succeeded");
 
 					sharedPreferences.edit()
 						.putString(AccountUtils.PREF_AUTH_TOKEN, authToken.getAuthToken())
@@ -122,6 +133,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 					intent.putExtra(AccountManager.KEY_ACCOUNT_NAME, username);
 					intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, AccountUtils.ACCOUNT_TYPE);
 					intent.putExtra(AccountManager.KEY_AUTHTOKEN, authToken.getAuthToken());
+					intent.putExtra(AccountUtils.KEY_REFRESH_TOKEN, authToken.getRefreshToken());
 					return intent;
 				}
 
@@ -134,12 +146,16 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 	}
 
 	private void finishLogin(final Intent intent, final String username, final String password) {
-		if (intent == null) {
+		if (intent == null || intent.getExtras() == null) {
 			return;
 		}
+
 		final AccountManager accountManager = AccountManager.get(LoginActivity.this);
 		final Account acc = new Account(username, AccountUtils.ACCOUNT_TYPE);
 		accountManager.addAccountExplicitly(acc, password, null);
+
+		accountManager.setUserData(acc, AccountUtils.KEY_REFRESH_TOKEN, intent.getExtras().getString(AccountUtils.KEY_REFRESH_TOKEN));
+
 		setAccountAuthenticatorResult(intent.getExtras());
 		setResult(RESULT_OK, intent);
 		finish();

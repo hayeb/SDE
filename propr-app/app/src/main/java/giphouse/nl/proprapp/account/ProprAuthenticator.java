@@ -9,16 +9,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 
 import javax.inject.Inject;
 
-import giphouse.nl.proprapp.R;
 import giphouse.nl.proprapp.account.ui.LoginActivity;
+
 
 /**
  * @author haye
  */
 public class ProprAuthenticator extends AbstractAccountAuthenticator {
+
+	private static final String TAG = "ProprAuthenticator";
 
 	private final Context mContext;
 
@@ -75,6 +78,7 @@ public class ProprAuthenticator extends AbstractAccountAuthenticator {
 		}
 
 		if (!TextUtils.isEmpty(authToken) && !TextUtils.isEmpty(refreshToken)) {
+			Log.d(TAG, "Found auth and refresh token.");
 			final Bundle result = new Bundle();
 			result.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
 			result.putString(AccountManager.KEY_ACCOUNT_TYPE, account.type);
@@ -82,6 +86,7 @@ public class ProprAuthenticator extends AbstractAccountAuthenticator {
 			result.putString(AccountUtils.KEY_REFRESH_TOKEN, refreshToken);
 			return result;
 		}
+		Log.d(TAG, "Not auth, refresh token found. Starting login activity.");
 		final Intent intent = new Intent(mContext, LoginActivity.class);
 		intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
 		intent.putExtra(AccountUtils.KEY_ACCOUNT_TYPE, account.type);

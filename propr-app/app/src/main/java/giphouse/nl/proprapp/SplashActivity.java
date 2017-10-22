@@ -6,7 +6,6 @@ import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
 import android.content.Intent;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
@@ -14,7 +13,7 @@ import java.io.IOException;
 
 import giphouse.nl.proprapp.account.AccountUtils;
 import giphouse.nl.proprapp.account.ui.LoginActivity;
-import giphouse.nl.proprapp.ui.groups.GroupListActivity;
+import giphouse.nl.proprapp.ui.group.GroupListActivity;
 
 public class SplashActivity extends AppCompatActivity {
 
@@ -47,18 +46,12 @@ public class SplashActivity extends AppCompatActivity {
 					return;
 				}
 				final String authToken = bundle.getString(AccountManager.KEY_AUTHTOKEN);
-				if (authToken == null) {
-					Log.i(TAG, "No auth token found. Starting Login Activity");
-					startActivity(new Intent(this, LoginActivity.class));
+				final String refreshToken = accountManager.getUserData(account, AccountUtils.KEY_REFRESH_TOKEN);
+				if (authToken == null || refreshToken == null) {
+					Log.i(TAG, "No auth, refresh token found. Starting Login Activity");
+					startActivityForResult(new Intent(this, LoginActivity.class), 11);
 					return;
 				}
-
-				Log.i(TAG, "Found credentials in account manager. Saving to shared preferences");
-
-				PreferenceManager.getDefaultSharedPreferences(this).edit()
-					.putString(AccountUtils.PREF_AUTH_TOKEN, authToken)
-					.putString(AccountUtils.PREF_REFRESH_TOKEN, accountManager.getUserData(account, AccountUtils.KEY_REFRESH_TOKEN))
-					.apply();
 				startActivity(new Intent(this, GroupListActivity.class));
 			}, null);
 		}

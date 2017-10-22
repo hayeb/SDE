@@ -1,4 +1,4 @@
-package giphouse.nl.proprapp.service.groups;
+package giphouse.nl.proprapp.service.group;
 
 import java.util.List;
 
@@ -10,7 +10,7 @@ import retrofit2.http.POST;
 /**
  * @author haye
  */
-public interface GroupBackendService {
+public interface GroupService {
 
 	@GET("/api/group")
 	Call<List<GroupDto>> listGroups();
