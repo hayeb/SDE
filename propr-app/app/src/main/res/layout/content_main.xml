@@ -9,13 +9,9 @@
 	tools:showIn="@layout/app_bar_main">
 
 	<ListView
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
 		android:id="@android:id/list"
-		>
-
-
-	</ListView>
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"/>
 
 	<TextView
 		android:id="@android:id/empty"

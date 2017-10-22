@@ -65,6 +65,9 @@ dependencies {
     provided "org.projectlombok:lombok:1.16.18"
     annotationProcessor 'org.projectlombok:lombok:1.16.18'
 
+    // Provides the floating action button menu list
+    compile 'com.getbase:floatingactionbutton:1.10.1'
+
     testCompile 'junit:junit:4.12'
 }
 

@@ -7,7 +7,6 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -17,6 +16,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+
+import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.getbase.floatingactionbutton.FloatingActionsMenu;
 
 import javax.inject.Inject;
 
@@ -61,8 +63,13 @@ public class GroupListActivity extends ListActivity
 
 		setContentView(R.layout.activity_group_list);
 
-		final FloatingActionButton fab = findViewById(R.id.fab);
-		fab.setOnClickListener(view -> startActivity(new Intent(this, GroupAddActivity.class)));
+		final FloatingActionButton joinGroupAction = findViewById(R.id.join_group);
+		joinGroupAction.setIcon(R.drawable.ic_plus);
+		joinGroupAction.setStrokeVisible(true);
+		joinGroupAction.setTitle("Join a group");
+		final FloatingActionButton createGroupAction = findViewById(R.id.create_group);
+		createGroupAction.setTitle("Create a group");
+		createGroupAction.setOnClickListener(v -> startActivity(new Intent(this, GroupAddActivity.class)));
 
 		final DrawerLayout drawer = findViewById(R.id.drawer_layout);
 		final ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -90,7 +97,6 @@ public class GroupListActivity extends ListActivity
 
 		// Reload the group list overview
 		new LoadGroupData(groupService, (GroupListAdapter) getListAdapter()).execute();
-
 	}
 
 	@Override
