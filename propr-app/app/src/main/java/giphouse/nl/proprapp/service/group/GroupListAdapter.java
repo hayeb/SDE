@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import giphouse.nl.proprapp.R;
+import giphouse.nl.proprapp.service.group.model.GroupDto;
 import giphouse.nl.proprapp.ui.group.GroupTabbedActivity;
 
 /**

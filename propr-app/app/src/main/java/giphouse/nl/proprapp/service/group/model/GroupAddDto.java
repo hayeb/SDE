@@ -1,4 +1,4 @@
-package giphouse.nl.proprapp.service.group;
+package giphouse.nl.proprapp.service.group.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

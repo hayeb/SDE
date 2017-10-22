@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
+import giphouse.nl.proprapp.service.group.model.GroupDto;
+
 /**
  * @author haye
  */

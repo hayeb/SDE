@@ -65,8 +65,8 @@ public class GroupListActivity extends ListActivity
 
 		final FloatingActionButton joinGroupAction = findViewById(R.id.join_group);
 		joinGroupAction.setIcon(R.drawable.ic_plus);
-		joinGroupAction.setStrokeVisible(true);
 		joinGroupAction.setTitle("Join a group");
+		joinGroupAction.setOnClickListener(v -> startActivity(new Intent(this, GroupJoinActivity.class)));
 		final FloatingActionButton createGroupAction = findViewById(R.id.create_group);
 		createGroupAction.setTitle("Create a group");
 		createGroupAction.setOnClickListener(v -> startActivity(new Intent(this, GroupAddActivity.class)));

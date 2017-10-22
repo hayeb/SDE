@@ -15,4 +15,8 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
 	List<Group> findGroupsByUsers(final User user);
 
 	int countByName(final String name);
+
+	Group findGroupByName(final String name);
+
+	List<Group> findGroupsByNameIsContaining(final String name);
 }

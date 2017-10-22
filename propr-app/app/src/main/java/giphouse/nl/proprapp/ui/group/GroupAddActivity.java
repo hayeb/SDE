@@ -20,7 +20,7 @@ import javax.inject.Inject;
 
 import giphouse.nl.proprapp.ProprApplication;
 import giphouse.nl.proprapp.R;
-import giphouse.nl.proprapp.service.group.GroupAddDto;
+import giphouse.nl.proprapp.service.group.model.GroupAddDto;
 import giphouse.nl.proprapp.service.group.GroupService;
 import retrofit2.Call;
 import retrofit2.Callback;

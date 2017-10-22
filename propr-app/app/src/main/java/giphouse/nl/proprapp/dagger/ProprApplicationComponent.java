@@ -7,6 +7,7 @@ import giphouse.nl.proprapp.account.service.AuthenticatorService;
 import giphouse.nl.proprapp.account.ui.LoginActivity;
 import giphouse.nl.proprapp.account.ui.RegisterAccountActivity;
 import giphouse.nl.proprapp.ui.group.GroupAddActivity;
+import giphouse.nl.proprapp.ui.group.GroupJoinActivity;
 import giphouse.nl.proprapp.ui.group.GroupListActivity;
 
 /**
@@ -25,4 +26,6 @@ public interface ProprApplicationComponent {
 	void inject(AuthenticatorService authenticatorService);
 
 	void inject(GroupAddActivity groupAddActivity);
+
+	void inject(GroupJoinActivity groupJoinActivity);
 }

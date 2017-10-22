@@ -64,6 +64,8 @@ public class User implements UserDetails, Serializable {
 		this.password = password;
 		this.enabled = true;
 		this.email = email;
+		this.firstname = firstname;
+		this.lastname = lastname;
 	}
 
 	// TODO: Goed implementeren in de database

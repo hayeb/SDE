@@ -46,7 +46,8 @@
 		<activity
 			android:name=".ui.group.GroupListActivity"
 			android:label="@string/title_activity_main"
-			android:theme="@style/AppTheme.NoActionBar"></activity>
+			android:theme="@style/AppTheme.NoActionBar" />
+
 		<activity android:name=".SplashActivity">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
@@ -54,6 +55,7 @@
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity>
+
 		<activity
 			android:name=".ui.group.GroupAddActivity"
 			android:label="@string/title_activity_group_add"
@@ -63,11 +65,21 @@
 				android:name="android.support.PARENT_ACTIVITY"
 				android:value="giphouse.nl.proprapp.ui.group.GroupListActivity" />
 		</activity>
+
 		<activity
 			android:name=".ui.group.GroupTabbedActivity"
 			android:label="@string/title_activity_group_tabbed"
 			android:parentActivityName=".ui.group.GroupListActivity"
 			android:theme="@style/AppTheme.NoActionBar">
+			<meta-data
+				android:name="android.support.PARENT_ACTIVITY"
+				android:value="giphouse.nl.proprapp.ui.group.GroupListActivity" />
+		</activity>
+
+		<activity
+			android:name=".ui.group.GroupJoinActivity"
+			android:label="Search for a group"
+			android:parentActivityName=".ui.group.GroupListActivity">
 			<meta-data
 				android:name="android.support.PARENT_ACTIVITY"
 				android:value="giphouse.nl.proprapp.ui.group.GroupListActivity" />
