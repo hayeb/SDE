@@ -1,14 +1,9 @@
 package giphouse.nl.proprapp.ui.group;
 
 import android.app.ListActivity;
-import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ListAdapter;
 import android.widget.SearchView;
 
 import java.util.List;
@@ -35,7 +30,7 @@ public class GroupJoinActivity extends ListActivity {
 	protected void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		((ProprApplication)getApplication()).getComponent().inject(this);
+		((ProprApplication) getApplication()).getComponent().inject(this);
 
 		setContentView(R.layout.activity_group_join);
 
@@ -62,7 +57,7 @@ public class GroupJoinActivity extends ListActivity {
 			@Override
 			public void onResponse(@NonNull final Call<List<GroupSearchResult>> call, @NonNull final Response<List<GroupSearchResult>> response) {
 				if (response.isSuccessful()) {
-					((GroupSearchAdapter)getListAdapter()).updateEntries(response.body());
+					((GroupSearchAdapter) getListAdapter()).updateEntries(response.body());
 				}
 			}
 

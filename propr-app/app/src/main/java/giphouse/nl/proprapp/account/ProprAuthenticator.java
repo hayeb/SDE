@@ -25,14 +25,14 @@ public class ProprAuthenticator extends AbstractAccountAuthenticator {
 
 	private final Context mContext;
 
-	private final BackendAuthenticator backendAuthenticator;
+	private final AuthenticatorService authenticatorService;
 
 	@Inject
-	public ProprAuthenticator(final Context context, final BackendAuthenticator backendAuthenticator) {
+	public ProprAuthenticator(final Context context, final AuthenticatorService authenticatorService) {
 		super(context);
 
 		mContext = context;
-		this.backendAuthenticator = backendAuthenticator;
+		this.authenticatorService = authenticatorService;
 	}
 
 	@Override
@@ -71,7 +71,7 @@ public class ProprAuthenticator extends AbstractAccountAuthenticator {
 		if (TextUtils.isEmpty(authToken)) {
 			final String password = am.getPassword(account);
 			if (password != null) {
-				final Token token = backendAuthenticator.signIn(account.name, password);
+				final Token token = authenticatorService.signIn(account.name, password);
 				authToken = token.getAuthToken();
 				refreshToken = token.getRefreshToken();
 			}

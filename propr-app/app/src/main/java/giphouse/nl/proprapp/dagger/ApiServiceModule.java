@@ -16,13 +16,13 @@ public class ApiServiceModule {
 
 	@Singleton
 	@Provides
-	public GroupService groupBackendService(final Retrofit retrofit) {
+	GroupService groupService(final Retrofit retrofit) {
 		return retrofit.create(GroupService.class);
 	}
 
 	@Singleton
 	@Provides
-	public UserService userService(final Retrofit retrofit) {
+	UserService userService(final Retrofit retrofit) {
 		return retrofit.create(UserService.class);
 	}
 }

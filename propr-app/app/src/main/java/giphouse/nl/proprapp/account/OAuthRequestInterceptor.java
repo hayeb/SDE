@@ -55,17 +55,13 @@ public class OAuthRequestInterceptor implements Interceptor {
 	public Response intercept(@NonNull final Chain chain) throws IOException {
 		Request request = chain.request();
 
-		final String url = request.url().toString();
-		if (!url.contains("/api/")) {
-			Log.d(TAG, "Not intercepting requests to endpoints not starting with /api/");
+		if (!isApplicable(request)) {
 			return chain.proceed(request);
 		}
 
 		Log.d(TAG, "Intercepting request: [" + request.method() + "] " + request.url().toString());
 
-		//Build new request
 		final Request.Builder builder = request.newBuilder();
-
 		final String token = sharedPreferences.getString(AccountUtils.PREF_AUTH_TOKEN, null);
 		setAuthHeader(builder, token);
 
@@ -101,6 +97,7 @@ public class OAuthRequestInterceptor implements Interceptor {
 		}
 	}
 
+	@SuppressWarnings("SynchronizeOnNonFinalField")
 	private boolean refreshToken(final String refreshToken) {
 		if (refreshToken == null) {
 			Log.e(TAG, "Not trying to refresh token: refreshtoken is null");
@@ -136,6 +133,15 @@ public class OAuthRequestInterceptor implements Interceptor {
 			accountManager.setAuthToken(account, AccountUtils.AUTH_TOKEN_TYPE, newAuthToken);
 			return true;
 		}
+	}
+
+	private boolean isApplicable(final Request request) {
+		// Ensures that requests to token endpoints are ignored by this interceptor
+		if (!request.url().toString().contains("/api/")) {
+			Log.d(TAG, "Not intercepting requests to endpoints not starting with /api/");
+			return false;
+		}
+		return true;
 	}
 
 	private String validateRefreshResponse(final JSONObject parsedResponse) {

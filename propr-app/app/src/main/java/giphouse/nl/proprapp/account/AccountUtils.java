@@ -7,6 +7,8 @@ import android.util.Log;
 
 import org.apache.commons.lang3.ArrayUtils;
 
+import javax.annotation.Nonnull;
+
 /**
  * @author haye
  */
@@ -30,7 +32,7 @@ public class AccountUtils {
 
 	static final String KEY_IS_ADDING_NEW_ACCOUNT = "isAddingNewAccount";
 
-	public static String getUsername(final Context context) {
+	public static String getUsername(@Nonnull final Context context) {
 		final AccountManager accountManager = AccountManager.get(context);
 		final Account[] accounts = accountManager.getAccountsByType(ACCOUNT_TYPE);
 

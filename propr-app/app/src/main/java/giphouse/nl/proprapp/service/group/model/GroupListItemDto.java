@@ -12,7 +12,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class GroupDto {
+public class GroupListItemDto {
 
 	private String groupName;
 

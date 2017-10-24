@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import giphouse.nl.proprapp.R;
-import giphouse.nl.proprapp.service.group.model.GroupDto;
+import giphouse.nl.proprapp.service.group.model.GroupListItemDto;
 import giphouse.nl.proprapp.ui.group.GroupTabbedActivity;
 
 /**
@@ -26,7 +26,7 @@ public class GroupListAdapter extends BaseAdapter {
 
 	private final LayoutInflater mLayoutInflater;
 
-	private List<GroupDto> groupDtos = new ArrayList<>();
+	private List<GroupListItemDto> groupListItemDtos = new ArrayList<>();
 
 	private final Context context;
 
@@ -37,12 +37,12 @@ public class GroupListAdapter extends BaseAdapter {
 
 	@Override
 	public int getCount() {
-		return groupDtos.size();
+		return groupListItemDtos.size();
 	}
 
 	@Override
 	public Object getItem(final int position) {
-		return groupDtos.get(position);
+		return groupListItemDtos.get(position);
 	}
 
 	@Override
@@ -64,21 +64,19 @@ public class GroupListAdapter extends BaseAdapter {
 		final TextView titleText = itemView.findViewById(R.id.listTitle);
 		final TextView descriptionText = itemView.findViewById(R.id.listDescription);
 
-		final String title = StringUtils.capitalize(groupDtos.get(position).getGroupName());
+		final String title = StringUtils.capitalize(groupListItemDtos.get(position).getGroupName());
 		titleText.setText(title);
 
-		final String description = groupDtos.get(position).getUsernames().stream().collect(Collectors.joining(", "));
+		final String description = groupListItemDtos.get(position).getUsernames().stream().collect(Collectors.joining(", "));
 		descriptionText.setText(description);
 
-		itemView.setOnClickListener(l -> {
-			context.startActivity(new Intent(context, GroupTabbedActivity.class));
-		});
+		itemView.setOnClickListener(l -> context.startActivity(new Intent(context, GroupTabbedActivity.class)));
 
 		return itemView;
 	}
 
-	void updateEntries(final List<GroupDto> dtos) {
-		this.groupDtos = dtos;
+	void updateEntries(final List<GroupListItemDto> dtos) {
+		this.groupListItemDtos = dtos;
 		notifyDataSetChanged();
 	}
 }

@@ -9,14 +9,12 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import java.util.logging.Level;
-
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
 import giphouse.nl.proprapp.ProprConfiguration;
-import giphouse.nl.proprapp.account.BackendAuthenticator;
+import giphouse.nl.proprapp.account.AuthenticatorService;
 import giphouse.nl.proprapp.account.OAuthRequestInterceptor;
 import giphouse.nl.proprapp.account.ProprAuthenticator;
 import okhttp3.Cache;
@@ -91,14 +89,14 @@ public class NetModule {
 
 	@Provides
 	@Singleton
-	BackendAuthenticator provideBackendAuthenticator(final ProprConfiguration proprConfiguration, final OkHttpClient client) {
-		return new BackendAuthenticator(proprConfiguration, client);
+	AuthenticatorService provideBackendAuthenticator(final ProprConfiguration proprConfiguration, final OkHttpClient client) {
+		return new AuthenticatorService(proprConfiguration, client);
 	}
 
 	@Provides
 	@Singleton
-	ProprAuthenticator provideAuthenticator(final Application application, final BackendAuthenticator backendAuthenticator) {
-		return new ProprAuthenticator(application, backendAuthenticator);
+	ProprAuthenticator provideAuthenticator(final Application application, final AuthenticatorService authenticatorService) {
+		return new ProprAuthenticator(application, authenticatorService);
 	}
 
 }

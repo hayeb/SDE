@@ -3,7 +3,6 @@ package giphouse.nl.proprapp.account.ui;
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountManager;
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -16,13 +15,17 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 
+import java.lang.ref.WeakReference;
+import java.util.Optional;
+
 import javax.inject.Inject;
 
 import giphouse.nl.proprapp.ProprApplication;
 import giphouse.nl.proprapp.R;
 import giphouse.nl.proprapp.account.AccountUtils;
-import giphouse.nl.proprapp.account.BackendAuthenticator;
+import giphouse.nl.proprapp.account.AuthenticatorService;
 import giphouse.nl.proprapp.account.Token;
+import lombok.AllArgsConstructor;
 
 /**
  * A login screen that offers login via email/password.
@@ -32,7 +35,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 	private static final String TAG = "LoginActivity";
 
 	@Inject
-	BackendAuthenticator backendAuthenticator;
+	AuthenticatorService authenticatorService;
 
 	@Inject
 	SharedPreferences sharedPreferences;
@@ -64,10 +67,9 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 		mSignInButton.setOnClickListener(view -> attemptLogin());
 
 		final Button mRegisterAccountButton = findViewById(R.id.register_account_button);
-		mRegisterAccountButton.setOnClickListener(view -> createAccount());
+		mRegisterAccountButton.setOnClickListener(view -> startCreateAccountActivity());
 	}
 
-	@SuppressLint("StaticFieldLeak")
 	private void attemptLogin() {
 		mUsernameTextView.setError(null);
 		mPasswordView.setError(null);
@@ -75,74 +77,13 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 		final String username = mUsernameTextView.getText().toString();
 		final String password = mPasswordView.getText().toString();
 
-		boolean cancel = false;
-		View focusView = null;
-
-		// Check for a valid password, if the user entered one.
-		if (TextUtils.isEmpty(password)) {
-			mPasswordView.setError(getString(R.string.error_invalid_password));
-			focusView = mPasswordView;
-			cancel = true;
-		}
-
-		// Check for a valid email address.
-		if (TextUtils.isEmpty(username)) {
-			mUsernameTextView.setError(getString(R.string.error_field_required));
-			focusView = mUsernameTextView;
-			cancel = true;
-		} else if (!isUsernameValid(username)) {
-			mUsernameTextView.setError(getString(R.string.error_invalid_username));
-			focusView = mUsernameTextView;
-			cancel = true;
-		}
-
-		if (cancel) {
+		final View focusView = validateInput(username, password);
+		if (focusView != null) {
 			focusView.requestFocus();
-		} else {
-			new AsyncTask<Void, Void, Intent>() {
-
-				@Override
-				protected Intent doInBackground(final Void... voids) {
-					Log.i(TAG, "Logging in as: " + username);
-
-					final Token authToken = backendAuthenticator.signIn(username, password);
-
-					if (authToken == null) {
-						Log.d(TAG, "Signing in unsuccessful. Token is null");
-						return null;
-					}
-
-					if (authToken.getAuthToken() == null) {
-						Log.d(TAG, "Signing in seems successful, but auth token is null");
-						return null;
-					}
-
-					if (authToken.getRefreshToken() == null) {
-						Log.d(TAG, "Signing in seems successful, but refresh token is null");
-						return null;
-
-					}
-					Log.d(TAG, "Authentication succeeded");
-
-					sharedPreferences.edit()
-						.putString(AccountUtils.PREF_AUTH_TOKEN, authToken.getAuthToken())
-						.putString(AccountUtils.PREF_REFRESH_TOKEN, authToken.getRefreshToken())
-						.apply();
-
-					final Intent intent = new Intent();
-					intent.putExtra(AccountManager.KEY_ACCOUNT_NAME, username);
-					intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, AccountUtils.ACCOUNT_TYPE);
-					intent.putExtra(AccountManager.KEY_AUTHTOKEN, authToken.getAuthToken());
-					intent.putExtra(AccountUtils.KEY_REFRESH_TOKEN, authToken.getRefreshToken());
-					return intent;
-				}
-
-				@Override
-				protected void onPostExecute(final Intent intent) {
-					finishLogin(intent, username, password);
-				}
-			}.execute();
+			return;
 		}
+		new LoginTask(new WeakReference<>(this), authenticatorService, sharedPreferences, username, password)
+			.execute();
 	}
 
 	private void finishLogin(final Intent intent, final String username, final String password) {
@@ -161,7 +102,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 		finish();
 	}
 
-	private void createAccount() {
+	private void startCreateAccountActivity() {
 		setContentView(R.layout.activity_create_account);
 
 		final Intent intent = new Intent(this, RegisterAccountActivity.class);
@@ -170,6 +111,82 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 
 	private boolean isUsernameValid(final String username) {
 		return username.length() > 5;
+	}
+
+	private View validateInput(final String username, final String password) {
+		View focusView = null;
+		if (TextUtils.isEmpty(password)) {
+			mPasswordView.setError(getString(R.string.error_invalid_password));
+			focusView = mPasswordView;
+		}
+		if (TextUtils.isEmpty(username)) {
+			mUsernameTextView.setError(getString(R.string.error_field_required));
+			focusView = mUsernameTextView;
+		} else if (!isUsernameValid(username)) {
+			mUsernameTextView.setError(getString(R.string.error_invalid_username));
+			focusView = mUsernameTextView;
+		}
+		return focusView;
+	}
+
+	@AllArgsConstructor
+	private static class LoginTask extends AsyncTask<Void, Void, Intent> {
+
+		private WeakReference<LoginActivity> loginActivityWeakReference;
+		private AuthenticatorService authenticatorService;
+		private SharedPreferences sharedPreferences;
+
+		private String username;
+		private String password;
+
+		@Override
+		protected Intent doInBackground(final Void... voids) {
+			Log.d(TAG, "Logging in as: " + username);
+
+			final Token authToken = authenticatorService.signIn(username, password);
+
+			final String validationError = validateToken(authToken);
+			if (validationError != null) {
+				Log.e(TAG, validationError);
+				return null;
+			}
+
+			Log.d(TAG, "Authentication succeeded");
+
+			sharedPreferences.edit()
+				.putString(AccountUtils.PREF_AUTH_TOKEN, authToken.getAuthToken())
+				.putString(AccountUtils.PREF_REFRESH_TOKEN, authToken.getRefreshToken())
+				.apply();
+
+			final Intent intent = new Intent();
+			intent.putExtra(AccountManager.KEY_ACCOUNT_NAME, username);
+			intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, AccountUtils.ACCOUNT_TYPE);
+			intent.putExtra(AccountManager.KEY_AUTHTOKEN, authToken.getAuthToken());
+			intent.putExtra(AccountUtils.KEY_REFRESH_TOKEN, authToken.getRefreshToken());
+			return intent;
+		}
+
+		@Override
+		protected void onPostExecute(final Intent intent) {
+			Optional.of(loginActivityWeakReference)
+				.map(WeakReference::get)
+				.ifPresent(a -> a.finishLogin(intent, username, password));
+		}
+
+		private String validateToken(final Token token) {
+			if (token == null) {
+				return "Signing in unsuccessful. Token is null";
+			}
+
+			if (token.getAuthToken() == null) {
+				return "Signing in seems successful, but auth token is null";
+			}
+
+			if (token.getRefreshToken() == null) {
+				return "Signing in seems successful, but refresh token is null";
+			}
+			return null;
+		}
 	}
 }
 

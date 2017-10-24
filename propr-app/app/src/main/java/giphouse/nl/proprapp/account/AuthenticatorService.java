@@ -9,9 +9,11 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 
+import javax.annotation.Nonnull;
 import javax.inject.Inject;
 
 import giphouse.nl.proprapp.ProprConfiguration;
+import lombok.NonNull;
 import okhttp3.FormBody;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -23,9 +25,9 @@ import okhttp3.ResponseBody;
 /**
  * @author haye
  */
-public class BackendAuthenticator {
+public class AuthenticatorService {
 
-	private static final String TAG = "BackendAuthenticator";
+	private static final String TAG = "AuthenticatorService";
 
 	private static final MediaType FORM_ENCODED = MediaType.parse("application/x-www-form-urlencoded; charset=utf-8");
 
@@ -36,12 +38,12 @@ public class BackendAuthenticator {
 	private final OkHttpClient client;
 
 	@Inject
-	public BackendAuthenticator(final ProprConfiguration proprConfiguration, final OkHttpClient client) {
+	public AuthenticatorService(final ProprConfiguration proprConfiguration, final OkHttpClient client) {
 		this.proprConfiguration = proprConfiguration;
 		this.client = client;
 	}
 
-	public Token signUp(final UserAccountDto accountDto) {
+	public Token signUp(@Nonnull final UserAccountDto accountDto) {
 		// 1. Get initial token from backend
 		final String clientToken = getInitialClientToken();
 		if (StringUtils.isEmpty(clientToken)) {
@@ -83,33 +85,29 @@ public class BackendAuthenticator {
 		return null;
 	}
 
-	private boolean createUser(final UserAccountDto accountDto, final String clientToken) {
-		try {
-			final JSONObject jsonObject = new JSONObject();
-			jsonObject.put("username", accountDto.getUsername());
-			jsonObject.put("email", accountDto.getEmail());
-			jsonObject.put("password", accountDto.getPassword());
-			final Request request = new Request.Builder()
-				.url(proprConfiguration.getBackendUrl() + "/api/users/register")
-				.header("Authorization", "Bearer " + clientToken)
-				.post(RequestBody.create(JSON, jsonObject.toString()))
-				.build();
-			final Response response = client.newCall(request).execute();
-
-			if (!response.isSuccessful()) {
-				Log.e(TAG, "Unable to register user with backend. Response: [" + response.code() + "] " + getBodyString(response));
-				return false;
-
-			}
-			Log.d(TAG, "Created user " + accountDto.getUsername());
-			return true;
-		} catch (JSONException | IOException e) {
-			e.printStackTrace();
+	private boolean createUser(@Nonnull final UserAccountDto accountDto, @Nonnull final String clientToken) {
+		final Request request = createRegisterUserRequest(accountDto, clientToken);
+		if (request == null) {
+			return false;
 		}
-		return false;
+		final Response response;
+		try {
+			response = client.newCall(request).execute();
+		} catch (final IOException e) {
+			e.printStackTrace();
+			return false;
+		}
+
+		if (!response.isSuccessful()) {
+			Log.e(TAG, "Unable to register user with backend. Response: [" + response.code() + "] " + getBodyString(response));
+			return false;
+
+		}
+		Log.d(TAG, "Created user " + accountDto.getUsername());
+		return true;
 	}
 
-	public Token signIn(final String username, final String password) {
+	public Token signIn(@Nonnull final String username, @Nonnull final String password) {
 		final Request loginRequest = createLoginRequest(username, password);
 		final Response loginResponse;
 		try {
@@ -127,7 +125,7 @@ public class BackendAuthenticator {
 		return null;
 	}
 
-	private Token handleLoginResponse(final Response response) {
+	private Token handleLoginResponse(@Nonnull final Response response) {
 		try {
 			final JSONObject body = new JSONObject(getBodyString(response));
 			return new Token(body.getString("access_token"), body.getString("refresh_token"));
@@ -137,7 +135,27 @@ public class BackendAuthenticator {
 		return null;
 	}
 
-	private Request createLoginRequest(final String username, final String password) {
+	private Request createRegisterUserRequest(@Nonnull final UserAccountDto accountDto, @NonNull final String clientToken) {
+		final JSONObject jsonObject = new JSONObject();
+		try {
+			jsonObject.put("username", accountDto.getUsername());
+			jsonObject.put("email", accountDto.getEmail());
+			jsonObject.put("password", accountDto.getPassword());
+			jsonObject.put("firstname", accountDto.getFirstname());
+			jsonObject.put("lastname", accountDto.getLastname());
+		} catch (final JSONException exc) {
+			exc.printStackTrace();
+			return null;
+		}
+
+		return new Request.Builder()
+			.url(proprConfiguration.getBackendUrl() + "/api/users/register")
+			.header("Authorization", "Bearer " + clientToken)
+			.post(RequestBody.create(JSON, jsonObject.toString()))
+			.build();
+	}
+
+	private Request createLoginRequest(@Nonnull final String username, @Nonnull final String password) {
 		final RequestBody body = new FormBody.Builder()
 			.addEncoded("username", username)
 			.addEncoded("password", password)
@@ -152,7 +170,7 @@ public class BackendAuthenticator {
 			.build();
 	}
 
-	private String getBodyString(final Response response) {
+	private String getBodyString(@Nonnull final Response response) {
 		final ResponseBody body = response.body();
 		if (body == null) {
 			return null;

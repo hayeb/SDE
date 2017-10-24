@@ -18,7 +18,6 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
-import com.getbase.floatingactionbutton.FloatingActionsMenu;
 
 import javax.inject.Inject;
 

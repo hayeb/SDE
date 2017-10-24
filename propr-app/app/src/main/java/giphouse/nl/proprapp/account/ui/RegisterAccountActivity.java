@@ -14,14 +14,20 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import org.apache.commons.lang3.ArrayUtils;
+
+import java.lang.ref.WeakReference;
+import java.util.Optional;
+
 import javax.inject.Inject;
 
 import giphouse.nl.proprapp.ProprApplication;
 import giphouse.nl.proprapp.R;
 import giphouse.nl.proprapp.account.AccountUtils;
-import giphouse.nl.proprapp.account.BackendAuthenticator;
+import giphouse.nl.proprapp.account.AuthenticatorService;
 import giphouse.nl.proprapp.account.Token;
 import giphouse.nl.proprapp.account.UserAccountDto;
+import lombok.AllArgsConstructor;
 
 /**
  * @author haye
@@ -30,8 +36,10 @@ public class RegisterAccountActivity extends AccountAuthenticatorActivity {
 
 	private static final String TAG = "RegisterAccountActivity";
 
+	private static final String KEY_USER_PASSWORD = "user.password";
+
 	@Inject
-	BackendAuthenticator backendAuthenticator;
+	AuthenticatorService authenticatorService;
 
 	@Inject
 	SharedPreferences sharedPreferences;
@@ -82,6 +90,28 @@ public class RegisterAccountActivity extends AccountAuthenticatorActivity {
 		final String firstname = mFirstnameField.getText().toString();
 		final String lastname = mLastnameField.getText().toString();
 
+		final View view = validateInput(username, firstname, lastname, email, password, passwordRepeated);
+
+		if (view != null) {
+			view.requestFocus();
+			return;
+		}
+
+		final UserAccountDto accountDto = UserAccountDto.builder()
+			.username(username)
+			.firstname(firstname)
+			.lastname(lastname)
+			.email(email)
+			.password(password)
+			.build();
+
+		Log.d(TAG, String.format("Registering account [%s, %s]", username, email));
+
+		new RegisterTask(new WeakReference<>(this), authenticatorService).execute(accountDto);
+	}
+
+	private View validateInput(final String username, final String firstname, final String lastname,
+							   final String email, final String password, final String passwordRepeated) {
 		View view = null;
 
 		if (!validateMatchingPasswords(password, passwordRepeated)) {
@@ -108,48 +138,12 @@ public class RegisterAccountActivity extends AccountAuthenticatorActivity {
 			mUsernameField.setError(getString(R.string.username_validation_size));
 			view = mUsernameField;
 		}
-
-		final UserAccountDto accountDto = UserAccountDto.builder()
-			.username(username)
-			.firstname(firstname)
-			.lastname(lastname)
-			.email(email)
-			.password(password)
-			.build();
-
-		if (view == null) {
-			Log.d(TAG, String.format("Registering account [%s, %s]", username, email));
-
-			new AsyncTask<Void, Void, Intent>() {
-
-				@Override
-				protected Intent doInBackground(final Void... voids) {
-					final Token token = backendAuthenticator.signUp(accountDto);
-					final Intent res = new Intent();
-					res.putExtra(AccountManager.KEY_ACCOUNT_NAME, username);
-					res.putExtra(AccountManager.KEY_ACCOUNT_TYPE, AccountUtils.ACCOUNT_TYPE);
-					res.putExtra(AccountManager.KEY_AUTHTOKEN, token.getAuthToken());
-					res.putExtra("user_password", password);
-					res.putExtra(AccountUtils.KEY_REFRESH_TOKEN, token.getRefreshToken());
-					return res;
-				}
-
-				@Override
-				protected void onPostExecute(final Intent intent) {
-					finishLogin(intent);
-				}
-			}.execute();
-		} else {
-			view.requestFocus();
-		}
+		return view;
 	}
 
-	/**
-	 * Finish the login procedure. We create an account and register it with the account manager, and signal that we've succeeded.
-	 */
-	private void finishLogin(final Intent intent) {
+	private void finishRegistering(final Intent intent) {
 		final String accountName = intent.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
-		final String accountPassword = intent.getStringExtra("user_password");
+		final String accountPassword = intent.getStringExtra(KEY_USER_PASSWORD);
 		final Account account = new Account(accountName, intent.getStringExtra(AccountManager.KEY_ACCOUNT_TYPE));
 		final String authtoken = intent.getStringExtra(AccountManager.KEY_AUTHTOKEN);
 
@@ -188,5 +182,60 @@ public class RegisterAccountActivity extends AccountAuthenticatorActivity {
 
 	private boolean validateLastname(final String lastname) {
 		return !TextUtils.isEmpty(lastname);
+	}
+
+	@AllArgsConstructor
+	private static final class RegisterTask extends AsyncTask<UserAccountDto, Void, Intent> {
+		private WeakReference<RegisterAccountActivity> registerAccountActivityWeakReference;
+		private AuthenticatorService authenticatorService;
+
+		@Override
+		protected Intent doInBackground(final UserAccountDto... accountDtos) {
+			if (ArrayUtils.isEmpty(accountDtos) || accountDtos.length != 1) {
+				return null;
+			}
+			final UserAccountDto accountDto = accountDtos[0];
+
+			Log.d(TAG, "Registering account " + accountDto.getUsername());
+
+			final Token token = authenticatorService.signUp(accountDto);
+			final String validationMessage = validateToken(token);
+			if (validationMessage != null) {
+				Log.e(TAG, validationMessage);
+				return null;
+			}
+			final Intent res = new Intent();
+			res.putExtra(AccountManager.KEY_ACCOUNT_NAME, accountDto.getUsername());
+			res.putExtra(AccountManager.KEY_ACCOUNT_TYPE, AccountUtils.ACCOUNT_TYPE);
+			res.putExtra(AccountManager.KEY_AUTHTOKEN, token.getAuthToken());
+			res.putExtra(KEY_USER_PASSWORD, accountDto.getPassword());
+			res.putExtra(AccountUtils.KEY_REFRESH_TOKEN, token.getRefreshToken());
+			return res;
+		}
+
+		@Override
+		protected void onPostExecute(final Intent intent) {
+			if (intent == null) {
+				return;
+			}
+			Optional.of(registerAccountActivityWeakReference)
+				.map(WeakReference::get)
+				.ifPresent(a -> a.finishRegistering(intent));
+		}
+
+		private String validateToken(final Token token) {
+			if (token == null) {
+				return "Registering unsuccessful. Token is null";
+			}
+
+			if (token.getAuthToken() == null) {
+				return "Registering seems successful, but auth token is null";
+			}
+
+			if (token.getRefreshToken() == null) {
+				return "Registering seems successful, but refresh token is null";
+			}
+			return null;
+		}
 	}
 }

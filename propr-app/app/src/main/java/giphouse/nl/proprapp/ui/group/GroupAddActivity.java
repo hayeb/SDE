@@ -93,7 +93,6 @@ public class GroupAddActivity extends AppCompatActivity {
 					} else {
 						Log.e(TAG, String.format(getString(R.string.error_unknown_request_error), responseCode, response.message()));
 					}
-					return;
 				} else {
 					Log.i(TAG, "Succesfully created a group");
 					startActivity(new Intent(GroupAddActivity.this, GroupTabbedActivity.class));

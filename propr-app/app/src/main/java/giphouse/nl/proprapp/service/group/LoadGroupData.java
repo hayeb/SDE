@@ -7,12 +7,12 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
-import giphouse.nl.proprapp.service.group.model.GroupDto;
+import giphouse.nl.proprapp.service.group.model.GroupListItemDto;
 
 /**
  * @author haye
  */
-public class LoadGroupData extends AsyncTask<Void, Void, List<GroupDto>> {
+public class LoadGroupData extends AsyncTask<Void, Void, List<GroupListItemDto>> {
 
 	private final GroupService groupService;
 
@@ -24,9 +24,9 @@ public class LoadGroupData extends AsyncTask<Void, Void, List<GroupDto>> {
 	}
 
 	@Override
-	protected List<GroupDto> doInBackground(final Void... voids) {
+	protected List<GroupListItemDto> doInBackground(final Void... voids) {
 		try {
-			final List<GroupDto> dtos = groupService.listGroups().execute().body();
+			final List<GroupListItemDto> dtos = groupService.listGroups().execute().body();
 			if (dtos == null) {
 				Log.e("LoadGroupData", "No response from server!");
 				return Collections.emptyList();
@@ -39,8 +39,8 @@ public class LoadGroupData extends AsyncTask<Void, Void, List<GroupDto>> {
 	}
 
 	@Override
-	protected void onPostExecute(final List<GroupDto> groupDtos) {
-		super.onPostExecute(groupDtos);
-		groupListAdapter.updateEntries(groupDtos);
+	protected void onPostExecute(final List<GroupListItemDto> groupListItemDtos) {
+		super.onPostExecute(groupListItemDtos);
+		groupListAdapter.updateEntries(groupListItemDtos);
 	}
 }
