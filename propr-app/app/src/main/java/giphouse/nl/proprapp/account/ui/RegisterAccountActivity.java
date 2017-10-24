@@ -146,17 +146,21 @@ public class RegisterAccountActivity extends AccountAuthenticatorActivity {
 		final String accountPassword = intent.getStringExtra(KEY_USER_PASSWORD);
 		final Account account = new Account(accountName, intent.getStringExtra(AccountManager.KEY_ACCOUNT_TYPE));
 		final String authtoken = intent.getStringExtra(AccountManager.KEY_AUTHTOKEN);
+		final String refreshToken = intent.getStringExtra(AccountUtils.KEY_REFRESH_TOKEN);
 
-		mAccountManager.addAccountExplicitly(account, accountPassword, null);
+		final Bundle userdata = new Bundle();
+		userdata.putString(AccountUtils.KEY_REFRESH_TOKEN, refreshToken);
+
+		mAccountManager.addAccountExplicitly(account, accountPassword, userdata);
 		mAccountManager.setAuthToken(account, AccountUtils.AUTH_TOKEN_TYPE, authtoken);
 
 		sharedPreferences.edit()
-			.putString(AccountUtils.PREF_REFRESH_TOKEN, intent.getStringExtra(AccountUtils.KEY_REFRESH_TOKEN))
+			.putString(AccountUtils.PREF_REFRESH_TOKEN, refreshToken)
 			.putString(AccountUtils.PREF_AUTH_TOKEN, authtoken)
 			.apply();
 
 		setAccountAuthenticatorResult(intent.getExtras());
-		setResult(RESULT_OK, intent);
+		setResult(11, intent);
 		finish();
 	}
 

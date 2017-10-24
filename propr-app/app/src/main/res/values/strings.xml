@@ -48,6 +48,7 @@
 	<string name="group_members">Group members</string>
 	<string name="group_image">Group image</string>
 	<string name="register">Register account</string>
+	<string name="no_groups">Uh-oh! No groups could be found. Be sure to create or join another group!</string>
 	<string name="loading">Loading…</string>
 	<string name="firstname">First name</string>
 	<string name="lastname">Lastname</string>

@@ -98,15 +98,22 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 		accountManager.setUserData(acc, AccountUtils.KEY_REFRESH_TOKEN, intent.getExtras().getString(AccountUtils.KEY_REFRESH_TOKEN));
 
 		setAccountAuthenticatorResult(intent.getExtras());
-		setResult(RESULT_OK, intent);
+		setResult(11, intent);
 		finish();
 	}
 
-	private void startCreateAccountActivity() {
-		setContentView(R.layout.activity_create_account);
+	@Override
+	protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+		if (resultCode == 11) {
+			setAccountAuthenticatorResult(data.getExtras());
+			setResult(11, data);
+			finish();
+		}
+	}
 
+	private void startCreateAccountActivity() {
 		final Intent intent = new Intent(this, RegisterAccountActivity.class);
-		startActivity(intent);
+		startActivityForResult(intent, 11);
 	}
 
 	private boolean isUsernameValid(final String username) {
