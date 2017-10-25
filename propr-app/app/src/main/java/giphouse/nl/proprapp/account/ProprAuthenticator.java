@@ -9,25 +9,30 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 
-import giphouse.nl.proprapp.R;
-import giphouse.nl.proprapp.ui.account.LoginActivity;
-import giphouse.nl.proprapp.ui.account.RegisterAccountActivity;
+import javax.inject.Inject;
+
+import giphouse.nl.proprapp.account.ui.LoginActivity;
+
 
 /**
  * @author haye
  */
 public class ProprAuthenticator extends AbstractAccountAuthenticator {
 
+	private static final String TAG = "ProprAuthenticator";
+
 	private final Context mContext;
 
-	private final BackendAuthenticator backendAuthenticator;
+	private final AuthenticatorService authenticatorService;
 
-	public ProprAuthenticator(final Context context) {
+	@Inject
+	public ProprAuthenticator(final Context context, final AuthenticatorService authenticatorService) {
 		super(context);
 
 		mContext = context;
-		backendAuthenticator = new BackendAuthenticator();
+		this.authenticatorService = authenticatorService;
 	}
 
 	@Override
@@ -37,11 +42,11 @@ public class ProprAuthenticator extends AbstractAccountAuthenticator {
 
 	@Override
 	public Bundle addAccount(final AccountAuthenticatorResponse response, final String accountType, final String authTokenType, final String[] requiredFeatures, final Bundle options) throws NetworkErrorException {
-		final Intent intent = new Intent(mContext, RegisterAccountActivity.class);
+		final Intent intent = new Intent(mContext, LoginActivity.class);
 
-		intent.putExtra(AccountUtils.ARG_ACCOUNT_TYPE, accountType);
-		intent.putExtra(AccountUtils.ARG_AUTH_TYPE, authTokenType);
-		intent.putExtra(AccountUtils.ARG_IS_ADDING_NEW_ACCOUNT, true);
+		intent.putExtra(AccountUtils.KEY_ACCOUNT_TYPE, accountType);
+		intent.putExtra(AccountUtils.KEY_AUTH_TYPE, authTokenType);
+		intent.putExtra(AccountUtils.KEY_IS_ADDING_NEW_ACCOUNT, true);
 
 		intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
 
@@ -60,25 +65,32 @@ public class ProprAuthenticator extends AbstractAccountAuthenticator {
 	public Bundle getAuthToken(final AccountAuthenticatorResponse response, final Account account, final String authTokenType, final Bundle options) throws NetworkErrorException {
 		final AccountManager am = AccountManager.get(mContext);
 		String authToken = am.peekAuthToken(account, authTokenType);
+		String refreshToken = am.getUserData(account, AccountUtils.KEY_REFRESH_TOKEN);
+
 
 		if (TextUtils.isEmpty(authToken)) {
 			final String password = am.getPassword(account);
 			if (password != null) {
-				authToken = backendAuthenticator.signIn(mContext.getString(R.string.backend_url), account.name, password);
+				final Token token = authenticatorService.signIn(account.name, password);
+				authToken = token.getAuthToken();
+				refreshToken = token.getRefreshToken();
 			}
 		}
 
-		if (!TextUtils.isEmpty(authToken)) {
+		if (!TextUtils.isEmpty(authToken) && !TextUtils.isEmpty(refreshToken)) {
+			Log.d(TAG, "Found auth and refresh token.");
 			final Bundle result = new Bundle();
 			result.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
 			result.putString(AccountManager.KEY_ACCOUNT_TYPE, account.type);
 			result.putString(AccountManager.KEY_AUTHTOKEN, authToken);
+			result.putString(AccountUtils.KEY_REFRESH_TOKEN, refreshToken);
 			return result;
 		}
+		Log.d(TAG, "Not auth, refresh token found. Starting login activity.");
 		final Intent intent = new Intent(mContext, LoginActivity.class);
 		intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
-		intent.putExtra(AccountUtils.ARG_ACCOUNT_TYPE, account.type);
-		intent.putExtra(AccountUtils.ARG_AUTH_TYPE, authTokenType);
+		intent.putExtra(AccountUtils.KEY_ACCOUNT_TYPE, account.type);
+		intent.putExtra(AccountUtils.KEY_AUTH_TYPE, authTokenType);
 		intent.putExtra("full_access", authTokenType);
 
 		final Bundle retBundle = new Bundle();
@@ -88,7 +100,7 @@ public class ProprAuthenticator extends AbstractAccountAuthenticator {
 
 	@Override
 	public String getAuthTokenLabel(final String authTokenType) {
-		return null;
+		return "Propr token";
 	}
 
 	@Override

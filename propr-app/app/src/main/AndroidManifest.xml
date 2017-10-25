@@ -16,6 +16,7 @@
 		android:maxSdkVersion="22" />
 
 	<application
+		android:name=".ProprApplication"
 		android:allowBackup="true"
 		android:icon="@mipmap/ic_launcher"
 		android:label="@string/app_name"
@@ -23,14 +24,11 @@
 		android:supportsRtl="true"
 		android:theme="@style/AppTheme">
 		<activity
-			android:name=".ui.account.LoginActivity"
+			android:name=".account.ui.LoginActivity"
 			android:label="@string/login_title" />
 		<activity
-			android:name=".ui.account.RegisterAccountActivity"
+			android:name=".account.ui.RegisterAccountActivity"
 			android:label="@string/register_account_title" />
-		<activity
-			android:name=".ui.groups.TempActivity"
-			android:label="@string/app_name" />
 
 		<service
 			android:name=".account.service.AuthenticatorService"
@@ -46,10 +44,9 @@
 		</service>
 
 		<activity
-			android:name=".ui.groups.MainActivity"
+			android:name=".ui.group.GroupListActivity"
 			android:label="@string/title_activity_main"
-			android:theme="@style/AppTheme.NoActionBar">
-		</activity>
+			android:theme="@style/AppTheme.NoActionBar" />
 
 		<activity android:name=".SplashActivity">
 			<intent-filter>
@@ -57,6 +54,35 @@
 
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
+		</activity>
+
+		<activity
+			android:name=".ui.group.GroupAddActivity"
+			android:label="@string/title_activity_group_add"
+			android:parentActivityName=".ui.group.GroupListActivity"
+			android:theme="@style/AppTheme.NoActionBar">
+			<meta-data
+				android:name="android.support.PARENT_ACTIVITY"
+				android:value="giphouse.nl.proprapp.ui.group.GroupListActivity" />
+		</activity>
+
+		<activity
+			android:name=".ui.group.GroupTabbedActivity"
+			android:label="@string/title_activity_group_tabbed"
+			android:parentActivityName=".ui.group.GroupListActivity"
+			android:theme="@style/AppTheme.NoActionBar">
+			<meta-data
+				android:name="android.support.PARENT_ACTIVITY"
+				android:value="giphouse.nl.proprapp.ui.group.GroupListActivity" />
+		</activity>
+
+		<activity
+			android:name=".ui.group.GroupJoinActivity"
+			android:label="Search for a group"
+			android:parentActivityName=".ui.group.GroupListActivity">
+			<meta-data
+				android:name="android.support.PARENT_ACTIVITY"
+				android:value="giphouse.nl.proprapp.ui.group.GroupListActivity" />
 		</activity>
 	</application>
 

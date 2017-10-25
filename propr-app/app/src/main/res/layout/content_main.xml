@@ -5,22 +5,25 @@
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	app:layout_behavior="@string/appbar_scrolling_view_behavior"
-	tools:context="giphouse.nl.proprapp.ui.groups.MainActivity"
+	tools:context="giphouse.nl.proprapp.ui.group.GroupListActivity"
 	tools:showIn="@layout/app_bar_main">
 
 	<ListView
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
 		android:id="@android:id/list"
-		>
-
-
-	</ListView>
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"/>
 
 	<TextView
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
 		android:id="@android:id/empty"
-		android:layout_gravity="center"/>
+		android:layout_width="0dp"
+		android:layout_height="wrap_content"
+		android:layout_gravity="center"
+		android:layout_marginEnd="8dp"
+		android:layout_marginStart="16dp"
+		android:text="@string/no_groups"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toTopOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

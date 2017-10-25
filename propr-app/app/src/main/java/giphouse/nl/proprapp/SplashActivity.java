@@ -1,17 +1,20 @@
 package giphouse.nl.proprapp;
 
+import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.accounts.AuthenticatorException;
+import android.accounts.OperationCanceledException;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
-import giphouse.nl.proprapp.account.AccountUtils;
-import giphouse.nl.proprapp.ui.groups.MainActivity;
+import java.io.IOException;
 
-/**
- * Splash activity to ensure that the user is logged in, or prompts to make an account
- */
+import giphouse.nl.proprapp.account.AccountUtils;
+import giphouse.nl.proprapp.account.ui.LoginActivity;
+import giphouse.nl.proprapp.ui.group.GroupListActivity;
+
 public class SplashActivity extends AppCompatActivity {
 
 	private static final String TAG = "SplashActivity";
@@ -21,27 +24,43 @@ public class SplashActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_splash);
 
-		Log.i(TAG, "Checked credentials. Starting main");
-		AccountManager.get(this).getAuthTokenByFeatures(AccountUtils.ACCOUNT_TYPE, AccountUtils.AUTH_TOKEN_TYPE, null, this, null, null, result -> {
-			final Bundle bundle;
-			try {
-				bundle = result.getResult();
+		final AccountManager accountManager = AccountManager.get(this);
+		final Account[] accounts = accountManager.getAccountsByType(AccountUtils.ACCOUNT_TYPE);
 
-				// An intent is returned: Start it to acquire proper account credentials
-				final Intent intent = (Intent) bundle.get(AccountManager.KEY_INTENT);
-				if (intent != null) {
-					this.startActivityForResult(intent, 1);
+		if (accounts.length == 0) {
+			Log.i(TAG, "No account found on device. Starting LoginActivity");
+			startActivityForResult(new Intent(this, LoginActivity.class), 11);
+		} else {
+
+			final Account account = accounts[0];
+
+			accountManager.getAuthToken(account, AccountUtils.AUTH_TOKEN_TYPE, null, false, result -> {
+				Bundle bundle = null;
+				try {
+					bundle = result.getResult();
+				} catch (OperationCanceledException | IOException | AuthenticatorException ignored) {
 				}
 
-				final String authToken = (String) bundle.get(AccountManager.KEY_AUTHTOKEN);
-				if (authToken == null) {
-					Log.i(TAG, "Account present, but no auth token: Ask for credentials");
+				if (bundle == null) {
+					Log.e(TAG, "Unable to get auth token from account manager");
+					return;
 				}
-				Log.i(TAG, "Valid credentials found");
-				startActivity(new Intent(this, MainActivity.class));
-			} catch (final Exception e) {
-				e.printStackTrace();
-			}
-		}, null);
+				final String authToken = bundle.getString(AccountManager.KEY_AUTHTOKEN);
+				final String refreshToken = accountManager.getUserData(account, AccountUtils.KEY_REFRESH_TOKEN);
+				if (authToken == null || refreshToken == null) {
+					Log.i(TAG, "No auth, refresh token found. Starting Login Activity");
+					startActivityForResult(new Intent(this, LoginActivity.class), 11);
+					return;
+				}
+				startActivity(new Intent(this, GroupListActivity.class));
+			}, null);
+		}
+	}
+
+	@Override
+	protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+		if (requestCode == 11) {
+			startActivity(new Intent(this, GroupListActivity.class));
+		}
 	}
 }
