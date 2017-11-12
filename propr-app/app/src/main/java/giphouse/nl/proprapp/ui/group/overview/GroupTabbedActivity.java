@@ -1,5 +1,7 @@
 package giphouse.nl.proprapp.ui.group.overview;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -9,51 +11,46 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
+
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.Optional;
 
 import giphouse.nl.proprapp.R;
 import giphouse.nl.proprapp.service.group.model.GroupListItemDto;
 
-public class GroupTabbedActivity extends AppCompatActivity {
+public class GroupTabbedActivity extends AppCompatActivity implements MyTasksFragment.MyTasksInteractionListener, GroupMembersFragment.GroupMembersInteractionListener, ScheduleFragment.ScheduleInteractionListener {
 
-	/**
-	 * The {@link android.support.v4.view.PagerAdapter} that will provide
-	 * fragments for each of the sections. We use a
-	 * {@link FragmentPagerAdapter} derivative, which will keep every
-	 * loaded fragment in memory. If this becomes too memory intensive, it
-	 * may be best to switch to a
-	 * {@link android.support.v4.app.FragmentStatePagerAdapter}.
-	 */
-	private SectionsPagerAdapter mSectionsPagerAdapter;
+	private static final String TAG = "GroupTabbedActivity";
 
-	/**
-	 * The {@link ViewPager} that will host the section contents.
-	 */
-	private ViewPager mViewPager;
+	private String groupName;
 
 	@Override
 	protected void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_group_tabbed);
 
-		final GroupListItemDto dto = getIntent().getExtras().getParcelable("group");
+		groupName = Optional.of(getIntent()).map(Intent::getExtras)
+			.map(e -> e.getParcelable("group"))
+			.map(GroupListItemDto.class::cast)
+			.map(GroupListItemDto::getGroupName)
+			.orElse(StringUtils.EMPTY);
 
-		final Toolbar toolbar = findViewById(R.id.toolbar);
-		setSupportActionBar(toolbar);
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-		getSupportActionBar().setTitle(dto.getGroupName());
+		setSupportActionBar(findViewById(R.id.toolbar));
+		Optional.ofNullable(getSupportActionBar()).ifPresent(tb -> {
+			tb.setDisplayHomeAsUpEnabled(true);
+			tb.setTitle(groupName);
+		});
+
 		// Create the adapter that will return a fragment for each of the three
 		// primary sections of the activity.
-		mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+		final SectionsPagerAdapter mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
 		// Set up the ViewPager with the sections adapter.
-		mViewPager = findViewById(R.id.container);
+		final ViewPager mViewPager = findViewById(R.id.container);
 		mViewPager.setAdapter(mSectionsPagerAdapter);
 
 		final TabLayout tabLayout = findViewById(R.id.tabs);
@@ -64,7 +61,6 @@ public class GroupTabbedActivity extends AppCompatActivity {
 		final FloatingActionButton fab = findViewById(R.id.fab);
 		fab.setOnClickListener(view -> Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
 			.setAction("Action", null).show());
-
 	}
 
 
@@ -90,56 +86,39 @@ public class GroupTabbedActivity extends AppCompatActivity {
 		return super.onOptionsItemSelected(item);
 	}
 
-	/**
-	 * A placeholder fragment containing a simple view.
-	 */
-	public static class PlaceholderFragment extends Fragment {
-		/**
-		 * The fragment argument representing the section number for this
-		 * fragment.
-		 */
-		private static final String ARG_SECTION_NUMBER = "section_number";
-
-		public PlaceholderFragment() {
-		}
-
-		/**
-		 * Returns a new instance of this fragment for the given section
-		 * number.
-		 */
-		public static PlaceholderFragment newInstance(final int sectionNumber) {
-			final PlaceholderFragment fragment = new PlaceholderFragment();
-			final Bundle args = new Bundle();
-			args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-			fragment.setArguments(args);
-			return fragment;
-		}
-
-		@Override
-		public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
-		                         final Bundle savedInstanceState) {
-			final View rootView = inflater.inflate(R.layout.fragment_group_tabbed, container, false);
-			final TextView textView = rootView.findViewById(R.id.section_label);
-			textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
-			return rootView;
-		}
+	@Override
+	public void onScheduleInteraction(final Uri uri) {
+		Log.d(TAG, "Schedule interaction");
 	}
 
-	/**
-	 * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
-	 * one of the sections/tabs/pages.
-	 */
+	@Override
+	public void onGroupMembersInteraction(final Uri uri) {
+		Log.d(TAG, "Groupmembers interaction");
+	}
+
+	@Override
+	public void onMyTasksInteraction(final Uri uri) {
+		Log.d(TAG, "My Tasks interaction");
+	}
+
 	public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-		public SectionsPagerAdapter(final FragmentManager fm) {
+		SectionsPagerAdapter(final FragmentManager fm) {
 			super(fm);
 		}
 
 		@Override
 		public Fragment getItem(final int position) {
-			// getItem is called to instantiate the fragment for the given page.
-			// Return a PlaceholderFragment (defined as a static inner class below).
-			return PlaceholderFragment.newInstance(position + 1);
+			switch (position) {
+				case 0:
+					return MyTasksFragment.newInstance(groupName);
+				case 1:
+					return GroupMembersFragment.newInstance(groupName);
+				case 2:
+					return ScheduleFragment.newInstance(groupName);
+				default:
+					throw new RuntimeException("Unhandled index " + position);
+			}
 		}
 
 		@Override
