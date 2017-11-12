@@ -55,7 +55,7 @@ public class OAuthRequestInterceptor implements Interceptor {
 	public Response intercept(@NonNull final Chain chain) throws IOException {
 		Request request = chain.request();
 
-		if (!isApplicable(request)) {
+		if (!isInterceptable(request)) {
 			return chain.proceed(request);
 		}
 
@@ -69,7 +69,7 @@ public class OAuthRequestInterceptor implements Interceptor {
 		final Response response = chain.proceed(request);
 
 		if (response.code() != 401) {
-			Log.i(TAG, "Token still fresh");
+			Log.d(TAG, "Token still fresh");
 			return response;
 		}
 		final String currentToken = sharedPreferences.getString(AccountUtils.PREF_AUTH_TOKEN, null);
@@ -135,13 +135,18 @@ public class OAuthRequestInterceptor implements Interceptor {
 		}
 	}
 
-	private boolean isApplicable(final Request request) {
+	private boolean isInterceptable(final Request request) {
 		// Ensures that requests to token endpoints are ignored by this interceptor
-		if (!request.url().toString().contains("/api/")) {
-			Log.d(TAG, "Not intercepting requests to endpoints not starting with /api/");
+		final String url = request.url().toString();
+		if (url.contains("/api/users/register")) {
+			Log.d(TAG, "Requests to user register endpoint not intercepted");
 			return false;
 		}
-		return true;
+		if (url.contains("/api/")) {
+			Log.d(TAG, "Request to an /api/ url intercepted");
+			return true;
+		}
+		return false;
 	}
 
 	private String validateRefreshResponse(final JSONObject parsedResponse) {
@@ -160,10 +165,9 @@ public class OAuthRequestInterceptor implements Interceptor {
 
 		try {
 			body.put("refresh_token", refreshToken);
-		} catch (final JSONException ignored) {
-		}
+		} catch (final JSONException ignored) {}
 
-		final String authorizationHeader = "Basic " + Base64.encodeToString(("app:secret").getBytes(), Base64.NO_WRAP);
+		final String authorizationHeader = "Basic " + Base64.encodeToString((proprConfiguration.getClientId() + ":" + proprConfiguration.getClientSecret()).getBytes(), Base64.NO_WRAP);
 
 		return new Request.Builder()
 			.url(proprConfiguration.getBackendUrl() + "/oauth/token?grant_type=refresh_token")

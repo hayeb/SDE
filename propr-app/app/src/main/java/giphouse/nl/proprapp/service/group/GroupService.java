@@ -17,15 +17,15 @@ import retrofit2.http.Query;
  */
 public interface GroupService {
 
-	@GET("/api/group")
+	@GET("api/group")
 	Call<List<GroupListItemDto>> listGroups();
 
-	@POST("/api/group/create")
+	@POST("api/group/create")
 	Call<Void> createGroup(@Body final GroupAddDto groupAddDto);
 
-	@POST("/api/group/join")
+	@POST("api/group/join")
 	Call<Void> joinGroup(@Body final GroupJoinDto groupJoinDto);
 
-	@GET("/api/group/search")
+	@GET("api/group/search")
 	Call<List<GroupSearchResult>> searchGroups(@Query("query") final String query);
 }
