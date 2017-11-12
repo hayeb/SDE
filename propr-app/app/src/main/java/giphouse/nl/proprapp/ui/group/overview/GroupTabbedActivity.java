@@ -1,25 +1,24 @@
-package giphouse.nl.proprapp.ui.group;
+package giphouse.nl.proprapp.ui.group.overview;
 
-import android.support.design.widget.TabLayout;
+import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-
 import android.widget.TextView;
 
 import giphouse.nl.proprapp.R;
+import giphouse.nl.proprapp.service.group.model.GroupListItemDto;
 
 public class GroupTabbedActivity extends AppCompatActivity {
 
@@ -43,9 +42,12 @@ public class GroupTabbedActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_group_tabbed);
 
+		final GroupListItemDto dto = getIntent().getExtras().getParcelable("group");
+
 		final Toolbar toolbar = findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		getSupportActionBar().setTitle(dto.getGroupName());
 		// Create the adapter that will return a fragment for each of the three
 		// primary sections of the activity.
 		mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -115,7 +117,7 @@ public class GroupTabbedActivity extends AppCompatActivity {
 
 		@Override
 		public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
-								 final Bundle savedInstanceState) {
+		                         final Bundle savedInstanceState) {
 			final View rootView = inflater.inflate(R.layout.fragment_group_tabbed, container, false);
 			final TextView textView = rootView.findViewById(R.id.section_label);
 			textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));

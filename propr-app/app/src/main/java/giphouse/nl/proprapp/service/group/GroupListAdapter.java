@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 import giphouse.nl.proprapp.R;
 import giphouse.nl.proprapp.service.group.model.GroupListItemDto;
-import giphouse.nl.proprapp.ui.group.GroupTabbedActivity;
+import giphouse.nl.proprapp.ui.group.overview.GroupTabbedActivity;
 
 /**
  * @author haye
@@ -64,13 +64,18 @@ public class GroupListAdapter extends BaseAdapter {
 		final TextView titleText = itemView.findViewById(R.id.listTitle);
 		final TextView descriptionText = itemView.findViewById(R.id.listDescription);
 
-		final String title = StringUtils.capitalize(groupListItemDtos.get(position).getGroupName());
+		final GroupListItemDto dto = groupListItemDtos.get(position);
+
+		final String title = StringUtils.capitalize(dto.getGroupName());
 		titleText.setText(title);
 
-		final String description = groupListItemDtos.get(position).getUsernames().stream().collect(Collectors.joining(", "));
+		final String description = dto.getUsernames().stream().collect(Collectors.joining(", "));
 		descriptionText.setText(description);
 
-		itemView.setOnClickListener(l -> context.startActivity(new Intent(context, GroupTabbedActivity.class)));
+		final Intent intent = new Intent(context, GroupTabbedActivity.class);
+		intent.putExtra("group", dto);
+
+		itemView.setOnClickListener(l -> context.startActivity(intent));
 
 		return itemView;
 	}

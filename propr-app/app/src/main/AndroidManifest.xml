@@ -67,7 +67,7 @@
 		</activity>
 
 		<activity
-			android:name=".ui.group.GroupTabbedActivity"
+			android:name=".ui.group.overview.GroupTabbedActivity"
 			android:label="@string/title_activity_group_tabbed"
 			android:parentActivityName=".ui.group.GroupListActivity"
 			android:theme="@style/AppTheme.NoActionBar">

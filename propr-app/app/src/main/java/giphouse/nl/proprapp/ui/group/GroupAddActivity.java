@@ -22,6 +22,7 @@ import giphouse.nl.proprapp.ProprApplication;
 import giphouse.nl.proprapp.R;
 import giphouse.nl.proprapp.service.group.model.GroupAddDto;
 import giphouse.nl.proprapp.service.group.GroupService;
+import giphouse.nl.proprapp.ui.group.overview.GroupTabbedActivity;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;

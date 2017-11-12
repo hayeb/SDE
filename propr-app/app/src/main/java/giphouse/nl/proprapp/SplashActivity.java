@@ -28,10 +28,10 @@ public class SplashActivity extends AppCompatActivity {
 		final Account[] accounts = accountManager.getAccountsByType(AccountUtils.ACCOUNT_TYPE);
 
 		if (accounts.length == 0) {
-			Log.i(TAG, "No account found on device. Starting LoginActivity");
+			Log.d(TAG, "No account found on device. Starting LoginActivity");
 			startActivityForResult(new Intent(this, LoginActivity.class), 11);
 		} else {
-
+			Log.d(TAG, "Account found on device. Getting additional information");
 			final Account account = accounts[0];
 
 			accountManager.getAuthToken(account, AccountUtils.AUTH_TOKEN_TYPE, null, false, result -> {
@@ -52,6 +52,7 @@ public class SplashActivity extends AppCompatActivity {
 					startActivityForResult(new Intent(this, LoginActivity.class), 11);
 					return;
 				}
+				// TODO: Check whether the tokens are still valid. If not, start the LoginActivity.
 				startActivity(new Intent(this, GroupListActivity.class));
 			}, null);
 		}

@@ -88,6 +88,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 
 	private void finishLogin(final Intent intent, final String username, final String password) {
 		if (intent == null || intent.getExtras() == null) {
+			// TODO: Show a message with what went wrong.
 			return;
 		}
 

@@ -6,7 +6,7 @@
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	android:fitsSystemWindows="true"
-	tools:context="giphouse.nl.proprapp.ui.group.GroupTabbedActivity">
+	tools:context="giphouse.nl.proprapp.ui.group.overview.GroupTabbedActivity">
 
 	<android.support.design.widget.AppBarLayout
 		android:id="@+id/appbar"
