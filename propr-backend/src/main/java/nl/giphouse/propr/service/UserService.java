@@ -3,7 +3,7 @@ package nl.giphouse.propr.service;
 import javax.inject.Inject;
 
 import lombok.extern.slf4j.Slf4j;
-import nl.giphouse.propr.model.User;
+import nl.giphouse.propr.model.user.User;
 import nl.giphouse.propr.repository.UserRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.userdetails.UserDetails;

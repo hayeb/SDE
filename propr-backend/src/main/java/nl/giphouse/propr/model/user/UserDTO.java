@@ -1,4 +1,4 @@
-package nl.giphouse.propr.model;
+package nl.giphouse.propr.model.user;
 
 import javax.validation.constraints.NotNull;
 

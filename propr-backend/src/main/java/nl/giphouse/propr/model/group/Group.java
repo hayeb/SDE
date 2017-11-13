@@ -1,4 +1,4 @@
-package nl.giphouse.propr.model;
+package nl.giphouse.propr.model.group;
 
 import java.util.List;
 
@@ -18,6 +18,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import nl.giphouse.propr.model.user.User;
 
 /**
  * @author haye.
@@ -28,7 +29,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @EqualsAndHashCode(of = {"id"})
-public class Group {
+public class Group
+{
 
 	public static final String PROPERTY_ID = "id";
 
@@ -44,21 +46,24 @@ public class Group {
 	@Column
 	private String inviteCode;
 
+	/**
+	 * De administrator van een groep. Bij het aanmaken van een groep ook gelijk een van de eerste groepsleden.
+	 */
 	@ManyToOne
 	@JoinColumn(name = "admin")
 	private User admin;
 
 	@OneToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "users_groups",
-			joinColumns = {@JoinColumn(name = "group_id")},
-			inverseJoinColumns = {@JoinColumn(name = "user_id")})
+		joinColumns = {@JoinColumn(name = "group_id")},
+		inverseJoinColumns = {@JoinColumn(name = "user_id")})
 	private List<User> users;
 
-	public Group(final String name, final String inviteCode, final User admin, final List<User> users) {
+	public Group(final String name, final String inviteCode, final User admin, final List<User> users)
+	{
 		this.name = name;
 		this.inviteCode = inviteCode;
 		this.admin = admin;
 		this.users = users;
 	}
-
 }

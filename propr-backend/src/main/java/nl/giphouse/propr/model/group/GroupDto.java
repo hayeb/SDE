@@ -1,4 +1,4 @@
-package nl.giphouse.propr.model;
+package nl.giphouse.propr.model.group;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.experimental.Builder;
+import nl.giphouse.propr.model.user.User;
 
 /**
  * @author haye.

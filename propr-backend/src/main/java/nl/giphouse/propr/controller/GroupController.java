@@ -8,11 +8,11 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import lombok.extern.slf4j.Slf4j;
-import nl.giphouse.propr.model.Group;
-import nl.giphouse.propr.model.GroupAddDto;
-import nl.giphouse.propr.model.GroupDto;
-import nl.giphouse.propr.model.GroupJoinDto;
-import nl.giphouse.propr.model.User;
+import nl.giphouse.propr.model.group.Group;
+import nl.giphouse.propr.model.group.GroupAddDto;
+import nl.giphouse.propr.model.group.GroupDto;
+import nl.giphouse.propr.model.group.GroupJoinDto;
+import nl.giphouse.propr.model.user.User;
 import nl.giphouse.propr.repository.GroupRepository;
 import nl.giphouse.propr.service.UserService;
 import org.apache.commons.collections4.CollectionUtils;
