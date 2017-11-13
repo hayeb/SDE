@@ -1,5 +1,6 @@
 package nl.giphouse.propr.model.group;
 
+import java.io.Serializable;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -29,7 +30,7 @@ import nl.giphouse.propr.model.user.User;
 @Setter
 @NoArgsConstructor
 @EqualsAndHashCode(of = {"id"})
-public class Group
+public class Group implements Serializable
 {
 
 	public static final String PROPERTY_ID = "id";

@@ -55,7 +55,7 @@ public class GroupListAdapter extends BaseAdapter {
 		final ConstraintLayout itemView;
 		if (convertView == null) {
 			itemView = (ConstraintLayout) mLayoutInflater.inflate(
-				R.layout.group_list_item, parent, false);
+				R.layout.item_group, parent, false);
 
 		} else {
 			itemView = (ConstraintLayout) convertView;

@@ -3,20 +3,40 @@ package giphouse.nl.proprapp.ui.group.overview;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ListFragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import giphouse.nl.proprapp.R;
+import java.util.List;
 
-public class MyTasksFragment extends Fragment {
+import javax.inject.Inject;
+
+import giphouse.nl.proprapp.ProprApplication;
+import giphouse.nl.proprapp.R;
+import giphouse.nl.proprapp.service.task.TaskListAdapter;
+import giphouse.nl.proprapp.service.task.TaskService;
+import giphouse.nl.proprapp.service.task.UserTaskDto;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+public class MyTasksFragment extends ListFragment {
+
+	private static final String TAG = "MyTasksFragment";
 
 	private static final String ARG_PARAM1 = "groupname";
+
+	@Inject
+	public TaskService taskService;
 
 	private String groupName;
 
 	private MyTasksInteractionListener mListener;
+
+	private TaskListAdapter taskListAdapter;
 
 	public MyTasksFragment() {
 		// Required empty public constructor
@@ -33,16 +53,31 @@ public class MyTasksFragment extends Fragment {
 	@Override
 	public void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		((ProprApplication) getActivity().getApplication()).getComponent().inject(this);
 		if (getArguments() != null) {
 			groupName = getArguments().getString(ARG_PARAM1);
 		}
-	}
 
-	@Override
-	public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
-	                         final Bundle savedInstanceState) {
-		// Inflate the layout for this fragment
-		return inflater.inflate(R.layout.fragment_my_tasks, container, false);
+		taskListAdapter = new TaskListAdapter(getLayoutInflater(), this.getContext());
+		setListAdapter(taskListAdapter);
+
+		taskService.getTasksForUserInGroup(groupName).enqueue(new Callback<List<UserTaskDto>>() {
+			@Override
+			public void onResponse(@NonNull Call<List<UserTaskDto>> call, @NonNull Response<List<UserTaskDto>> response) {
+				if (response.isSuccessful()) {
+					taskListAdapter.updateData(response.body());
+				} else {
+					// Something went wrong..
+				}
+			}
+
+			@Override
+			public void onFailure(@NonNull Call<List<UserTaskDto>> call, @NonNull Throwable t) {
+				Log.e(TAG, "Failed to connect to backend");
+				t.printStackTrace();
+			}
+		});
 	}
 
 	// TODO: Rename method, update argument and hook method into UI event
