@@ -21,6 +21,6 @@ propr:
   clientId: app
   clientSecret: secret
 
-security.oauth2.resource.id: oauth2_id
+security.oauth2.resource.id: oauth2_id2
 
 spring.jackson.serialization.WRITE_DATES_AS_TIMESTAMPS: false

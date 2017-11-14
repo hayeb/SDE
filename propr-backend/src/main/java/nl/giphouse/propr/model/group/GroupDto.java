@@ -30,5 +30,4 @@ public class GroupDto {
 			.usernames(group.getUsers().stream().map(User::getUsername).collect(Collectors.toList()))
 			.build();
 	}
-
 }
