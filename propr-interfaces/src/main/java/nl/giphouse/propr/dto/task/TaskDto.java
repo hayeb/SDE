@@ -1,21 +1,19 @@
-package giphouse.nl.proprapp.service.task;
+package nl.giphouse.propr.dto.task;
 
 import java.time.LocalDate;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 /**
  * @author haye
  */
 @AllArgsConstructor
-@NoArgsConstructor
+@Builder
 @Getter
-@Setter
-public class UserTaskDto {
-
+public class TaskDto
+{
 	private String name;
 
 	private String description;

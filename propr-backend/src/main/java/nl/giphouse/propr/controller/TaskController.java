@@ -7,12 +7,15 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import lombok.extern.slf4j.Slf4j;
+
+import nl.giphouse.propr.dto.task.TaskDto;
 import nl.giphouse.propr.model.group.Group;
-import nl.giphouse.propr.model.task.TaskDto;
+import nl.giphouse.propr.model.task.TaskFactory;
 import nl.giphouse.propr.model.user.User;
 import nl.giphouse.propr.repository.GroupRepository;
 import nl.giphouse.propr.repository.TaskRepository;
 import nl.giphouse.propr.service.UserService;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -36,8 +39,11 @@ public class TaskController
 	@Inject
 	private GroupRepository groupRepository;
 
+	@Inject
+	private TaskFactory taskFactory;
+
 	@RequestMapping(method = RequestMethod.GET, value = "/group")
-	public ResponseEntity<?> getTasksForUserInGroup(Principal principal, final @RequestParam String groupname)
+	public ResponseEntity<?> getTasksForUserInGroup(final Principal principal, final @RequestParam String groupname)
 	{
 		final User user = (User) userService.loadUserByUsername(principal.getName());
 		final Group group = groupRepository.findGroupByName(groupname);
@@ -48,7 +54,7 @@ public class TaskController
 
 		final List<TaskDto> tasks = taskRepository.findAllByAssigneeAndGroup(user, group)
 			.stream()
-			.map(TaskDto::fromEntity)
+			.map(taskFactory::fromEntity)
 			.collect(Collectors.toList());
 
 		return ResponseEntity.ok(tasks);

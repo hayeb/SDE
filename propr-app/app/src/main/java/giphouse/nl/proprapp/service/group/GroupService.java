@@ -2,10 +2,11 @@ package giphouse.nl.proprapp.service.group;
 
 import java.util.List;
 
-import giphouse.nl.proprapp.service.group.model.GroupAddDto;
-import giphouse.nl.proprapp.service.group.model.GroupListItemDto;
-import giphouse.nl.proprapp.service.group.model.GroupJoinDto;
 import giphouse.nl.proprapp.service.group.search.GroupSearchResult;
+import nl.giphouse.propr.dto.group.GroupAddDto;
+import nl.giphouse.propr.dto.group.GroupDto;
+import nl.giphouse.propr.dto.group.GroupJoinDto;
+import nl.giphouse.propr.dto.user.UserInfoDto;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -18,14 +19,17 @@ import retrofit2.http.Query;
 public interface GroupService {
 
 	@GET("api/group")
-	Call<List<GroupListItemDto>> listGroups();
+	Call<List<GroupDto>> listGroups();
 
 	@POST("api/group/create")
-	Call<GroupListItemDto> createGroup(@Body final GroupAddDto groupAddDto);
+	Call<GroupDto> createGroup(@Body final GroupAddDto groupAddDto);
 
 	@POST("api/group/join")
 	Call<Void> joinGroup(@Body final GroupJoinDto groupJoinDto);
 
 	@GET("api/group/search")
 	Call<List<GroupSearchResult>> searchGroups(@Query("query") final String query);
+
+	@GET("api/group/users")
+	Call<List<UserInfoDto>> getUsersInGroup(@Query("groupName") final String groupName);
 }

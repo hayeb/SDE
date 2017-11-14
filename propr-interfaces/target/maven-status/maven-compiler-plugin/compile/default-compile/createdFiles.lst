@@ -1,0 +1,11 @@
+nl/giphouse/propr/dto/group/GroupDto$GroupDtoBuilder.class
+nl/giphouse/propr/dto/group/GroupJoinDto.class
+nl/giphouse/propr/dto/group/GroupDto.class
+nl/giphouse/propr/dto/group/GroupAddDto.class
+nl/giphouse/propr/dto/user/GroupUserDto.class
+nl/giphouse/propr/dto/task/TaskDto.class
+nl/giphouse/propr/dto/user/UserDTO.class
+nl/giphouse/propr/dto/user/UserDTO$UserDTOBuilder.class
+nl/giphouse/propr/dto/user/UserInfoDto.class
+nl/giphouse/propr/dto/user/GroupUserDto$GroupUserDtoBuilder.class
+nl/giphouse/propr/dto/task/TaskDto$TaskDtoBuilder.class

@@ -16,8 +16,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import giphouse.nl.proprapp.R;
-import giphouse.nl.proprapp.service.group.model.GroupListItemDto;
 import giphouse.nl.proprapp.ui.group.overview.GroupTabbedActivity;
+import nl.giphouse.propr.dto.group.GroupDto;
 
 /**
  * @author haye
@@ -26,7 +26,7 @@ public class GroupListAdapter extends BaseAdapter {
 
 	private final LayoutInflater mLayoutInflater;
 
-	private List<GroupListItemDto> groupListItemDtos = new ArrayList<>();
+	private List<GroupDto> groupListItemDtos = new ArrayList<>();
 
 	private final Context context;
 
@@ -64,7 +64,7 @@ public class GroupListAdapter extends BaseAdapter {
 		final TextView titleText = itemView.findViewById(R.id.listTitle);
 		final TextView descriptionText = itemView.findViewById(R.id.listDescription);
 
-		final GroupListItemDto dto = groupListItemDtos.get(position);
+		final GroupDto dto = groupListItemDtos.get(position);
 
 		final String title = StringUtils.capitalize(dto.getGroupName());
 		titleText.setText(title);
@@ -73,14 +73,14 @@ public class GroupListAdapter extends BaseAdapter {
 		descriptionText.setText(description);
 
 		final Intent intent = new Intent(context, GroupTabbedActivity.class);
-		intent.putExtra("group", dto);
+		intent.putExtra("groupname", dto.getGroupName());
 
 		itemView.setOnClickListener(l -> context.startActivity(intent));
 
 		return itemView;
 	}
 
-	void updateEntries(final List<GroupListItemDto> dtos) {
+	void updateEntries(final List<GroupDto> dtos) {
 		this.groupListItemDtos = dtos;
 		notifyDataSetChanged();
 	}

@@ -62,6 +62,8 @@ dependencies {
     // Provides the floating action button menu list
     compile 'com.getbase:floatingactionbutton:1.10.1'
     testCompile 'junit:junit:4.12'
+
+    compile 'nl.giphouse:propr-interfaces:0.0.1-SNAPSHOT'
 }
 
 

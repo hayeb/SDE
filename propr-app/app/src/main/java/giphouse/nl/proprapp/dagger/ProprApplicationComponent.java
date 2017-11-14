@@ -10,6 +10,7 @@ import giphouse.nl.proprapp.account.ui.RegisterAccountActivity;
 import giphouse.nl.proprapp.ui.group.GroupAddActivity;
 import giphouse.nl.proprapp.ui.group.GroupJoinActivity;
 import giphouse.nl.proprapp.ui.group.GroupListActivity;
+import giphouse.nl.proprapp.ui.group.overview.GroupMembersFragment;
 import giphouse.nl.proprapp.ui.group.overview.MyTasksFragment;
 
 /**
@@ -34,4 +35,6 @@ public interface ProprApplicationComponent {
 	void inject(MyTasksFragment myTasksFragment);
 
 	void inject(SplashActivity splashActivity);
+
+	void inject(GroupMembersFragment groupMembersFragment);
 }

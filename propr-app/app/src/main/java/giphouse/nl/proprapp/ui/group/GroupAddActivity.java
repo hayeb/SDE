@@ -15,15 +15,16 @@ import android.view.MenuItem;
 import android.widget.ImageButton;
 
 import java.io.ByteArrayOutputStream;
+import java.util.Optional;
 
 import javax.inject.Inject;
 
 import giphouse.nl.proprapp.ProprApplication;
 import giphouse.nl.proprapp.R;
-import giphouse.nl.proprapp.service.group.model.GroupAddDto;
 import giphouse.nl.proprapp.service.group.GroupService;
-import giphouse.nl.proprapp.service.group.model.GroupListItemDto;
 import giphouse.nl.proprapp.ui.group.overview.GroupTabbedActivity;
+import nl.giphouse.propr.dto.group.GroupAddDto;
+import nl.giphouse.propr.dto.group.GroupDto;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -48,7 +49,7 @@ public class GroupAddActivity extends AppCompatActivity {
 		setContentView(R.layout.activity_group_add);
 		final Toolbar toolbar = findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		Optional.ofNullable(getSupportActionBar()).ifPresent(bar -> bar.setDisplayHomeAsUpEnabled(true));
 
 		groupNameEdit = findViewById(R.id.editGroupname);
 		groupCodeEdit = findViewById(R.id.editGroupcode);
@@ -85,9 +86,9 @@ public class GroupAddActivity extends AppCompatActivity {
 			return;
 		}
 
-		groupService.createGroup(new GroupAddDto(groupname, groupCode, null)).enqueue(new Callback<GroupListItemDto>() {
+		groupService.createGroup(new GroupAddDto(groupname, groupCode, null)).enqueue(new Callback<GroupDto>() {
 			@Override
-			public void onResponse(@NonNull final Call<GroupListItemDto> call, @NonNull final Response<GroupListItemDto> response) {
+			public void onResponse(@NonNull final Call<GroupDto> call, @NonNull final Response<GroupDto> response) {
 				if (!response.isSuccessful()) {
 					final int responseCode = response.code();
 					if (responseCode == 422) {
@@ -97,14 +98,14 @@ public class GroupAddActivity extends AppCompatActivity {
 					}
 				} else {
 					Log.i(TAG, "Succesfully created a group");
-					Intent intent = new Intent(GroupAddActivity.this, GroupTabbedActivity.class);
-					intent.putExtra("group", response.body());
+					final Intent intent = new Intent(GroupAddActivity.this, GroupTabbedActivity.class);
+					intent.putExtra("groupname", Optional.of(response).map(Response::body).map(GroupDto::getGroupName).orElse(null));
 					startActivity(intent);
 				}
 			}
 
 			@Override
-			public void onFailure(@NonNull final Call<GroupListItemDto> call, @NonNull final Throwable t) {
+			public void onFailure(@NonNull final Call<GroupDto> call, @NonNull final Throwable t) {
 				Log.e(TAG, "Calling backend failed! OMG!");
 				t.printStackTrace();
 			}
