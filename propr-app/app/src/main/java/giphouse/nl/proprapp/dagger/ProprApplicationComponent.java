@@ -3,12 +3,14 @@ package giphouse.nl.proprapp.dagger;
 import javax.inject.Singleton;
 
 import dagger.Component;
+import giphouse.nl.proprapp.SplashActivity;
 import giphouse.nl.proprapp.account.service.AuthenticatorService;
 import giphouse.nl.proprapp.account.ui.LoginActivity;
 import giphouse.nl.proprapp.account.ui.RegisterAccountActivity;
 import giphouse.nl.proprapp.ui.group.GroupAddActivity;
 import giphouse.nl.proprapp.ui.group.GroupJoinActivity;
 import giphouse.nl.proprapp.ui.group.GroupListActivity;
+import giphouse.nl.proprapp.ui.group.overview.MyTasksFragment;
 
 /**
  * @author haye
@@ -28,4 +30,8 @@ public interface ProprApplicationComponent {
 	void inject(GroupAddActivity groupAddActivity);
 
 	void inject(GroupJoinActivity groupJoinActivity);
+
+	void inject(MyTasksFragment myTasksFragment);
+
+	void inject(SplashActivity splashActivity);
 }

@@ -52,13 +52,49 @@ public class AuthenticatorService {
 		}
 
 		// 2. Create user using initial token, and authenticate.
-		final boolean userCreated = createUser(accountDto, clientToken);
+		final boolean userCreated =  createUser(accountDto, clientToken);
 		if (!userCreated) {
 			return null;
 		}
 
 		// 3. Sign in, get user token and create account in account manager.
 		return signIn(accountDto.getUsername(), accountDto.getPassword());
+	}
+
+	public Token signIn(@Nonnull final String username, @Nonnull final String password) {
+		final Request loginRequest = createLoginRequest(username, password);
+		final Response loginResponse;
+		try {
+			loginResponse = client.newCall(loginRequest).execute();
+		} catch (final IOException e) {
+			e.printStackTrace();
+			Log.e(TAG, "Unable to make request to " + proprConfiguration.getBackendUrl());
+			return null;
+		}
+
+		if (loginResponse.isSuccessful()) {
+			return handleLoginResponse(loginResponse);
+		}
+
+		return null;
+	}
+
+	public boolean tokenValid(final String token) {
+		final Request request = createTokenValidRequest(token);
+		final Response tokenValidResponse;
+		try {
+			tokenValidResponse = client.newCall(request).execute();
+		} catch(final IOException e){
+			e.printStackTrace();
+			Log.e(TAG, "Unable to make token valid request to " + proprConfiguration.getBackendUrl());
+			return false;
+		}
+
+		if (tokenValidResponse.isSuccessful() && tokenValidResponse.code() == 200)
+		{
+			return true;
+		}
+		return false;
 	}
 
 	private String getInitialClientToken() {
@@ -107,24 +143,6 @@ public class AuthenticatorService {
 		return true;
 	}
 
-	public Token signIn(@Nonnull final String username, @Nonnull final String password) {
-		final Request loginRequest = createLoginRequest(username, password);
-		final Response loginResponse;
-		try {
-			loginResponse = client.newCall(loginRequest).execute();
-		} catch (final IOException e) {
-			e.printStackTrace();
-			Log.e(TAG, "Unable to make request to " + proprConfiguration.getBackendUrl());
-			return null;
-		}
-
-		if (loginResponse.isSuccessful()) {
-			return handleLoginResponse(loginResponse);
-		}
-
-		return null;
-	}
-
 	private Token handleLoginResponse(@Nonnull final Response response) {
 		try {
 			final JSONObject body = new JSONObject(getBodyString(response));
@@ -161,11 +179,21 @@ public class AuthenticatorService {
 			.addEncoded("password", password)
 			.build();
 
-		final String authorizationHeader = "Basic " + Base64.encodeToString((proprConfiguration.getClientId() + ":" + proprConfiguration.getClientSecret()).getBytes(), Base64.NO_WRAP);
-
 		return new Request.Builder()
 			.url(proprConfiguration.getBackendUrl() + "/oauth/token?grant_type=password")
-			.header("Authorization", authorizationHeader)
+			.header("Authorization", getClientAuthorizationHeader())
+			.post(body)
+			.build();
+	}
+
+	private Request createTokenValidRequest(@Nonnull final String token) {
+		final RequestBody body = new FormBody.Builder()
+			.addEncoded("token", token)
+			.build();
+
+		return new Request.Builder()
+			.url(proprConfiguration.getBackendUrl() + "/oauth/check_token")
+			.addHeader("Authorization", getClientAuthorizationHeader())
 			.post(body)
 			.build();
 	}
@@ -182,4 +210,10 @@ public class AuthenticatorService {
 			return null;
 		}
 	}
+
+	private String getClientAuthorizationHeader()
+	{
+		return "Basic " + Base64.encodeToString((proprConfiguration.getClientId() + ":" + proprConfiguration.getClientSecret()).getBytes(), Base64.NO_WRAP);
+	}
+
 }

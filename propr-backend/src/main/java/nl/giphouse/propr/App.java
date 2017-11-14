@@ -2,7 +2,6 @@ package nl.giphouse.propr;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
 
@@ -14,7 +13,7 @@ public class App extends SpringBootServletInitializer {
 	}
 
 	@Override
-	    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-		            return application.sources(App.class);
-			        }
+	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+		return application.sources(App.class);
+	}
 }

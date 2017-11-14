@@ -3,13 +3,13 @@ server:
   contextPath: /propr
 
 logging:
-    level.nl.giphouse.propr: DEBUG
+    level.nl.giphouse.propr: INFO
     level.org.springframework: INFO
     level.org.springframework.security.oauth2: INFO
 
 # Data source properties
 spring:
-  jpa.show-sql: false
+  jpa.show-sql: true
   jpa.database: POSTGRESQL
   datasource.platform: postgres
   datasource.name: postgresdb
@@ -21,4 +21,6 @@ propr:
   clientId: app
   clientSecret: secret
 
-security.oauth2.resource.id: oauth2_id
+security.oauth2.resource.id: oauth2_id2
+
+spring.jackson.serialization.WRITE_DATES_AS_TIMESTAMPS: false

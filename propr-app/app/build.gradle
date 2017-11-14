@@ -47,6 +47,7 @@ dependencies {
     compile 'com.squareup.okhttp3:logging-interceptor:3.9.0'
     // Gson to parse JSON responsen from backend
     compile 'com.google.code.gson:gson:2.8.2'
+    compile "com.fatboyindustrial.gson-javatime-serialisers:gson-javatime-serialisers:1.1.1"
     // Retrofit
     compile 'com.squareup.retrofit2:retrofit:2.3.0'
     compile 'com.squareup.retrofit2:converter-gson:2.3.0'

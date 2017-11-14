@@ -2,8 +2,8 @@ package nl.giphouse.propr.repository;
 
 import java.util.List;
 
-import nl.giphouse.propr.model.Group;
-import nl.giphouse.propr.model.User;
+import nl.giphouse.propr.model.group.Group;
+import nl.giphouse.propr.model.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**

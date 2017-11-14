@@ -1,11 +1,12 @@
-package nl.giphouse.propr.model;
+package nl.giphouse.propr.model.group;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.experimental.Builder;
+import lombok.Builder;
+import nl.giphouse.propr.model.user.User;
 
 /**
  * @author haye.
@@ -29,5 +30,4 @@ public class GroupDto {
 			.usernames(group.getUsers().stream().map(User::getUsername).collect(Collectors.toList()))
 			.build();
 	}
-
 }

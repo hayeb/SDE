@@ -64,9 +64,9 @@
 	<string name="tab_text_3">Schedule</string>
 	<string name="section_format">Hello World from section: %1$d</string>
 	<string name="name_format">%1$s %2$s</string>
-	<string name="groep_wijzigen_action">Edit</string>
-	<string name="groep_verlaten_action">Leave</string>
-
-	<!-- TODO: Remove or change this placeholder text -->
-	<string name="hello_blank_fragment">Hello blank fragment</string>
+	<string name="action_groep_wijzigen">Edit</string>
+	<string name="action_groep_verlaten">Leave</string>
+	<string name="schedule_placeholder">Schedule fragment</string>
+	<string name="placeholder_group_member">Group members fragment</string>
+	<string name="placeholder_my_tasks">My tasks fragment</string>
 </resources>

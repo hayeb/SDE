@@ -1,3 +1,5 @@
+BEGIN TRANSACTION;
+
 INSERT INTO users (user_id, username, email, password, enabled, firstname, lastname) VALUES
 	(1, 'peter.vdbroek', 'peter@example.com', '$2a$10$WXhYLzz3/Fp3hBkk.vvVd.bhDcusdWLr4AZGSs.au8pwoYwAAOCbe', TRUE,
 	 'Peter',
@@ -47,3 +49,31 @@ INSERT INTO users_groups (group_id, user_id) VALUES
 	(14, 9),
 	(14, 8),
 	(14, 10);
+
+INSERT INTO task (id, name, description, assignee, "group", due_date) VALUES
+	-- Deuvelenstraat
+	(15, 'Badkamer schoonmaken', 'Badkamer schoonmaken, leegmaken doucheputje', 1, 11, '01-12-2017'),
+	(16, 'WC schoonmaken', 'WC schoonmaken, bijvullen TP', 2, 11, '02-12-2017'),
+	(17, 'Stofzuigen eerste verdieping', 'Stofzuigen', 3, 11, '03-12-2017'),
+	(18, 'Stofzuigen tweede verdieping', 'Stofzuigen', 2, 11, '04-12-2017'),
+
+	-- Sportvereniging
+	(19, 'Ballen verzamelen', '', 4, 12, '05-12-2017'),
+	(20, 'Grasmaaien', '', 5, 12, '06-12-2017'),
+	(21, 'Bitterballen aanvullen', '', 4, 12, '07-12-2017'),
+	(22, 'Clubhuis opruimen', '', 5, 12, '08-12-2017'),
+
+	-- TEAM 6
+	(23, 'Trainingsprogramma uitwerken', '', 6, 13, '09-12-2017'),
+	(24, 'Uitje verzinnen', '', 6, 13, '10-12-2017'),
+	(25, 'Datumprikker maken', '', 7, 13, '11-12-2017'),
+
+	-- DEVTEAM
+	(26, 'Software maken', '', 9, 14, '11-12-2017'),
+	(27, 'Eerste demo', '', 8, 14, '11-12-2017'),
+	(28, 'Tweede demo', '', 8, 14, '11-12-2017'),
+	(29, 'Release', '', 10, 14, '11-12-2017');
+
+
+ALTER SEQUENCE hibernate_sequence RESTART WITH 1111;
+COMMIT;
