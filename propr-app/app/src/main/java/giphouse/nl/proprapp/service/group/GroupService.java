@@ -21,7 +21,7 @@ public interface GroupService {
 	Call<List<GroupListItemDto>> listGroups();
 
 	@POST("api/group/create")
-	Call<Void> createGroup(@Body final GroupAddDto groupAddDto);
+	Call<GroupListItemDto> createGroup(@Body final GroupAddDto groupAddDto);
 
 	@POST("api/group/join")
 	Call<Void> joinGroup(@Body final GroupJoinDto groupJoinDto);

@@ -60,7 +60,7 @@ public class GroupController
 	}
 
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
-	public ResponseEntity<Void> createGroup(@RequestBody final GroupAddDto groupAddDto, final Principal principal)
+	public ResponseEntity<GroupDto> createGroup(@RequestBody final GroupAddDto groupAddDto, final Principal principal)
 	{
 		if (groupRepository.countByName(groupAddDto.getGroupName()) > 0)
 		{
@@ -77,7 +77,7 @@ public class GroupController
 		log.info("Saving images not implemented yet.");
 		groupRepository.save(group);
 
-		return ResponseEntity.ok(null);
+		return ResponseEntity.ok(GroupDto.fromGroup(group));
 	}
 
 	@RequestMapping(value = "/join", method = RequestMethod.POST)
