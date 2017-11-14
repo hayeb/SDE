@@ -1,5 +1,6 @@
 server:
   port: 8000
+  contextPath: /propr
 
 logging:
     level.nl.giphouse.propr: DEBUG

@@ -6,7 +6,7 @@
 	<groupId>nl.giphouse</groupId>
 	<artifactId>propr</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>jar</packaging>
+	<packaging>war</packaging>
 
 	<name>propr</name>
 	<description>Propr backend</description>
@@ -107,10 +107,10 @@
 
 	<build>
 		<plugins>
-			<plugin>
+			<!--plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
+			</plugin-->
 		</plugins>
 	</build>
 </project>
