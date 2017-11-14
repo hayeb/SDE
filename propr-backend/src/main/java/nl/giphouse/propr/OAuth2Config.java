@@ -16,6 +16,7 @@ import org.springframework.security.oauth2.config.annotation.configurers.ClientD
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
+import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
@@ -27,8 +28,8 @@ import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
 @EnableAuthorizationServer
 public class OAuth2Config extends AuthorizationServerConfigurerAdapter {
 
-	private final int accessTokenValiditySeconds = 10000;
-	private final int refreshTokenValiditySeconds = 30000;
+	private static final int accessTokenValiditySeconds = 10000;
+	private static final int refreshTokenValiditySeconds = 30000;
 
 	@Inject
 	private UserDetailsService userDetailsService;
@@ -41,8 +42,6 @@ public class OAuth2Config extends AuthorizationServerConfigurerAdapter {
 
 	@Value("${security.oauth2.resource.id}")
 	private String resourceId;
-
-	private String oauthClass;
 
 	@Value("${spring.datasource.url}")
 	private String oauthUrl;
@@ -60,11 +59,16 @@ public class OAuth2Config extends AuthorizationServerConfigurerAdapter {
 	}
 
 	@Override
-	public void configure(final AuthorizationServerEndpointsConfigurer configurer) throws Exception {
+	public void configure(final AuthorizationServerEndpointsConfigurer configurer) {
 		configurer.authenticationManager(authenticationManager)
 			.userDetailsService(userDetailsService)
 			.tokenServices(tokenServices())
 			.tokenStore(tokenStore());
+	}
+
+	@Override
+	public void configure(AuthorizationServerSecurityConfigurer security) {
+		security.checkTokenAccess("hasAuthority('ROLE_USER')");
 	}
 
 	@Override

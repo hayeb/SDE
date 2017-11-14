@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import java.lang.ref.WeakReference;
+import java.util.Arrays;
 import java.util.Optional;
 
 import javax.inject.Inject;
@@ -93,9 +94,12 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 		}
 
 		final AccountManager accountManager = AccountManager.get(LoginActivity.this);
+
+		Arrays.stream(accountManager.getAccountsByType(AccountUtils.ACCOUNT_TYPE))
+			.forEach(account -> accountManager.removeAccount(account, this, null,null));
+
 		final Account acc = new Account(username, AccountUtils.ACCOUNT_TYPE);
 		accountManager.addAccountExplicitly(acc, password, null);
-
 		accountManager.setUserData(acc, AccountUtils.KEY_REFRESH_TOKEN, intent.getExtras().getString(AccountUtils.KEY_REFRESH_TOKEN));
 
 		setAccountAuthenticatorResult(intent.getExtras());

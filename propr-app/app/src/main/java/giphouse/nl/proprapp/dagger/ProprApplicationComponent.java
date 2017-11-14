@@ -3,6 +3,7 @@ package giphouse.nl.proprapp.dagger;
 import javax.inject.Singleton;
 
 import dagger.Component;
+import giphouse.nl.proprapp.SplashActivity;
 import giphouse.nl.proprapp.account.service.AuthenticatorService;
 import giphouse.nl.proprapp.account.ui.LoginActivity;
 import giphouse.nl.proprapp.account.ui.RegisterAccountActivity;
@@ -31,4 +32,6 @@ public interface ProprApplicationComponent {
 	void inject(GroupJoinActivity groupJoinActivity);
 
 	void inject(MyTasksFragment myTasksFragment);
+
+	void inject(SplashActivity splashActivity);
 }

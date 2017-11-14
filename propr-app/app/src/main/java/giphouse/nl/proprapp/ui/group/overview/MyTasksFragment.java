@@ -64,7 +64,7 @@ public class MyTasksFragment extends ListFragment {
 
 		taskService.getTasksForUserInGroup(groupName).enqueue(new Callback<List<UserTaskDto>>() {
 			@Override
-			public void onResponse(@NonNull Call<List<UserTaskDto>> call, @NonNull Response<List<UserTaskDto>> response) {
+			public void onResponse(@NonNull final Call<List<UserTaskDto>> call, @NonNull final Response<List<UserTaskDto>> response) {
 				if (response.isSuccessful()) {
 					taskListAdapter.updateData(response.body());
 				} else {
@@ -73,18 +73,11 @@ public class MyTasksFragment extends ListFragment {
 			}
 
 			@Override
-			public void onFailure(@NonNull Call<List<UserTaskDto>> call, @NonNull Throwable t) {
+			public void onFailure(@NonNull final Call<List<UserTaskDto>> call, @NonNull final Throwable t) {
 				Log.e(TAG, "Failed to connect to backend");
 				t.printStackTrace();
 			}
 		});
-	}
-
-	// TODO: Rename method, update argument and hook method into UI event
-	public void onButtonPressed(final Uri uri) {
-		if (mListener != null) {
-			mListener.onMyTasksInteraction(uri);
-		}
 	}
 
 	@Override
