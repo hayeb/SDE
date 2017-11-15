@@ -6,7 +6,7 @@
 	<groupId>nl.giphouse</groupId>
 	<artifactId>propr</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>war</packaging>
+	<packaging>pom</packaging>
 
 	<name>propr</name>
 	<description>Propr backend</description>
@@ -115,14 +115,12 @@
 			<groupId>com.fasterxml.jackson.datatype</groupId>
 			<artifactId>jackson-datatype-jsr310</artifactId>
 		</dependency>
+
+		<dependency>
+			<groupId>nl.giphouse</groupId>
+			<artifactId>propr-interfaces</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 
-	<build>
-		<plugins>
-			<!--plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin-->
-		</plugins>
-	</build>
 </project>

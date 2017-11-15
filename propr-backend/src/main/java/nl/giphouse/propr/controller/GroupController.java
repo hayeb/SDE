@@ -8,13 +8,17 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import lombok.extern.slf4j.Slf4j;
+
+import nl.giphouse.propr.dto.group.GroupAddDto;
+import nl.giphouse.propr.dto.group.GroupDto;
+import nl.giphouse.propr.dto.group.GroupJoinDto;
 import nl.giphouse.propr.model.group.Group;
-import nl.giphouse.propr.model.group.GroupAddDto;
-import nl.giphouse.propr.model.group.GroupDto;
-import nl.giphouse.propr.model.group.GroupJoinDto;
+import nl.giphouse.propr.model.group.GroupFactory;
 import nl.giphouse.propr.model.user.User;
+import nl.giphouse.propr.model.user.UserFactory;
 import nl.giphouse.propr.repository.GroupRepository;
 import nl.giphouse.propr.service.UserService;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
@@ -38,6 +42,12 @@ public class GroupController
 
 	@Inject
 	private GroupRepository groupRepository;
+
+	@Inject
+	private GroupFactory groupFactory;
+
+	@Inject
+	private UserFactory userFactory;
 
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<List<GroupDto>> listGroups(final Principal principal)
@@ -77,7 +87,26 @@ public class GroupController
 		log.info("Saving images not implemented yet.");
 		groupRepository.save(group);
 
-		return ResponseEntity.ok(GroupDto.fromGroup(group));
+		return ResponseEntity.ok(groupFactory.fromEntity(group));
+	}
+
+	@RequestMapping(value = "/users", method = RequestMethod.GET)
+	public ResponseEntity<?> listUsersInGroup(final Principal principal, final String groupName)
+	{
+		final User user = (User) userService.loadUserByUsername(principal.getName());
+		final Group group = groupRepository.findGroupByName(groupName);
+
+		if (group == null)
+		{
+			return ResponseEntity.notFound().build();
+		}
+
+		if (!group.getUsers().contains(user))
+		{
+			return ResponseEntity.status(403).build();
+		}
+
+		return ResponseEntity.ok(group.getUsers().stream().map(userFactory::fromEntity).collect(Collectors.toList()));
 	}
 
 	@RequestMapping(value = "/join", method = RequestMethod.POST)
@@ -117,7 +146,7 @@ public class GroupController
 
 		final List<Group> foundGroups = groupRepository.findGroupsByNameIsContaining(query);
 		final List<GroupDto> groupDtos = foundGroups.stream()
-			.map(GroupDto::fromGroup)
+			.map(groupFactory::fromEntity)
 			.collect(Collectors.toList());
 
 		return ResponseEntity.ok(groupDtos);

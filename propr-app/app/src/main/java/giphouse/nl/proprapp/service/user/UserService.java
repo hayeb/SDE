@@ -1,5 +1,6 @@
 package giphouse.nl.proprapp.service.user;
 
+import nl.giphouse.propr.dto.user.UserInfoDto;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;

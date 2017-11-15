@@ -3,9 +3,10 @@ package nl.giphouse.propr.controller;
 import javax.inject.Inject;
 import javax.validation.Valid;
 
+import nl.giphouse.propr.dto.user.UserDTO;
 import nl.giphouse.propr.model.user.User;
-import nl.giphouse.propr.model.user.UserDTO;
 import nl.giphouse.propr.repository.UserRepository;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,8 +38,9 @@ public class UserController
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username already exists");
 		}
 
-		final User user = new User(userDto.getUsername(), passwordEncoder.encode(userDto.getPassword()), userDto.getEmail(), userDto.getFirstname(), userDto.getLastname());
-		//user.setRoles(Collections.singletonList("ROLE_USER"));
+		final User user = new User(userDto.getUsername(), passwordEncoder.encode(userDto.getPassword()), userDto.getEmail(), userDto.getFirstname(),
+			userDto.getLastname());
+		// user.setRoles(Collections.singletonList("ROLE_USER"));
 
 		userRepository.save(user);
 

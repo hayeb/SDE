@@ -10,10 +10,10 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import java.lang.ref.WeakReference;
 import java.util.Arrays;
@@ -33,6 +33,10 @@ import lombok.AllArgsConstructor;
  */
 public class LoginActivity extends AccountAuthenticatorActivity {
 
+	public static String LOGIN_REASON_KEY = "loginReason";
+
+	public static String USERNAME_KEY = "username";
+
 	private static final String TAG = "LoginActivity";
 
 	@Inject
@@ -42,8 +46,9 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 	SharedPreferences sharedPreferences;
 
 	// UI references.
-	private AutoCompleteTextView mUsernameTextView;
+	private EditText mUsernameTextView;
 	private EditText mPasswordView;
+	private TextView mLoginReasonTextView;
 
 	@Override
 	protected void onCreate(final Bundle savedInstanceState) {
@@ -52,17 +57,25 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 		((ProprApplication) getApplication()).getComponent().inject(this);
 
 		setContentView(R.layout.activity_login);
-		// Set up the login form.
-		mUsernameTextView = findViewById(R.id.email);
+		setActionBar(findViewById(R.id.toolbar));
+		getActionBar().setDisplayShowTitleEnabled(true);
 
+		final Bundle extras = getIntent().getExtras();
+
+		// Set up the login form.
+		mLoginReasonTextView = findViewById(R.id.login_reason_text);
+		mUsernameTextView = findViewById(R.id.email);
 		mPasswordView = findViewById(R.id.password);
-		mPasswordView.setOnEditorActionListener((textView, id, keyEvent) -> {
-			if (id == R.id.login || id == EditorInfo.IME_NULL) {
-				attemptLogin();
-				return true;
-			}
-			return false;
-		});
+
+		// Show the reason for logging in
+		Optional.ofNullable(extras)
+			.map(e -> e.getString(LOGIN_REASON_KEY))
+			.ifPresent(mLoginReasonTextView::setText);
+
+		// Fill the username field if one is provided
+		Optional.ofNullable(extras)
+			.map(e -> e.getString(USERNAME_KEY))
+			.ifPresent(mUsernameTextView::setText);
 
 		final Button mSignInButton = findViewById(R.id.sign_in_button);
 		mSignInButton.setOnClickListener(view -> attemptLogin());
@@ -89,7 +102,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 
 	private void finishLogin(final Intent intent, final String username, final String password) {
 		if (intent == null || intent.getExtras() == null) {
-			// TODO: Show a message with what went wrong.
+			Toast.makeText(this, "Unable to log in: Incorrect username or password", Toast.LENGTH_SHORT).show();
 			return;
 		}
 

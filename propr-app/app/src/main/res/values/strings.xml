@@ -74,4 +74,8 @@
 	<string name="schedule_placeholder">Schedule fragment</string>
 	<string name="placeholder_group_member">Group members fragment</string>
 	<string name="placeholder_my_tasks">My tasks fragment</string>
+	<string name="account_avatar">account avatar</string>
+	<string name="default_login_reason">Please log in to your Propr account.</string>
+	<string name="expired_login_reason">You haven\'t used Propr for a while! Please enter your password.</string>
+	<string name="invalid_login_reason">We could not find that account! Please log in with your account.</string>
 </resources>

@@ -6,19 +6,15 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import java.util.List;
 
 import javax.inject.Inject;
 
 import giphouse.nl.proprapp.ProprApplication;
-import giphouse.nl.proprapp.R;
 import giphouse.nl.proprapp.service.task.TaskListAdapter;
 import giphouse.nl.proprapp.service.task.TaskService;
-import giphouse.nl.proprapp.service.task.UserTaskDto;
+import nl.giphouse.propr.dto.task.TaskDto;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -62,9 +58,9 @@ public class MyTasksFragment extends ListFragment {
 		taskListAdapter = new TaskListAdapter(getLayoutInflater(), this.getContext());
 		setListAdapter(taskListAdapter);
 
-		taskService.getTasksForUserInGroup(groupName).enqueue(new Callback<List<UserTaskDto>>() {
+		taskService.getTasksForUserInGroup(groupName).enqueue(new Callback<List<TaskDto>>() {
 			@Override
-			public void onResponse(@NonNull final Call<List<UserTaskDto>> call, @NonNull final Response<List<UserTaskDto>> response) {
+			public void onResponse(@NonNull final Call<List<TaskDto>> call, @NonNull final Response<List<TaskDto>> response) {
 				if (response.isSuccessful()) {
 					taskListAdapter.updateData(response.body());
 				} else {
@@ -73,7 +69,7 @@ public class MyTasksFragment extends ListFragment {
 			}
 
 			@Override
-			public void onFailure(@NonNull final Call<List<UserTaskDto>> call, @NonNull final Throwable t) {
+			public void onFailure(@NonNull final Call<List<TaskDto>> call, @NonNull final Throwable t) {
 				Log.e(TAG, "Failed to connect to backend");
 				t.printStackTrace();
 			}

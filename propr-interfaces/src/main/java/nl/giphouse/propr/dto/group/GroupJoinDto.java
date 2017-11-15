@@ -1,4 +1,4 @@
-package nl.giphouse.propr.model.group;
+package nl.giphouse.propr.dto.group;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

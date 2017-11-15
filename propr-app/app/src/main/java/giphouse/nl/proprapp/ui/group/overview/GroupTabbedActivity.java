@@ -20,7 +20,6 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.Optional;
 
 import giphouse.nl.proprapp.R;
-import giphouse.nl.proprapp.service.group.model.GroupListItemDto;
 
 public class GroupTabbedActivity extends AppCompatActivity implements MyTasksFragment.MyTasksInteractionListener, GroupMembersFragment.GroupMembersInteractionListener, ScheduleFragment.ScheduleInteractionListener {
 
@@ -34,9 +33,7 @@ public class GroupTabbedActivity extends AppCompatActivity implements MyTasksFra
 		setContentView(R.layout.activity_group_tabbed);
 
 		groupName = Optional.of(getIntent()).map(Intent::getExtras)
-			.map(e -> e.getParcelable("group"))
-			.map(GroupListItemDto.class::cast)
-			.map(GroupListItemDto::getGroupName)
+			.map(e -> e.getString("groupname"))
 			.orElse(StringUtils.EMPTY);
 
 		setSupportActionBar(findViewById(R.id.toolbar));
