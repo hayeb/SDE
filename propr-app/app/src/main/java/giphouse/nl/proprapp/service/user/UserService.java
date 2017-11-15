@@ -9,6 +9,6 @@ import retrofit2.http.Query;
  */
 public interface UserService {
 
-	@GET("/api/users/info")
+	@GET("api/users/info")
 	Call<UserInfoDto> getUserInfo(@Query("username") String username);
 }

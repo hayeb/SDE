@@ -4,8 +4,8 @@ import java.util.Collections;
 
 import javax.inject.Inject;
 
-import nl.giphouse.propr.model.Group;
-import nl.giphouse.propr.model.User;
+import nl.giphouse.propr.model.group.Group;
+import nl.giphouse.propr.model.user.User;
 import nl.giphouse.propr.repository.GroupRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;

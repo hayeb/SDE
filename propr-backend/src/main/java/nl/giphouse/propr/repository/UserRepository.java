@@ -1,6 +1,6 @@
 package nl.giphouse.propr.repository;
 
-import nl.giphouse.propr.model.User;
+import nl.giphouse.propr.model.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**

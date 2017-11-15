@@ -22,6 +22,8 @@ import giphouse.nl.proprapp.ProprApplication;
 import giphouse.nl.proprapp.R;
 import giphouse.nl.proprapp.service.group.model.GroupAddDto;
 import giphouse.nl.proprapp.service.group.GroupService;
+import giphouse.nl.proprapp.service.group.model.GroupListItemDto;
+import giphouse.nl.proprapp.ui.group.overview.GroupTabbedActivity;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -83,9 +85,9 @@ public class GroupAddActivity extends AppCompatActivity {
 			return;
 		}
 
-		groupService.createGroup(new GroupAddDto(groupname, groupCode, null)).enqueue(new Callback<Void>() {
+		groupService.createGroup(new GroupAddDto(groupname, groupCode, null)).enqueue(new Callback<GroupListItemDto>() {
 			@Override
-			public void onResponse(@NonNull final Call<Void> call, @NonNull final Response<Void> response) {
+			public void onResponse(@NonNull final Call<GroupListItemDto> call, @NonNull final Response<GroupListItemDto> response) {
 				if (!response.isSuccessful()) {
 					final int responseCode = response.code();
 					if (responseCode == 422) {
@@ -95,12 +97,14 @@ public class GroupAddActivity extends AppCompatActivity {
 					}
 				} else {
 					Log.i(TAG, "Succesfully created a group");
-					startActivity(new Intent(GroupAddActivity.this, GroupTabbedActivity.class));
+					Intent intent = new Intent(GroupAddActivity.this, GroupTabbedActivity.class);
+					intent.putExtra("group", response.body());
+					startActivity(intent);
 				}
 			}
 
 			@Override
-			public void onFailure(@NonNull final Call<Void> call, @NonNull final Throwable t) {
+			public void onFailure(@NonNull final Call<GroupListItemDto> call, @NonNull final Throwable t) {
 				Log.e(TAG, "Calling backend failed! OMG!");
 				t.printStackTrace();
 			}

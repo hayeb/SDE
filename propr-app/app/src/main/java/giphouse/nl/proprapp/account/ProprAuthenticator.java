@@ -72,8 +72,10 @@ public class ProprAuthenticator extends AbstractAccountAuthenticator {
 			final String password = am.getPassword(account);
 			if (password != null) {
 				final Token token = authenticatorService.signIn(account.name, password);
-				authToken = token.getAuthToken();
-				refreshToken = token.getRefreshToken();
+				if (token != null) {
+					authToken = token.getAuthToken();
+					refreshToken = token.getRefreshToken();
+				}
 			}
 		}
 

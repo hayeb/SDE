@@ -8,11 +8,11 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import lombok.extern.slf4j.Slf4j;
-import nl.giphouse.propr.model.Group;
-import nl.giphouse.propr.model.GroupAddDto;
-import nl.giphouse.propr.model.GroupDto;
-import nl.giphouse.propr.model.GroupJoinDto;
-import nl.giphouse.propr.model.User;
+import nl.giphouse.propr.model.group.Group;
+import nl.giphouse.propr.model.group.GroupAddDto;
+import nl.giphouse.propr.model.group.GroupDto;
+import nl.giphouse.propr.model.group.GroupJoinDto;
+import nl.giphouse.propr.model.user.User;
 import nl.giphouse.propr.repository.GroupRepository;
 import nl.giphouse.propr.service.UserService;
 import org.apache.commons.collections4.CollectionUtils;
@@ -60,7 +60,7 @@ public class GroupController
 	}
 
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
-	public ResponseEntity<Void> createGroup(@RequestBody final GroupAddDto groupAddDto, final Principal principal)
+	public ResponseEntity<GroupDto> createGroup(@RequestBody final GroupAddDto groupAddDto, final Principal principal)
 	{
 		if (groupRepository.countByName(groupAddDto.getGroupName()) > 0)
 		{
@@ -77,7 +77,7 @@ public class GroupController
 		log.info("Saving images not implemented yet.");
 		groupRepository.save(group);
 
-		return ResponseEntity.ok(null);
+		return ResponseEntity.ok(GroupDto.fromGroup(group));
 	}
 
 	@RequestMapping(value = "/join", method = RequestMethod.POST)

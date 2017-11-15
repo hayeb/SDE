@@ -3,8 +3,8 @@ package nl.giphouse.propr.controller;
 import javax.inject.Inject;
 import javax.validation.Valid;
 
-import nl.giphouse.propr.model.User;
-import nl.giphouse.propr.model.UserDTO;
+import nl.giphouse.propr.model.user.User;
+import nl.giphouse.propr.model.user.UserDTO;
 import nl.giphouse.propr.repository.UserRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;

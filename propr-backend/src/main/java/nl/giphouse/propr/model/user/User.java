@@ -1,4 +1,4 @@
-package nl.giphouse.propr.model;
+package nl.giphouse.propr.model.user;
 
 import java.io.Serializable;
 import java.util.Collection;
