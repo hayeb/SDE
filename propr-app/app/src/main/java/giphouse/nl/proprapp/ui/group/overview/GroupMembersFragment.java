@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.apache.commons.lang3.StringUtils;
@@ -152,12 +153,13 @@ public class GroupMembersFragment extends Fragment {
 				itemView = (ConstraintLayout) view;
 			}
 
-			final TextView usernameText = itemView.findViewById(R.id.item_username);
-
 			final UserInfoDto dto = users.get(position);
 
-			final String title = StringUtils.capitalize(dto.getUsername());
-			usernameText.setText(title);
+			final TextView usernameText = itemView.findViewById(R.id.item_username);
+			usernameText.setText(dto.getUsername());
+
+			final ImageView avatarImage = itemView.findViewById(R.id.account_avatar);
+			avatarImage.setImageResource(R.drawable.placeholder_avatar);
 
 			return itemView;
 		}

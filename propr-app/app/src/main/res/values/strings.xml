@@ -69,4 +69,5 @@
 	<string name="schedule_placeholder">Schedule fragment</string>
 	<string name="placeholder_group_member">Group members fragment</string>
 	<string name="placeholder_my_tasks">My tasks fragment</string>
+	<string name="account_avatar">account avatar</string>
 </resources>
