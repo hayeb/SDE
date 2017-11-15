@@ -60,6 +60,9 @@ public class RegisterAccountActivity extends AccountAuthenticatorActivity {
 		((ProprApplication) getApplication()).getComponent().inject(this);
 		setContentView(R.layout.activity_create_account);
 
+		setActionBar(findViewById(R.id.toolbar));
+		getActionBar().setDisplayShowTitleEnabled(true);
+
 		mUsernameField = findViewById(R.id.username);
 		mEmailField = findViewById(R.id.email);
 		mPasswordField = findViewById(R.id.password);

@@ -1,15 +1,21 @@
 package giphouse.nl.proprapp.service.task;
 
 import android.content.Context;
+import android.os.Build;
 import android.support.constraint.ConstraintLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.sql.Date;
+import java.text.DateFormat;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,12 +65,15 @@ public class TaskListAdapter extends BaseAdapter {
 			itemView = (ConstraintLayout) view;
 		}
 
-		final TextView titleText = itemView.findViewById(R.id.task_name);
+		final TextView taskNameTextView = itemView.findViewById(R.id.task_name);
+		final TextView descriptionTextView = itemView.findViewById(R.id.task_description);
+		final TextView dueDateTextView = itemView.findViewById(R.id.task_due_date);
 
 		final TaskDto dto = taskDtos.get(position);
 
-		final String title = StringUtils.capitalize(dto.getName());
-		titleText.setText(title);
+		taskNameTextView.setText(dto.getName());
+		descriptionTextView.setText(dto.getDescription());
+		dueDateTextView.setText(dto.getDueDate());
 
 		return itemView;
 	}

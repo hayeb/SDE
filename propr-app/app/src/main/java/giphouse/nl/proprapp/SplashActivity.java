@@ -79,8 +79,7 @@ public class SplashActivity extends AppCompatActivity {
 	}
 
 	@AllArgsConstructor
-	private static class TokenValidTask extends AsyncTask<String, Void, Boolean>
-	{
+	private static class TokenValidTask extends AsyncTask<String, Void, Boolean> {
 		private final AuthenticatorService authenticatorService;
 
 		private final WeakReference<SplashActivity> contextReference;
@@ -89,8 +88,7 @@ public class SplashActivity extends AppCompatActivity {
 
 		@Override
 		protected Boolean doInBackground(final String... tokens) {
-			if (tokens == null || tokens.length != 1)
-			{
+			if (tokens == null || tokens.length != 1) {
 				throw new IllegalArgumentException("TokenValidTask accepts exactly 1 token as parameter");
 			}
 
@@ -102,17 +100,21 @@ public class SplashActivity extends AppCompatActivity {
 			if (tokenValid) {
 				contextReference.get().startActivity(new Intent(contextReference.get(), GroupListActivity.class));
 			} else {
-				final Intent intent = new Intent(contextReference.get(), LoginActivity.class);
-				intent.putExtra("username", username);
-				contextReference.get().startActivityForResult(intent, 11);
+				final Context context = contextReference.get();
+				if (context != null) {
+					final Intent intent = new Intent(context, LoginActivity.class);
+					intent.putExtra(LoginActivity.LOGIN_REASON_KEY, context.getString(R.string.expired_login_reason));
+					intent.putExtra(LoginActivity.USERNAME_KEY, username);
+					contextReference.get().startActivityForResult(intent, 11);
+				}
+
 			}
 		}
 	}
 
 	@Override
 	public void onActivityReenter(final int resultCode, final Intent data) {
-		if (resultCode == 11)
-		{
+		if (resultCode == 11) {
 			startActivity(new Intent(this, GroupListActivity.class));
 		}
 	}

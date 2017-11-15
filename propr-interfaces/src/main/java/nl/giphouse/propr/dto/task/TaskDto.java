@@ -22,5 +22,5 @@ public class TaskDto
 
 	private Long groupId;
 
-	private LocalDate dueDate;
+	private String dueDate;
 }

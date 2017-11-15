@@ -3,6 +3,10 @@
 		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<artifactId>propr-interfaces</artifactId>
+	<groupId>nl.giphouse</groupId>
+	<version>0.0.1-SNAPSHOT</version>
+	<modelVersion>4.0.0</modelVersion>
+
 	<build>
 		<plugins>
 			<plugin>
@@ -12,12 +16,10 @@
 					<source>1.8</source>
 					<target>1.8</target>
 				</configuration>
+				<version>3.6.2</version>
 			</plugin>
 		</plugins>
 	</build>
-	<groupId>nl.giphouse</groupId>
-	<version>0.0.1-SNAPSHOT</version>
-	<modelVersion>4.0.0</modelVersion>
 
 	<dependencies>
 		<dependency>
