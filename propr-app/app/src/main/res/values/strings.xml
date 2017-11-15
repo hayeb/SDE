@@ -24,6 +24,11 @@
 	<string name="password_validation_size">Password must be longer than 7 characters</string>
 	<string name="password_validation_not_matching">Passwords do not match</string>
 
+	<!-- Strings related to join group -->
+	<string name="join_group">Please enter groupcode to join</string>
+	<string name="join">Join!</string>
+	<string name="hint_group_code">Group code</string>
+
 	<!-- IP-adres van de host-machine, voor emulators -->
 	<string name="backend_url">http://10.0.2.2:8000/propr/</string>
 	<string name="account_type">nl.giphouse.propr</string>

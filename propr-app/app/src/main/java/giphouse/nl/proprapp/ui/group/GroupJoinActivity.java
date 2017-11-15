@@ -3,6 +3,7 @@ package giphouse.nl.proprapp.ui.group;
 import android.app.ListActivity;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.SearchView;
 
@@ -19,7 +20,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class GroupJoinActivity extends ListActivity {
+public class GroupJoinActivity extends AppCompatActivity {
 
 	private static final String TAG = "GroupJoinActivity";
 
@@ -34,37 +35,6 @@ public class GroupJoinActivity extends ListActivity {
 
 		setContentView(R.layout.activity_group_join);
 
-		final SearchView groupSearchView = findViewById(R.id.search_group);
-		groupSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-			@Override
-			public boolean onQueryTextSubmit(final String query) {
-				searchGroups(query);
-				return true;
-			}
-
-			@Override
-			public boolean onQueryTextChange(final String newText) {
-				return false;
-			}
-		});
-
-		setListAdapter(new GroupSearchAdapter(getLayoutInflater(), this));
 	}
 
-	private void searchGroups(final String query) {
-		Log.i(TAG, "Searching groups for \"" + query + "\"");
-		groupService.searchGroups(query).enqueue(new Callback<List<GroupSearchResult>>() {
-			@Override
-			public void onResponse(@NonNull final Call<List<GroupSearchResult>> call, @NonNull final Response<List<GroupSearchResult>> response) {
-				if (response.isSuccessful()) {
-					((GroupSearchAdapter) getListAdapter()).updateEntries(response.body());
-				}
-			}
-
-			@Override
-			public void onFailure(@NonNull final Call<List<GroupSearchResult>> call, @NonNull final Throwable t) {
-				t.printStackTrace();
-			}
-		});
-	}
 }
