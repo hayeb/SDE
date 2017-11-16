@@ -14,7 +14,6 @@ import lombok.Getter;
  */
 public class ProprApplication extends Application {
 
-	@Getter
 	private ProprApplicationComponent component;
 
 	@Override
@@ -26,5 +25,9 @@ public class ProprApplication extends Application {
 			.netModule(new NetModule(getString(R.string.backend_url), "app", "secret"))
 			.apiServiceModule(new ApiServiceModule())
 			.build();
+	}
+
+	public ProprApplicationComponent getComponent() {
+		return component;
 	}
 }

@@ -15,8 +15,8 @@ android {
         testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
     }
     buildTypes {
         release {
@@ -50,7 +50,6 @@ dependencies {
     compile 'com.squareup.okhttp3:logging-interceptor:3.9.0'
     // Gson to parse JSON responsen from backend
     compile 'com.google.code.gson:gson:2.8.2'
-    compile "com.fatboyindustrial.gson-javatime-serialisers:gson-javatime-serialisers:1.1.1"
     // Retrofit
     compile 'com.squareup.retrofit2:retrofit:2.3.0'
     compile 'com.squareup.retrofit2:converter-gson:2.3.0'
@@ -60,12 +59,11 @@ dependencies {
     annotationProcessor 'com.google.dagger:dagger-android-processor:2.11'
     annotationProcessor 'com.google.dagger:dagger-compiler:2.11'
     // Lombok
-    provided 'org.projectlombok:lombok:1.16.18'
+    compileOnly 'org.projectlombok:lombok:1.16.18'
     annotationProcessor 'org.projectlombok:lombok:1.16.18'
     // Provides the floating action button menu list
     compile 'com.getbase:floatingactionbutton:1.10.1'
     testCompile 'junit:junit:4.12'
-
     compile 'nl.giphouse:propr-interfaces:0.0.1-SNAPSHOT'
 }
 

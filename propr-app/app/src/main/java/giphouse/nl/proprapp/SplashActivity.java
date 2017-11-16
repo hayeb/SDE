@@ -2,6 +2,8 @@ package giphouse.nl.proprapp;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.accounts.AccountManagerCallback;
+import android.accounts.AccountManagerFuture;
 import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
 import android.content.Context;
@@ -46,27 +48,30 @@ public class SplashActivity extends AppCompatActivity {
 			Log.d(TAG, "Account found on device. Getting additional information");
 			final Account account = accounts[0];
 
-			accountManager.getAuthToken(account, AccountUtils.AUTH_TOKEN_TYPE, null, false, result -> {
-				Bundle bundle = null;
-				try {
-					bundle = result.getResult();
-				} catch (OperationCanceledException | IOException | AuthenticatorException ignored) {
-				}
+			accountManager.getAuthToken(account, AccountUtils.AUTH_TOKEN_TYPE, null, false, new AccountManagerCallback<Bundle>() {
+				@Override
+				public void run(final AccountManagerFuture<Bundle> result) {
+					Bundle bundle = null;
+					try {
+						bundle = result.getResult();
+					} catch (OperationCanceledException | IOException | AuthenticatorException ignored) {
+					}
 
-				if (bundle == null) {
-					Log.e(TAG, "Unable to get auth token from account manager");
-					return;
-				}
-				final String authToken = bundle.getString(AccountManager.KEY_AUTHTOKEN);
-				final String refreshToken = accountManager.getUserData(account, AccountUtils.KEY_REFRESH_TOKEN);
-				if (authToken == null || refreshToken == null) {
-					Log.i(TAG, "No auth, refresh token found. Starting Login Activity");
-					startActivityForResult(new Intent(this, LoginActivity.class), 11);
-					return;
-				}
+					if (bundle == null) {
+						Log.e(TAG, "Unable to get auth token from account manager");
+						return;
+					}
+					final String authToken = bundle.getString(AccountManager.KEY_AUTHTOKEN);
+					final String refreshToken = accountManager.getUserData(account, AccountUtils.KEY_REFRESH_TOKEN);
+					if (authToken == null || refreshToken == null) {
+						Log.i(TAG, "No auth, refresh token found. Starting Login Activity");
+						SplashActivity.this.startActivityForResult(new Intent(SplashActivity.this, LoginActivity.class), 11);
+						return;
+					}
 
-				new TokenValidTask(authenticatorService, new WeakReference<>(this), account.name).execute(authToken);
+					new TokenValidTask(authenticatorService, new WeakReference<>(SplashActivity.this), account.name).execute(authToken);
 
+				}
 			}, null);
 		}
 	}
@@ -78,13 +83,18 @@ public class SplashActivity extends AppCompatActivity {
 		}
 	}
 
-	@AllArgsConstructor
 	private static class TokenValidTask extends AsyncTask<String, Void, Boolean> {
 		private final AuthenticatorService authenticatorService;
 
 		private final WeakReference<SplashActivity> contextReference;
 
 		private final String username;
+
+		public TokenValidTask(final AuthenticatorService authenticatorService, final WeakReference<SplashActivity> contextReference, final String username) {
+			this.authenticatorService = authenticatorService;
+			this.contextReference = contextReference;
+			this.username = username;
+		}
 
 		@Override
 		protected Boolean doInBackground(final String... tokens) {
@@ -105,7 +115,7 @@ public class SplashActivity extends AppCompatActivity {
 					final Intent intent = new Intent(context, LoginActivity.class);
 					intent.putExtra(LoginActivity.LOGIN_REASON_KEY, context.getString(R.string.expired_login_reason));
 					intent.putExtra(LoginActivity.USERNAME_KEY, username);
-					contextReference.get().startActivityForResult(intent, 11);
+					contextReference.get().startActivityForResult(intent, LoginActivity.CODE_LOGGED_IN);
 				}
 
 			}
@@ -114,7 +124,7 @@ public class SplashActivity extends AppCompatActivity {
 
 	@Override
 	public void onActivityReenter(final int resultCode, final Intent data) {
-		if (resultCode == 11) {
+		if (resultCode ==  LoginActivity.CODE_LOGGED_IN) {
 			startActivity(new Intent(this, GroupListActivity.class));
 		}
 	}

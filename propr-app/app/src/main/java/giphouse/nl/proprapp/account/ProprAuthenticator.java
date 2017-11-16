@@ -8,11 +8,15 @@ import android.accounts.NetworkErrorException;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
+import android.widget.Toast;
 
 import javax.inject.Inject;
 
+import giphouse.nl.proprapp.R;
 import giphouse.nl.proprapp.account.ui.LoginActivity;
 
 
@@ -22,6 +26,8 @@ import giphouse.nl.proprapp.account.ui.LoginActivity;
 public class ProprAuthenticator extends AbstractAccountAuthenticator {
 
 	private static final String TAG = "ProprAuthenticator";
+
+	private static final int ERROR_CODE_ONE_ACCOUNT_ALLOWED = 15;
 
 	private final Context mContext;
 
@@ -42,6 +48,23 @@ public class ProprAuthenticator extends AbstractAccountAuthenticator {
 
 	@Override
 	public Bundle addAccount(final AccountAuthenticatorResponse response, final String accountType, final String authTokenType, final String[] requiredFeatures, final Bundle options) throws NetworkErrorException {
+
+		final AccountManager accountManager = AccountManager.get(mContext);
+		final Account[] accounts = accountManager.getAccountsByType(AccountUtils.ACCOUNT_TYPE);
+		if (accounts.length != 0) {
+			final Bundle result = new Bundle();
+			result.putInt(AccountManager.KEY_ERROR_CODE, ERROR_CODE_ONE_ACCOUNT_ALLOWED);
+			result.putString(AccountManager.KEY_ERROR_MESSAGE, mContext.getString(R.string.one_account_allowed));
+
+			new Handler(Looper.getMainLooper()).post(new Runnable() {
+				@Override
+				public void run() {
+					Toast.makeText(mContext, R.string.one_account_allowed, Toast.LENGTH_LONG).show();
+				}
+			});
+
+			return result;
+		}
 		final Intent intent = new Intent(mContext, LoginActivity.class);
 
 		intent.putExtra(AccountUtils.KEY_ACCOUNT_TYPE, accountType);
@@ -66,7 +89,6 @@ public class ProprAuthenticator extends AbstractAccountAuthenticator {
 		final AccountManager am = AccountManager.get(mContext);
 		String authToken = am.peekAuthToken(account, authTokenType);
 		String refreshToken = am.getUserData(account, AccountUtils.KEY_REFRESH_TOKEN);
-
 
 		if (TextUtils.isEmpty(authToken)) {
 			final String password = am.getPassword(account);

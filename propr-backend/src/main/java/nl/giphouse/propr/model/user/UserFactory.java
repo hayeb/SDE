@@ -15,6 +15,7 @@ public class UserFactory {
 			.username(user.getUsername())
 			.firstname(user.getFirstname())
 			.lastname(user.getLastname())
+			.email(user.getEmail())
 			.build();
 	}
 }
