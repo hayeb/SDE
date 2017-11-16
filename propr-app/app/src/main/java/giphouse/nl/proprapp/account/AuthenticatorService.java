@@ -100,7 +100,7 @@ public class AuthenticatorService {
 	private String getInitialClientToken() {
 		try {
 			final Request request = new Request.Builder()
-				.url(proprConfiguration.getBackendUrl() + "/oauth/token?grant_type=client_credentials")
+				.url(proprConfiguration.getBackendUrl() + "oauth/token?grant_type=client_credentials")
 				.post(RequestBody.create(FORM_ENCODED, ""))
 				.header("Authorization", "Basic " + Base64.encodeToString((proprConfiguration.getClientId() + ":" + proprConfiguration.getClientSecret()).getBytes(), Base64.NO_WRAP))
 				.build();
@@ -167,7 +167,7 @@ public class AuthenticatorService {
 		}
 
 		return new Request.Builder()
-			.url(proprConfiguration.getBackendUrl() + "/api/users/register")
+			.url(proprConfiguration.getBackendUrl() + "api/users/register")
 			.header("Authorization", "Bearer " + clientToken)
 			.post(RequestBody.create(JSON, jsonObject.toString()))
 			.build();
@@ -180,7 +180,7 @@ public class AuthenticatorService {
 			.build();
 
 		return new Request.Builder()
-			.url(proprConfiguration.getBackendUrl() + "/oauth/token?grant_type=password")
+			.url(proprConfiguration.getBackendUrl() + "oauth/token?grant_type=password")
 			.header("Authorization", getClientAuthorizationHeader())
 			.post(body)
 			.build();
@@ -192,7 +192,7 @@ public class AuthenticatorService {
 			.build();
 
 		return new Request.Builder()
-			.url(proprConfiguration.getBackendUrl() + "/oauth/check_token")
+			.url(proprConfiguration.getBackendUrl() + "oauth/check_token")
 			.addHeader("Authorization", getClientAuthorizationHeader())
 			.post(body)
 			.build();
