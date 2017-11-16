@@ -28,6 +28,7 @@
 	<string name="join_group">Please enter groupcode to join</string>
 	<string name="join">Join!</string>
 	<string name="hint_group_code">Group code</string>
+	<string name="join_toolbar">Join a group</string>
 
 	<!-- IP-adres van de host-machine, voor emulators -->
 	<string name="backend_url">http://10.0.2.2:8000/propr/</string>
