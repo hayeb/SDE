@@ -22,6 +22,9 @@ android {
         release {
             minifyEnabled true
         }
+        debug {
+            useProguard false
+        }
     }
 
     configurations.all {

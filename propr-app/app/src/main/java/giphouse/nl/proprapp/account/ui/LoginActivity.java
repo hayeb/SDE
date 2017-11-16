@@ -108,8 +108,8 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 
 		final AccountManager accountManager = AccountManager.get(LoginActivity.this);
 
-		Arrays.stream(accountManager.getAccountsByType(AccountUtils.ACCOUNT_TYPE))
-			.forEach(account -> accountManager.removeAccount(account, this, null,null));
+		//Arrays.stream(accountManager.getAccountsByType(AccountUtils.ACCOUNT_TYPE))
+		//	.forEach(account -> accountManager.removeAccount(account, this, null,null));
 
 		final Account acc = new Account(username, AccountUtils.ACCOUNT_TYPE);
 		accountManager.addAccountExplicitly(acc, password, null);
