@@ -28,9 +28,6 @@ import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
 @EnableAuthorizationServer
 public class OAuth2Config extends AuthorizationServerConfigurerAdapter {
 
-	private static final int accessTokenValiditySeconds = 10000;
-	private static final int refreshTokenValiditySeconds = 30000;
-
 	@Inject
 	private UserDetailsService userDetailsService;
 
@@ -67,7 +64,7 @@ public class OAuth2Config extends AuthorizationServerConfigurerAdapter {
 	}
 
 	@Override
-	public void configure(AuthorizationServerSecurityConfigurer security) {
+	public void configure(final AuthorizationServerSecurityConfigurer security) {
 		security.checkTokenAccess("hasAuthority('ROLE_USER')");
 	}
 
@@ -78,8 +75,6 @@ public class OAuth2Config extends AuthorizationServerConfigurerAdapter {
 			.authorities("ROLE_USER")
 			.scopes("read", "write")
 			.resourceIds(resourceId)
-			.accessTokenValiditySeconds(accessTokenValiditySeconds)
-			.refreshTokenValiditySeconds(refreshTokenValiditySeconds)
 			.authorizedGrantTypes("password", "refresh_token", "client_credentials").resourceIds("resource")
 			.secret(proprConfiguration.getClientSecret());
 	}
