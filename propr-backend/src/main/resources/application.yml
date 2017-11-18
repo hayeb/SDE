@@ -3,7 +3,7 @@ server:
   contextPath: /propr
 
 logging:
-    level.nl.giphouse.propr: INFO
+    level.nl.giphouse.propr: DEBUG
     level.org.springframework: INFO
     level.org.springframework.security.oauth2: INFO
 

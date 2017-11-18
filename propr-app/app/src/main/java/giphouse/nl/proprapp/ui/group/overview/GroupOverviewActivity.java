@@ -14,9 +14,10 @@ import android.view.MenuItem;
 import org.apache.commons.lang3.StringUtils;
 
 import giphouse.nl.proprapp.R;
+import giphouse.nl.proprapp.ui.group.overview.GroupMyTasksFragment.MyTasksInteractionListener;
 import nl.giphouse.propr.dto.task.TaskDto;
 
-public class GroupOverviewActivity extends AppCompatActivity implements MyTasksFragment.MyTasksInteractionListener, GroupMembersFragment.GroupMembersInteractionListener, ScheduleFragment.ScheduleInteractionListener, GroupActivityFragment.OnGroupActivityFragmentInteractionListener {
+public class GroupOverviewActivity extends AppCompatActivity implements MyTasksInteractionListener, OnGroupTasksFragmentInteractionListener {
 
 	private static final String TAG = "GroupOverviewActivity";
 
@@ -39,7 +40,7 @@ public class GroupOverviewActivity extends AppCompatActivity implements MyTasksF
 		}
 
 		getSupportFragmentManager().beginTransaction()
-			.add(R.id.group_overview_fragment, MyTasksFragment.newInstance(groupName), null)
+			.add(R.id.group_overview_fragment, GroupMyTasksFragment.newInstance(groupName), null)
 			.disallowAddToBackStack()
 			.commit();
 
@@ -58,13 +59,13 @@ public class GroupOverviewActivity extends AppCompatActivity implements MyTasksF
 							break;
 						case R.id.item_schedule:
 							getSupportFragmentManager().beginTransaction()
-								.replace(R.id.group_overview_fragment, ScheduleFragment.newInstance(groupName))
+								.replace(R.id.group_overview_fragment, GroupScheduleFragment.newInstance(groupName))
 								.disallowAddToBackStack()
 								.commit();
 							break;
 						case R.id.item_tasks:
 							getSupportFragmentManager().beginTransaction()
-								.replace(R.id.group_overview_fragment, MyTasksFragment.newInstance(groupName))
+								.replace(R.id.group_overview_fragment, GroupMyTasksFragment.newInstance(groupName))
 								.disallowAddToBackStack()
 								.commit();
 							break;
@@ -81,22 +82,17 @@ public class GroupOverviewActivity extends AppCompatActivity implements MyTasksF
 	}
 
 	@Override
-	public void onScheduleInteraction(final Uri uri) {
-		Log.d(TAG, "Schedule interaction");
-	}
-
-	@Override
-	public void onGroupMembersInteraction(final Uri uri) {
-		Log.d(TAG, "Groupmembers interaction");
-	}
-
-	@Override
 	public void onMyTasksInteraction(final Uri uri) {
 		Log.d(TAG, "My Tasks interaction");
 	}
 
 	@Override
-	public void onGroupActivityFragmentInteraction(TaskDto item) {
+	public void onGroupActivityFragmentInteraction(final TaskDto item) {
+
+	}
+
+	@Override
+	public void onGroupScheduleFragmentInteraction(final TaskDto item) {
 
 	}
 }

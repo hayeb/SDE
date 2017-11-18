@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import nl.giphouse.propr.dto.task.PeriodType;
+import nl.giphouse.propr.dto.task.TaskRepetitionType;
 import nl.giphouse.propr.dto.task.TaskWeight;
 import nl.giphouse.propr.model.group.Group;
 
@@ -46,7 +46,7 @@ public class TaskDefinition {
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
-	private PeriodType periodType;
+	private TaskRepetitionType periodType;
 	
 	@Column(nullable = false)
 	private int frequency;

@@ -25,28 +25,29 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 /**
- * Shows tasks in a group which are done or overdue.
+ * Show the tasks still to be done in the future in a group.
  *
  * @author haye
  */
-public class GroupActivityFragment extends Fragment {
+public class GroupScheduleFragment extends Fragment {
 
-	private static final String ARG_GROUP_NAME = "groupname";
+	private static final String ARG_PARAM1 = "groupname";
 
 	@Inject
 	TaskService taskService;
 
-	private OnGroupTasksFragmentInteractionListener mListener;
-
 	private String groupName;
 
-	public GroupActivityFragment() {
+	private OnGroupTasksFragmentInteractionListener mListener;
+
+	public GroupScheduleFragment() {
+		// Required empty public constructor
 	}
 
-	public static GroupActivityFragment newInstance(final String groupName) {
-		final GroupActivityFragment fragment = new GroupActivityFragment();
+	public static GroupScheduleFragment newInstance(final String param1) {
+		final GroupScheduleFragment fragment = new GroupScheduleFragment();
 		final Bundle args = new Bundle();
-		args.putString(ARG_GROUP_NAME, groupName);
+		args.putString(ARG_PARAM1, param1);
 		fragment.setArguments(args);
 		return fragment;
 	}
@@ -58,14 +59,15 @@ public class GroupActivityFragment extends Fragment {
 		((ProprApplication) getActivity().getApplication()).getComponent().inject(this);
 
 		if (getArguments() != null) {
-			groupName = getArguments().getString(ARG_GROUP_NAME);
+			groupName = getArguments().getString(ARG_PARAM1);
 		}
 	}
 
 	@Override
 	public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
 	                         final Bundle savedInstanceState) {
-		final RecyclerView view = (RecyclerView) inflater.inflate(R.layout.fragment_groupactivity_list, container, false);
+
+		final RecyclerView view = (RecyclerView) inflater.inflate(R.layout.fragment_groupschedule_list, container, false);
 		final DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(view.getContext(), DividerItemDecoration.VERTICAL);
 
 		view.addItemDecoration(dividerItemDecoration);
@@ -74,7 +76,7 @@ public class GroupActivityFragment extends Fragment {
 		final GroupTasksAdapter adapter = new GroupTasksAdapter(mListener);
 		view.setAdapter(adapter);
 
-		taskService.getDoneTasksInGroup(groupName).enqueue(new Callback<List<TaskDto>>() {
+		taskService.getTodoTasksInGroup(groupName).enqueue(new Callback<List<TaskDto>>() {
 			@Override
 			public void onResponse(@NonNull final Call<List<TaskDto>> call, @NonNull final Response<List<TaskDto>> response) {
 				if (response.isSuccessful()) {
@@ -84,14 +86,13 @@ public class GroupActivityFragment extends Fragment {
 
 			@Override
 			public void onFailure(@NonNull final Call<List<TaskDto>> call, @NonNull final Throwable t) {
-				Toast.makeText(GroupActivityFragment.this.getContext(), "Unable to connect to server", Toast.LENGTH_LONG).show();
+				Toast.makeText(GroupScheduleFragment.this.getContext(), "Unable to connect to server", Toast.LENGTH_LONG).show();
 			}
 		});
 
 
 		return view;
 	}
-
 
 	@Override
 	public void onAttach(final Context context) {
@@ -100,7 +101,7 @@ public class GroupActivityFragment extends Fragment {
 			mListener = (OnGroupTasksFragmentInteractionListener) context;
 		} else {
 			throw new RuntimeException(context.toString()
-				+ " must implement OnListFragmentInteractionListener");
+				+ " must implement ScheduleInteractionListener");
 		}
 	}
 
@@ -109,5 +110,4 @@ public class GroupActivityFragment extends Fragment {
 		super.onDetach();
 		mListener = null;
 	}
-
 }

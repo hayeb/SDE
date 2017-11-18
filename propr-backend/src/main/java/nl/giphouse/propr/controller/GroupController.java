@@ -54,12 +54,9 @@ public class GroupController
 	{
 		final User user = (User) userService.loadUserByUsername(principal.getName());
 
-		final List<Group> groups = groupRepository.findGroupsByUsers(user);
+		log.debug("Handling /api/group");
 
-		if (CollectionUtils.isEmpty(groups))
-		{
-			return ResponseEntity.ok(Collections.emptyList());
-		}
+		final List<Group> groups = groupRepository.findGroupsByUsers(user);
 
 		final List<GroupDto> dtos = groups.stream()
 			.map(group -> new GroupDto(group.getName(), group.getAdmin().getUsername(),
@@ -70,14 +67,16 @@ public class GroupController
 	}
 
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
-	public ResponseEntity<GroupDto> createGroup(@RequestBody final GroupAddDto groupAddDto, final Principal principal)
+	public ResponseEntity<?> createGroup(@RequestBody final GroupAddDto groupAddDto, final Principal principal)
 	{
+		final User user = (User) userService.loadUserByUsername(principal.getName());
+
 		if (groupRepository.countByName(groupAddDto.getGroupName()) > 0)
 		{
-			return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(null);
+			return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("Group with this name already exists.");
 		}
 
-		final User user = (User) userService.loadUserByUsername(principal.getName());
+		log.debug("Handling /api/group/create");
 
 		final Group group = new Group();
 		group.setAdmin(user);
@@ -103,14 +102,16 @@ public class GroupController
 
 		if (!group.getUsers().contains(user))
 		{
-			return ResponseEntity.status(403).build();
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 		}
+
+		log.debug("Handling /api/group/users");
 
 		return ResponseEntity.ok(group.getUsers().stream().map(userFactory::fromEntity).collect(Collectors.toList()));
 	}
 
 	@RequestMapping(value = "/join", method = RequestMethod.POST)
-	public ResponseEntity<Void> joinGroup(@RequestBody final GroupJoinDto groupJoinDto, final Principal principal)
+	public ResponseEntity<?> joinGroup(@RequestBody final GroupJoinDto groupJoinDto, final Principal principal)
 	{
 		final Group group = groupRepository.findGroupByName(groupJoinDto.getGroupName());
 
@@ -121,10 +122,11 @@ public class GroupController
 
 		if (!group.getInviteCode().equals(groupJoinDto.getEnteredCode()))
 		{
-			return ResponseEntity.unprocessableEntity().body(null);
+			return ResponseEntity.unprocessableEntity().body("Entered code is invalid.");
 		}
 
 		final User user = (User) userService.loadUserByUsername(principal.getName());
+		log.debug("Handling /api/group/join");
 
 		if (group.getUsers().contains(user))
 		{
@@ -143,6 +145,8 @@ public class GroupController
 		{
 			return ResponseEntity.badRequest().body(null);
 		}
+
+		log.debug("Handling /api/group/search");
 
 		final List<Group> foundGroups = groupRepository.findGroupsByNameIsContaining(query);
 		final List<GroupDto> groupDtos = foundGroups.stream()

@@ -11,19 +11,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import giphouse.nl.proprapp.R;
-import giphouse.nl.proprapp.ui.group.overview.GroupActivityFragment.OnGroupActivityFragmentInteractionListener;
 import nl.giphouse.propr.dto.task.TaskDto;
 import nl.giphouse.propr.dto.task.TaskStatus;
 
 /**
  * @author haye
  */
-public class GroupActivityAdapter extends RecyclerView.Adapter<GroupActivityAdapter.ViewHolder> {
+public class GroupTasksAdapter extends RecyclerView.Adapter<GroupTasksAdapter.ViewHolder> {
 
 	private List<TaskDto> mValues = new ArrayList<>();
-	private final OnGroupActivityFragmentInteractionListener mListener;
+	private final OnGroupTasksFragmentInteractionListener mListener;
 
-	GroupActivityAdapter(final OnGroupActivityFragmentInteractionListener listener) {
+	GroupTasksAdapter(final OnGroupTasksFragmentInteractionListener listener) {
 		mListener = listener;
 	}
 
@@ -63,7 +62,7 @@ public class GroupActivityAdapter extends RecyclerView.Adapter<GroupActivityAdap
 			case OVERDUE:
 				return R.drawable.ic_assignment_late_black_24dp;
 			default:
-				throw new IllegalStateException("Task in done list has TODO state!");
+				return R.drawable.ic_task_todo;
 		}
 	}
 

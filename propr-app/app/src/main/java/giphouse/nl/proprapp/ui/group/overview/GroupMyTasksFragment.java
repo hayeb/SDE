@@ -19,9 +19,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MyTasksFragment extends ListFragment {
+public class GroupMyTasksFragment extends ListFragment {
 
-	private static final String TAG = "MyTasksFragment";
+	private static final String TAG = "GroupMyTasksFragment";
 
 	private static final String ARG_PARAM1 = "groupname";
 
@@ -34,12 +34,12 @@ public class MyTasksFragment extends ListFragment {
 
 	private TaskListAdapter taskListAdapter;
 
-	public MyTasksFragment() {
+	public GroupMyTasksFragment() {
 		// Required empty public constructor
 	}
 
-	public static MyTasksFragment newInstance(final String groupName) {
-		final MyTasksFragment fragment = new MyTasksFragment();
+	public static GroupMyTasksFragment newInstance(final String groupName) {
+		final GroupMyTasksFragment fragment = new GroupMyTasksFragment();
 		final Bundle args = new Bundle();
 		args.putString(ARG_PARAM1, groupName);
 		fragment.setArguments(args);
@@ -51,6 +51,7 @@ public class MyTasksFragment extends ListFragment {
 		super.onCreate(savedInstanceState);
 
 		((ProprApplication) getActivity().getApplication()).getComponent().inject(this);
+
 		if (getArguments() != null) {
 			groupName = getArguments().getString(ARG_PARAM1);
 		}

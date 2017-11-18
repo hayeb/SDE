@@ -12,7 +12,8 @@ import giphouse.nl.proprapp.ui.group.GroupJoinActivity;
 import giphouse.nl.proprapp.ui.group.GroupListActivity;
 import giphouse.nl.proprapp.ui.group.overview.GroupActivityFragment;
 import giphouse.nl.proprapp.ui.group.overview.GroupMembersFragment;
-import giphouse.nl.proprapp.ui.group.overview.MyTasksFragment;
+import giphouse.nl.proprapp.ui.group.overview.GroupMyTasksFragment;
+import giphouse.nl.proprapp.ui.group.overview.GroupScheduleFragment;
 
 /**
  * @author haye
@@ -33,11 +34,13 @@ public interface ProprApplicationComponent {
 
 	void inject(GroupJoinActivity groupJoinActivity);
 
-	void inject(MyTasksFragment myTasksFragment);
+	void inject(GroupMyTasksFragment myTasksFragment);
 
 	void inject(SplashActivity splashActivity);
 
 	void inject(GroupMembersFragment groupMembersFragment);
 
 	void inject(GroupActivityFragment groupActivityFragment);
+
+	void inject(GroupScheduleFragment groupScheduleFragment);
 }

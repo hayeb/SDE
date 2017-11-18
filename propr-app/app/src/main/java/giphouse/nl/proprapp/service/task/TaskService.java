@@ -17,4 +17,7 @@ public interface TaskService {
 
 	@GET("api/task/group/done")
 	Call<List<TaskDto>> getDoneTasksInGroup(final @Query("groupname") String groupname);
+
+	@GET("api/task/group/todo")
+	Call<List<TaskDto>> getTodoTasksInGroup(final @Query("groupname") String groupname);
 }

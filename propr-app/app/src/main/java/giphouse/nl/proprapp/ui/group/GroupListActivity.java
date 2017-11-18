@@ -92,11 +92,6 @@ public class GroupListActivity extends ListActivity
 		accountEmailTextView = navigationView.getHeaderView(0).findViewById(R.id.account_email);
 
 		setListAdapter(new GroupListAdapter(this.getLayoutInflater(), this));
-
-		final LoadGroupData loadGroupData = new LoadGroupData(groupService, (GroupListAdapter) getListAdapter());
-		loadGroupData.execute();
-
-		loadUserInfo(AccountUtils.getUsername(this));
 	}
 
 	@Override
@@ -105,6 +100,7 @@ public class GroupListActivity extends ListActivity
 
 		// Reload the group list overview
 		new LoadGroupData(groupService, (GroupListAdapter) getListAdapter()).execute();
+		loadUserInfo(AccountUtils.getUsername(this));
 	}
 
 	@Override

@@ -3,7 +3,7 @@ package nl.giphouse.propr.dto.task;
 /**
  * @author haye.
  */
-public enum PeriodType {
+public enum TaskRepetitionType {
 	DAY,
 	WEEK,
 	MONTH,
