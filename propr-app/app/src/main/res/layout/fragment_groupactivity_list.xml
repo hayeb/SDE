@@ -10,4 +10,4 @@
 	android:layout_marginRight="16dp"
 	app:layoutManager="LinearLayoutManager"
 	tools:context="giphouse.nl.proprapp.ui.group.overview.GroupActivityFragment"
-	tools:listitem="@layout/fragment_groupactivity" />
+	tools:listitem="@layout/item_grouptask" />

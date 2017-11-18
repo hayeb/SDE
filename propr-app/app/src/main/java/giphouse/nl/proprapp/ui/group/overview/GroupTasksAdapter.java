@@ -29,7 +29,7 @@ public class GroupTasksAdapter extends RecyclerView.Adapter<GroupTasksAdapter.Vi
 	@Override
 	public ViewHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
 		final View view = LayoutInflater.from(parent.getContext())
-			.inflate(R.layout.fragment_groupactivity, parent, false);
+			.inflate(R.layout.item_grouptask, parent, false);
 		return new ViewHolder(view);
 	}
 

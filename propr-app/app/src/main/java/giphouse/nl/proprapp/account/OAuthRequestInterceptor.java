@@ -59,7 +59,7 @@ public class OAuthRequestInterceptor implements Interceptor {
 			return chain.proceed(request);
 		}
 
-		Log.d(TAG, "Intercepting request: [" + request.method() + "] " + request.url().toString());
+		//Log.d(TAG, "Intercepting request: [" + request.method() + "] " + request.url().toString());
 
 		final Request.Builder builder = request.newBuilder();
 		final String token = sharedPreferences.getString(AccountUtils.PREF_AUTH_TOKEN, null);
@@ -69,7 +69,7 @@ public class OAuthRequestInterceptor implements Interceptor {
 		final Response response = chain.proceed(request);
 
 		if (response.code() != 401) {
-			Log.d(TAG, "Token still fresh");
+			//Log.d(TAG, "Token still fresh");
 			return response;
 		}
 		final String currentToken = sharedPreferences.getString(AccountUtils.PREF_AUTH_TOKEN, null);
@@ -77,7 +77,7 @@ public class OAuthRequestInterceptor implements Interceptor {
 		if (currentToken != null && currentToken.equals(token)) {
 
 			if (!refreshToken(sharedPreferences.getString(AccountUtils.PREF_REFRESH_TOKEN, null))) {
-				Log.e(TAG, "Refreshing token failed, returning original response");
+				//Log.e(TAG, "Refreshing token failed, returning original response");
 				return response;
 			}
 		}

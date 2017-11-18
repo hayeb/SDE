@@ -1,11 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools"
-	android:id="@+id/main_content"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	tools:context="giphouse.nl.proprapp.ui.group.overview.GroupOverviewActivity">
+	tools:context="giphouse.nl.proprapp.ui.group.GroupMembersActivity">
 
 	<android.support.design.widget.AppBarLayout
 		android:layout_width="match_parent"
@@ -22,25 +20,16 @@
 
 	</android.support.design.widget.AppBarLayout>
 
-
-	<FrameLayout
+	<GridView
+		android:id="@+id/users_grid"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		android:layout_below="@+id/appBarLayout"
-		android:id="@+id/group_overview_fragment">
-
-	</FrameLayout>
-
-	<android.support.design.widget.BottomNavigationView
-		android:id="@+id/bottom_navigation"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		app:itemBackground="@color/colorPrimary"
-		app:itemIconTint="@drawable/nav_item_color_state"
-		app:itemTextColor="@drawable/nav_item_color_state"
-		android:layout_alignParentBottom="true"
-		app:menu="@menu/bottom_navigation_group_overview">
-
-	</android.support.design.widget.BottomNavigationView>
+		android:columnWidth="135dp"
+		android:numColumns="2"
+		android:verticalSpacing="10dp"
+		android:horizontalSpacing="10dp"
+		android:stretchMode="columnWidth"
+		android:gravity="center"
+		/>
 
 </RelativeLayout>

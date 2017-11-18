@@ -1,12 +1,11 @@
-package giphouse.nl.proprapp.ui.group.overview;
+package giphouse.nl.proprapp.ui.group;
 
-import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.ListFragment;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,8 +13,6 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,64 +22,52 @@ import javax.inject.Inject;
 import giphouse.nl.proprapp.ProprApplication;
 import giphouse.nl.proprapp.R;
 import giphouse.nl.proprapp.service.group.GroupService;
-import lombok.AllArgsConstructor;
-import nl.giphouse.propr.dto.task.TaskDto;
 import nl.giphouse.propr.dto.user.UserInfoDto;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-// TODO: Move to a separate activity
-public class GroupMembersFragment extends Fragment {
-	private static final String ARG_PARAM1 = "groupname";
+/**
+ * @author haye
+ */
+public class GroupMembersActivity extends AppCompatActivity {
+	public static final String ARG_PARAM1 = "groupname";
 
 	@Inject
 	GroupService groupService;
 
 	private String groupname;
 
-	private GroupMembersInteractionListener mListener;
-
 	private GroupUserAdapter adapter;
 
-	public GroupMembersFragment() {
+	public GroupMembersActivity() {
 		// Required empty public constructor
-	}
-
-	public static GroupMembersFragment newInstance(final String param1) {
-		final GroupMembersFragment fragment = new GroupMembersFragment();
-		final Bundle args = new Bundle();
-		args.putString(ARG_PARAM1, param1);
-		fragment.setArguments(args);
-		return fragment;
 	}
 
 	@Override
 	public void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		if (getArguments() != null) {
-			groupname = getArguments().getString(ARG_PARAM1);
+		((ProprApplication) getApplication()).getComponent().inject(this);
+
+		groupname = getIntent().getStringExtra(ARG_PARAM1);
+
+		setContentView(R.layout.activity_group_members);
+
+		setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
+		final ActionBar bar = getSupportActionBar();
+		if (bar != null) {
+			bar.setDisplayHomeAsUpEnabled(true);
 		}
-
-		((ProprApplication)getActivity().getApplication()).getComponent().inject(this);
-
 		adapter = new GroupUserAdapter(getLayoutInflater());
-	}
 
-	@Override
-	public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
-	                         final Bundle savedInstanceState) {
-		final View view = inflater.inflate(R.layout.fragment_group_members, container, false);
-
-		final GridView gridView = view.findViewById(R.id.users_grid);
+		final GridView gridView = findViewById(R.id.users_grid);
 		gridView.setAdapter(adapter);
 
 		groupService.getUsersInGroup(groupname).enqueue(new Callback<List<UserInfoDto>>() {
 			@Override
 			public void onResponse(@NonNull final Call<List<UserInfoDto>> call, @NonNull final Response<List<UserInfoDto>> response) {
-				if (response.isSuccessful())
-				{
+				if (response.isSuccessful()) {
 					adapter.updateItems(response.body());
 				}
 			}
@@ -92,39 +77,14 @@ public class GroupMembersFragment extends Fragment {
 
 			}
 		});
-
-		return view;
 	}
 
-	@Override
-	public void onAttach(final Context context) {
-		super.onAttach(context);
-		if (context instanceof GroupMembersInteractionListener) {
-			mListener = (GroupMembersInteractionListener) context;
-		} else {
-			throw new RuntimeException(context.toString()
-				+ " must implement GroupMembersInteractionListener");
-		}
-	}
-
-	@Override
-	public void onDetach() {
-		super.onDetach();
-		mListener = null;
-	}
-
-	public interface GroupMembersInteractionListener {
-		void onGroupMembersInteraction(Uri uri);
-	}
-
-	private class GroupUserAdapter extends BaseAdapter
-	{
+	private class GroupUserAdapter extends BaseAdapter {
 		private List<UserInfoDto> users = new ArrayList<>();
 
 		private final LayoutInflater layoutInflater;
 
-		public GroupUserAdapter(final LayoutInflater layoutInflater)
-		{
+		GroupUserAdapter(final LayoutInflater layoutInflater) {
 			this.layoutInflater = layoutInflater;
 		}
 
@@ -165,7 +125,7 @@ public class GroupMembersFragment extends Fragment {
 			return itemView;
 		}
 
-		public void updateItems(final List<UserInfoDto> dtos) {
+		void updateItems(final List<UserInfoDto> dtos) {
 			users = dtos;
 			notifyDataSetChanged();
 		}

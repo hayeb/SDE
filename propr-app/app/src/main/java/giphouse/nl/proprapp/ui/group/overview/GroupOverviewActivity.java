@@ -1,5 +1,6 @@
 package giphouse.nl.proprapp.ui.group.overview;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -11,9 +12,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import org.apache.commons.lang3.StringUtils;
-
 import giphouse.nl.proprapp.R;
+import giphouse.nl.proprapp.ui.group.GroupMembersActivity;
 import giphouse.nl.proprapp.ui.group.overview.GroupMyTasksFragment.MyTasksInteractionListener;
 import nl.giphouse.propr.dto.task.TaskDto;
 
@@ -21,16 +21,23 @@ public class GroupOverviewActivity extends AppCompatActivity implements MyTasksI
 
 	private static final String TAG = "GroupOverviewActivity";
 
-	private String groupName = StringUtils.EMPTY;
+	private String groupName;
 
 	@Override
 	protected void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_group_overview);
 
-		if (getIntent() != null && getIntent().getExtras() != null) {
+		if (savedInstanceState != null) {
+			groupName = savedInstanceState.getString("groupname");
+		} else if (getIntent() != null && getIntent().getExtras() != null) {
 			groupName = getIntent().getExtras().getString("groupname");
 		}
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
 
 		setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
 		final ActionBar bar = getSupportActionBar();
@@ -76,8 +83,27 @@ public class GroupOverviewActivity extends AppCompatActivity implements MyTasksI
 	}
 
 	@Override
+	protected void onSaveInstanceState(final Bundle outState) {
+		outState.putString("groupname", groupName);
+
+		super.onSaveInstanceState(outState);
+	}
+
+	@Override
 	public boolean onCreateOptionsMenu(final Menu menu) {
 		getMenuInflater().inflate(R.menu.group_overview, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(final MenuItem item) {
+		if (item.getItemId() == R.id.item_members) {
+			final Intent intent = new Intent(this, GroupMembersActivity.class);
+
+			intent.putExtra(GroupMembersActivity.ARG_PARAM1, groupName);
+			startActivity(intent);
+		}
+
 		return true;
 	}
 

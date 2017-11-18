@@ -25,7 +25,7 @@
 		android:theme="@style/ProprTheme">
 		<activity
 			android:name=".account.ui.LoginActivity"
-			android:label="@string/login_title"/>
+			android:label="@string/login_title" />
 		<activity
 			android:name=".account.ui.RegisterAccountActivity"
 			android:label="@string/register_account_title" />
@@ -80,6 +80,14 @@
 			<meta-data
 				android:name="android.support.PARENT_ACTIVITY"
 				android:value="giphouse.nl.proprapp.ui.group.GroupListActivity" />
+		</activity>
+
+		<activity android:name=".ui.group.GroupMembersActivity"
+			android:label="@string/item_title_members"
+			android:parentActivityName=".ui.group.overview.GroupOverviewActivity">
+			<meta-data
+				android:name="android.support.PARENT_ACTIVITY"
+				android:value="giphouse.nl.proprapp.ui.group.overview.GroupOverviewActivity" />
 		</activity>
 	</application>
 
