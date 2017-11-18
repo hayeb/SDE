@@ -8,6 +8,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 
 import org.apache.commons.lang3.StringUtils;
@@ -41,7 +42,7 @@ public class GroupOverviewActivity extends AppCompatActivity implements MyTasksF
 			.disallowAddToBackStack()
 			.commit();
 
-		BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+		final BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
 		bottomNavigationView.setOnNavigationItemSelectedListener(
 			new BottomNavigationView.OnNavigationItemSelectedListener() {
 				@Override
@@ -50,12 +51,6 @@ public class GroupOverviewActivity extends AppCompatActivity implements MyTasksF
 					switch (item.getItemId()) {
 						case R.id.item_activity:
 
-							break;
-						case R.id.item_members:
-							getSupportFragmentManager().beginTransaction()
-								.replace(R.id.group_overview_fragment, GroupMembersFragment.newInstance(groupName))
-								.disallowAddToBackStack()
-								.commit();
 							break;
 						case R.id.item_schedule:
 							getSupportFragmentManager().beginTransaction()
@@ -73,6 +68,12 @@ public class GroupOverviewActivity extends AppCompatActivity implements MyTasksF
 					return false;
 				}
 			});
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(final Menu menu) {
+		getMenuInflater().inflate(R.menu.group_overview, menu);
+		return true;
 	}
 
 	@Override

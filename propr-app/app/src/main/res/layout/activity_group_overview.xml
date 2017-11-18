@@ -41,7 +41,7 @@
 		app:itemIconTint="@drawable/nav_item_color_state"
 		app:itemTextColor="@drawable/nav_item_color_state"
 		android:layout_alignParentBottom="true"
-		app:menu="@menu/group_overview">
+		app:menu="@menu/bottom_navigation_group_overview">
 
 	</android.support.design.widget.BottomNavigationView>
 

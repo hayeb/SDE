@@ -2,27 +2,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto">
 
-	<item android:title="@string/item_title_tasks"
-		android:id="@+id/item_tasks"
-		app:showAsAction="ifRoom"
-		android:enabled="true"
-		android:icon="@drawable/ic_task_todo"/>
-
 	<item android:title="@string/item_title_members"
-		android:id="@+id/item_members"
-		app:showAsAction="ifRoom"
-		android:enabled="true"
-		android:icon="@drawable/ic_task_todo"/>
+		android:icon="@drawable/ic_people_black_24dp"
+		app:showAsAction="always">
 
-	<item android:title="@string/item_title_activity"
-		android:id="@+id/item_activity"
-		app:showAsAction="ifRoom"
-		android:enabled="true"
-		android:icon="@drawable/ic_task_todo"/>
+	</item>
 
-	<item android:title="@string/item_title_schedule"
-		android:id="@+id/item_schedule"
-		app:showAsAction="ifRoom"
-		android:enabled="true"
-		android:icon="@drawable/ic_task_todo"/>
 </menu>
