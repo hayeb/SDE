@@ -1,23 +1,44 @@
 package giphouse.nl.proprapp.account;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-
 /**
  * @author haye
  */
-@Builder
-@AllArgsConstructor
-@Getter
 public class UserAccountDto {
-	final String username;
+	private final String username;
 
-	final String password;
+	private final String password;
 
-	final String email;
+	private final String email;
 
-	final String firstname;
+	private final String firstname;
 
-	final String lastname;
+	private final String lastname;
+
+	public UserAccountDto(final String username, final String password, final String email, final String firstname, final String lastname) {
+		this.username = username;
+		this.password = password;
+		this.email = email;
+		this.firstname = firstname;
+		this.lastname = lastname;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public String getFirstname() {
+		return firstname;
+	}
+
+	public String getLastname() {
+		return lastname;
+	}
 }

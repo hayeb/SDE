@@ -22,10 +22,10 @@
 		android:label="@string/app_name"
 		android:roundIcon="@drawable/iconcircle"
 		android:supportsRtl="true"
-		android:theme="@style/AppTheme">
+		android:theme="@style/ProprTheme">
 		<activity
 			android:name=".account.ui.LoginActivity"
-			android:label="@string/login_title" />
+			android:label="@string/login_title"/>
 		<activity
 			android:name=".account.ui.RegisterAccountActivity"
 			android:label="@string/register_account_title" />
@@ -45,8 +45,7 @@
 
 		<activity
 			android:name=".ui.group.GroupListActivity"
-			android:label="@string/title_activity_main"
-			android:theme="@style/AppTheme.NoActionBar" />
+			android:label="@string/title_activity_main" />
 
 		<activity android:name=".SplashActivity">
 			<intent-filter>
@@ -59,8 +58,7 @@
 		<activity
 			android:name=".ui.group.GroupAddActivity"
 			android:label="@string/title_activity_group_add"
-			android:parentActivityName=".ui.group.GroupListActivity"
-			android:theme="@style/AppTheme.NoActionBar">
+			android:parentActivityName=".ui.group.GroupListActivity">
 			<meta-data
 				android:name="android.support.PARENT_ACTIVITY"
 				android:value="giphouse.nl.proprapp.ui.group.GroupListActivity" />
@@ -69,8 +67,7 @@
 		<activity
 			android:name=".ui.group.overview.GroupTabbedActivity"
 			android:label="@string/title_activity_group_tabbed"
-			android:parentActivityName=".ui.group.GroupListActivity"
-			android:theme="@style/AppTheme.NoActionBar">
+			android:parentActivityName=".ui.group.GroupListActivity">
 			<meta-data
 				android:name="android.support.PARENT_ACTIVITY"
 				android:value="giphouse.nl.proprapp.ui.group.GroupListActivity" />

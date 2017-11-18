@@ -11,10 +11,12 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
@@ -65,14 +67,24 @@ public class GroupListActivity extends ListActivity
 		final FloatingActionButton joinGroupAction = findViewById(R.id.join_group);
 		joinGroupAction.setIcon(R.drawable.ic_plus);
 		joinGroupAction.setTitle("Join a group");
-		joinGroupAction.setOnClickListener(v -> startActivity(new Intent(this, GroupJoinActivity.class)));
+		joinGroupAction.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(final View v) {
+				GroupListActivity.this.startActivity(new Intent(GroupListActivity.this, GroupJoinActivity.class));
+			}
+		});
 		final FloatingActionButton createGroupAction = findViewById(R.id.create_group);
 		createGroupAction.setTitle("Create a group");
-		createGroupAction.setOnClickListener(v -> startActivity(new Intent(this, GroupAddActivity.class)));
+		createGroupAction.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(final View v) {
+				GroupListActivity.this.startActivity(new Intent(GroupListActivity.this, GroupAddActivity.class));
+			}
+		});
 
 		final DrawerLayout drawer = findViewById(R.id.drawer_layout);
 		final ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-			this, drawer, findViewById(R.id.toolbar), R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+			this, drawer, (Toolbar) findViewById(R.id.toolbar), R.string.navigation_drawer_open, R.string.navigation_drawer_close);
 		drawer.addDrawerListener(toggle);
 		toggle.syncState();
 

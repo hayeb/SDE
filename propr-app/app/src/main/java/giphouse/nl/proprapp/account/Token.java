@@ -6,11 +6,22 @@ import lombok.Getter;
 /**
  * @author haye
  */
-@Getter
-@AllArgsConstructor
 public class Token {
 
 	private final String authToken;
 
 	private final String refreshToken;
+
+	public Token(final String authToken, final String refreshToken) {
+		this.authToken = authToken;
+		this.refreshToken = refreshToken;
+	}
+
+	public String getAuthToken() {
+		return authToken;
+	}
+
+	public String getRefreshToken() {
+		return refreshToken;
+	}
 }

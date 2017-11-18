@@ -5,7 +5,6 @@ import android.app.Application;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import com.fatboyindustrial.gsonjavatime.Converters;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -58,7 +57,6 @@ public class NetModule {
 	@Singleton
 	Gson provideGson() {
 		final GsonBuilder gsonBuilder = new GsonBuilder();
-		Converters.registerAll(gsonBuilder);
 		gsonBuilder.setFieldNamingPolicy(FieldNamingPolicy.IDENTITY);
 		return gsonBuilder.create();
 	}

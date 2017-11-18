@@ -1,6 +1,5 @@
 package giphouse.nl.proprapp.ui.group.overview;
 
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -10,14 +9,15 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import org.apache.commons.lang3.StringUtils;
-
-import java.util.Optional;
 
 import giphouse.nl.proprapp.R;
 
@@ -25,22 +25,23 @@ public class GroupTabbedActivity extends AppCompatActivity implements MyTasksFra
 
 	private static final String TAG = "GroupTabbedActivity";
 
-	private String groupName;
+	private String groupName = StringUtils.EMPTY;
 
 	@Override
 	protected void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_group_tabbed);
 
-		groupName = Optional.of(getIntent()).map(Intent::getExtras)
-			.map(e -> e.getString("groupname"))
-			.orElse(StringUtils.EMPTY);
+		if (getIntent() != null && getIntent().getExtras() != null) {
+			groupName = getIntent().getExtras().getString("groupname");
+		}
 
-		setSupportActionBar(findViewById(R.id.toolbar));
-		Optional.ofNullable(getSupportActionBar()).ifPresent(tb -> {
-			tb.setDisplayHomeAsUpEnabled(true);
-			tb.setTitle(groupName);
-		});
+		setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
+		final ActionBar bar = getSupportActionBar();
+		if (bar != null) {
+			bar.setDisplayHomeAsUpEnabled(true);
+			bar.setTitle(groupName);
+		}
 
 		// Create the adapter that will return a fragment for each of the three
 		// primary sections of the activity.
@@ -56,8 +57,13 @@ public class GroupTabbedActivity extends AppCompatActivity implements MyTasksFra
 		tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
 
 		final FloatingActionButton fab = findViewById(R.id.fab);
-		fab.setOnClickListener(view -> Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-			.setAction("Action", null).show());
+		fab.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(final View view) {
+				Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+					.setAction("Action", null).show();
+			}
+		});
 	}
 
 

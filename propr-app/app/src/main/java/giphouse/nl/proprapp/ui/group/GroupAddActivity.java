@@ -1,11 +1,13 @@
 package giphouse.nl.proprapp.ui.group;
 
 import android.content.Intent;
+import android.drm.DrmStore;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputEditText;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -49,7 +51,11 @@ public class GroupAddActivity extends AppCompatActivity {
 		setContentView(R.layout.activity_group_add);
 		final Toolbar toolbar = findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
-		Optional.ofNullable(getSupportActionBar()).ifPresent(bar -> bar.setDisplayHomeAsUpEnabled(true));
+		final ActionBar bar = getSupportActionBar();
+		if (bar != null)
+		{
+			bar.setDisplayHomeAsUpEnabled(true);
+		}
 
 		groupNameEdit = findViewById(R.id.editGroupname);
 		groupCodeEdit = findViewById(R.id.editGroupcode);
@@ -99,7 +105,12 @@ public class GroupAddActivity extends AppCompatActivity {
 				} else {
 					Log.i(TAG, "Succesfully created a group");
 					final Intent intent = new Intent(GroupAddActivity.this, GroupTabbedActivity.class);
-					intent.putExtra("groupname", Optional.of(response).map(Response::body).map(GroupDto::getGroupName).orElse(null));
+					final GroupDto dto = response.body();
+					if (dto != null)
+					{
+						intent.putExtra("groupname", dto.getGroupName());
+					}
+
 					startActivity(intent);
 				}
 			}

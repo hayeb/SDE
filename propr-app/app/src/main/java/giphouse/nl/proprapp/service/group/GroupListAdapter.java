@@ -75,7 +75,12 @@ public class GroupListAdapter extends BaseAdapter {
 		final Intent intent = new Intent(context, GroupTabbedActivity.class);
 		intent.putExtra("groupname", dto.getGroupName());
 
-		itemView.setOnClickListener(l -> context.startActivity(intent));
+		itemView.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(final View v) {
+				context.startActivity(intent);
+			}
+		});
 
 		return itemView;
 	}

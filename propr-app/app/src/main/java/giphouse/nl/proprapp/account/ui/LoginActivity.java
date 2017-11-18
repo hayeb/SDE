@@ -3,6 +3,11 @@ package giphouse.nl.proprapp.account.ui;
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountManager;
+import android.accounts.AccountManagerCallback;
+import android.accounts.AccountManagerFuture;
+import android.accounts.AuthenticatorException;
+import android.accounts.OperationCanceledException;
+import android.app.ActionBar;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -14,10 +19,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
+import java.io.IOException;
 import java.lang.ref.WeakReference;
-import java.util.Arrays;
-import java.util.Optional;
 
 import javax.inject.Inject;
 
@@ -26,7 +31,6 @@ import giphouse.nl.proprapp.R;
 import giphouse.nl.proprapp.account.AccountUtils;
 import giphouse.nl.proprapp.account.AuthenticatorService;
 import giphouse.nl.proprapp.account.Token;
-import lombok.AllArgsConstructor;
 
 /**
  * A login screen that offers login via email/password.
@@ -36,6 +40,8 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 	public static String LOGIN_REASON_KEY = "loginReason";
 
 	public static String USERNAME_KEY = "username";
+
+	public static int CODE_LOGGED_IN = 11;
 
 	private static final String TAG = "LoginActivity";
 
@@ -48,7 +54,8 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 	// UI references.
 	private EditText mUsernameTextView;
 	private EditText mPasswordView;
-	private TextView mLoginReasonTextView;
+
+	private AccountManager accountManager;
 
 	@Override
 	protected void onCreate(final Bundle savedInstanceState) {
@@ -56,32 +63,46 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 
 		((ProprApplication) getApplication()).getComponent().inject(this);
 
+		accountManager = AccountManager.get(this);
+
 		setContentView(R.layout.activity_login);
-		setActionBar(findViewById(R.id.toolbar));
-		getActionBar().setDisplayShowTitleEnabled(true);
+		setActionBar((Toolbar) findViewById(R.id.toolbar));
+		final ActionBar bar = getActionBar();
+		if (bar != null) {
+			bar.setDisplayShowTitleEnabled(true);
+		}
 
 		final Bundle extras = getIntent().getExtras();
 
 		// Set up the login form.
-		mLoginReasonTextView = findViewById(R.id.login_reason_text);
+		final TextView mLoginReasonTextView = findViewById(R.id.login_reason_text);
 		mUsernameTextView = findViewById(R.id.email);
 		mPasswordView = findViewById(R.id.password);
 
 		// Show the reason for logging in
-		Optional.ofNullable(extras)
-			.map(e -> e.getString(LOGIN_REASON_KEY))
-			.ifPresent(mLoginReasonTextView::setText);
-
+		if (extras != null && extras.containsKey(LOGIN_REASON_KEY)) {
+			mLoginReasonTextView.setText(extras.getString(LOGIN_REASON_KEY));
+		}
 		// Fill the username field if one is provided
-		Optional.ofNullable(extras)
-			.map(e -> e.getString(USERNAME_KEY))
-			.ifPresent(mUsernameTextView::setText);
+		if (extras != null && extras.containsKey(USERNAME_KEY)) {
+			mLoginReasonTextView.setText(extras.getString(USERNAME_KEY));
+		}
 
 		final Button mSignInButton = findViewById(R.id.sign_in_button);
-		mSignInButton.setOnClickListener(view -> attemptLogin());
+		mSignInButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(final View view) {
+				LoginActivity.this.attemptLogin();
+			}
+		});
 
 		final Button mRegisterAccountButton = findViewById(R.id.register_account_button);
-		mRegisterAccountButton.setOnClickListener(view -> startCreateAccountActivity());
+		mRegisterAccountButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(final View view) {
+				LoginActivity.this.startCreateAccountActivity();
+			}
+		});
 	}
 
 	private void attemptLogin() {
@@ -102,36 +123,91 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 
 	private void finishLogin(final Intent intent, final String username, final String password) {
 		if (intent == null || intent.getExtras() == null) {
-			Toast.makeText(this, "Unable to log in: Incorrect username or password", Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, "Unable to log in: Incorrect username or password", Toast.LENGTH_LONG).show();
 			return;
 		}
 
 		final AccountManager accountManager = AccountManager.get(LoginActivity.this);
+		final Account[] accounts = accountManager.getAccountsByType(AccountUtils.ACCOUNT_TYPE);
 
-		Arrays.stream(accountManager.getAccountsByType(AccountUtils.ACCOUNT_TYPE))
-			.forEach(account -> accountManager.removeAccount(account, this, null,null));
+		if (accounts.length > 1) {
+			throw new IllegalStateException("Multiple accounts registered on device!");
+		}
 
-		final Account acc = new Account(username, AccountUtils.ACCOUNT_TYPE);
-		accountManager.addAccountExplicitly(acc, password, null);
-		accountManager.setUserData(acc, AccountUtils.KEY_REFRESH_TOKEN, intent.getExtras().getString(AccountUtils.KEY_REFRESH_TOKEN));
+		if (differentAccountRegistered(username, accounts)) {
+			Log.d(TAG, "Renaming earlier account");
+			renameAccount(accounts[0], username, password, intent);
+			return;
+		}
 
+		final Account account = getNewOrExistingAccount(accounts, username, password);
+
+		Log.d(TAG, "Updating password and refresh token for account");
+		accountManager.setPassword(account, password);
+		accountManager.setUserData(account, AccountUtils.KEY_REFRESH_TOKEN, intent.getExtras().getString(AccountUtils.KEY_REFRESH_TOKEN));
+
+		returnResult(intent);
+	}
+
+	private void renameAccount(final Account account, final String username, final String password, final Intent intent) {
+		final Bundle extras = intent.getExtras();
+		accountManager.renameAccount(account, username, new AccountManagerCallback<Account>() {
+				@Override
+				public void run(final AccountManagerFuture<Account> acc) {
+					final Account renamedAccount;
+					try {
+						renamedAccount = acc.getResult();
+					} catch (OperationCanceledException | IOException | AuthenticatorException e) {
+						e.printStackTrace();
+						LoginActivity.this.setResult(1);
+						LoginActivity.this.finish();
+						return;
+					}
+
+					LoginActivity.this.setAdditionalData(renamedAccount, password, extras.getString(AccountUtils.KEY_REFRESH_TOKEN));
+					LoginActivity.this.returnResult(intent);
+				}
+			}
+			, null);
+	}
+
+	private void setAdditionalData(final Account account, final String password, final String refreshToken) {
+		accountManager.setPassword(account, password);
+		accountManager.setUserData(account, AccountUtils.KEY_REFRESH_TOKEN, refreshToken);
+	}
+
+	private void returnResult(final Intent intent) {
 		setAccountAuthenticatorResult(intent.getExtras());
-		setResult(11, intent);
+		setResult(CODE_LOGGED_IN, intent);
 		finish();
+	}
+
+	private boolean differentAccountRegistered(final String username, final Account[] accounts) {
+		return accounts.length == 1 && !accounts[0].name.equals(username);
+	}
+
+	private Account getNewOrExistingAccount(final Account[] accounts, final String username, final String password) {
+		if (accounts.length == 0) {
+			final Account account = new Account(username, AccountUtils.ACCOUNT_TYPE);
+			accountManager.addAccountExplicitly(account, password, null);
+			return account;
+		} else {
+			return accounts[0];
+		}
 	}
 
 	@Override
 	protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-		if (resultCode == 11) {
+		if (resultCode == RegisterAccountActivity.CODE_ACCOUNT_REGISTERED) {
 			setAccountAuthenticatorResult(data.getExtras());
-			setResult(11, data);
+			setResult(CODE_LOGGED_IN, data);
 			finish();
 		}
 	}
 
 	private void startCreateAccountActivity() {
 		final Intent intent = new Intent(this, RegisterAccountActivity.class);
-		startActivityForResult(intent, 11);
+		startActivityForResult(intent, RegisterAccountActivity.CODE_ACCOUNT_REGISTERED);
 	}
 
 	private boolean isUsernameValid(final String username) {
@@ -154,15 +230,22 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 		return focusView;
 	}
 
-	@AllArgsConstructor
 	private static class LoginTask extends AsyncTask<Void, Void, Intent> {
 
-		private WeakReference<LoginActivity> loginActivityWeakReference;
-		private AuthenticatorService authenticatorService;
-		private SharedPreferences sharedPreferences;
+		private final WeakReference<LoginActivity> loginActivityWeakReference;
+		private final AuthenticatorService authenticatorService;
+		private final SharedPreferences sharedPreferences;
 
-		private String username;
-		private String password;
+		private final String username;
+		private final String password;
+
+		LoginTask(final WeakReference<LoginActivity> loginActivityWeakReference, final AuthenticatorService authenticatorService, final SharedPreferences sharedPreferences, final String username, final String password) {
+			this.loginActivityWeakReference = loginActivityWeakReference;
+			this.authenticatorService = authenticatorService;
+			this.sharedPreferences = sharedPreferences;
+			this.username = username;
+			this.password = password;
+		}
 
 		@Override
 		protected Intent doInBackground(final Void... voids) {
@@ -193,9 +276,10 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 
 		@Override
 		protected void onPostExecute(final Intent intent) {
-			Optional.of(loginActivityWeakReference)
-				.map(WeakReference::get)
-				.ifPresent(a -> a.finishLogin(intent, username, password));
+			final LoginActivity loginActivity = loginActivityWeakReference.get();
+			if (loginActivity != null) {
+				loginActivity.finishLogin(intent, username, password);
+			}
 		}
 
 		private String validateToken(final Token token) {

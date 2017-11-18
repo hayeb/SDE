@@ -1,16 +1,24 @@
 package giphouse.nl.proprapp.service.group.search;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
 /**
  * @author haye
  */
-@AllArgsConstructor
-@Getter
 public class GroupSearchResult {
+
+	public String getGroupName() {
+		return groupName;
+	}
+
+	public byte[] getImage() {
+		return image;
+	}
 
 	private final String groupName;
 
 	private final byte[] image;
+
+	public GroupSearchResult(final String groupName, final byte[] image) {
+		this.groupName = groupName;
+		this.image = image;
+	}
 }

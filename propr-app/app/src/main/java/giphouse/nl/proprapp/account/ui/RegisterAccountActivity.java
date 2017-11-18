@@ -4,6 +4,7 @@ import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountManager;
 import android.annotation.SuppressLint;
+import android.app.ActionBar;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -13,11 +14,11 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toolbar;
 
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.lang.ref.WeakReference;
-import java.util.Optional;
 
 import javax.inject.Inject;
 
@@ -33,6 +34,8 @@ import lombok.AllArgsConstructor;
  * @author haye
  */
 public class RegisterAccountActivity extends AccountAuthenticatorActivity {
+
+	public static int CODE_ACCOUNT_REGISTERED = 12;
 
 	private static final String TAG = "RegisterAccountActivity";
 
@@ -60,8 +63,11 @@ public class RegisterAccountActivity extends AccountAuthenticatorActivity {
 		((ProprApplication) getApplication()).getComponent().inject(this);
 		setContentView(R.layout.activity_create_account);
 
-		setActionBar(findViewById(R.id.toolbar));
-		getActionBar().setDisplayShowTitleEnabled(true);
+		setActionBar((Toolbar) findViewById(R.id.toolbar));
+		final ActionBar bar = getActionBar();
+		if (bar != null) {
+			bar.setDisplayShowTitleEnabled(true);
+		}
 
 		mUsernameField = findViewById(R.id.username);
 		mEmailField = findViewById(R.id.email);
@@ -73,7 +79,12 @@ public class RegisterAccountActivity extends AccountAuthenticatorActivity {
 		mAccountManager = AccountManager.get(this);
 
 		final Button registerAccountButton = findViewById(R.id.submit_account_button);
-		registerAccountButton.setOnClickListener(view -> registerAccount());
+		registerAccountButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(final View view) {
+				RegisterAccountActivity.this.registerAccount();
+			}
+		});
 	}
 
 	@SuppressLint("StaticFieldLeak")
@@ -100,13 +111,7 @@ public class RegisterAccountActivity extends AccountAuthenticatorActivity {
 			return;
 		}
 
-		final UserAccountDto accountDto = UserAccountDto.builder()
-			.username(username)
-			.firstname(firstname)
-			.lastname(lastname)
-			.email(email)
-			.password(password)
-			.build();
+		final UserAccountDto accountDto = new UserAccountDto(username, password, email, firstname, lastname);
 
 		Log.d(TAG, String.format("Registering account [%s, %s]", username, email));
 
@@ -114,7 +119,7 @@ public class RegisterAccountActivity extends AccountAuthenticatorActivity {
 	}
 
 	private View validateInput(final String username, final String firstname, final String lastname,
-							   final String email, final String password, final String passwordRepeated) {
+	                           final String email, final String password, final String passwordRepeated) {
 		View view = null;
 
 		if (!validateMatchingPasswords(password, passwordRepeated)) {
@@ -163,7 +168,7 @@ public class RegisterAccountActivity extends AccountAuthenticatorActivity {
 			.apply();
 
 		setAccountAuthenticatorResult(intent.getExtras());
-		setResult(11, intent);
+		setResult(CODE_ACCOUNT_REGISTERED, intent);
 		finish();
 	}
 
@@ -191,10 +196,14 @@ public class RegisterAccountActivity extends AccountAuthenticatorActivity {
 		return !TextUtils.isEmpty(lastname);
 	}
 
-	@AllArgsConstructor
 	private static final class RegisterTask extends AsyncTask<UserAccountDto, Void, Intent> {
-		private WeakReference<RegisterAccountActivity> registerAccountActivityWeakReference;
-		private AuthenticatorService authenticatorService;
+		private final WeakReference<RegisterAccountActivity> registerAccountActivityWeakReference;
+		private final AuthenticatorService authenticatorService;
+
+		public RegisterTask(final WeakReference<RegisterAccountActivity> registerAccountActivityWeakReference, final AuthenticatorService authenticatorService) {
+			this.registerAccountActivityWeakReference = registerAccountActivityWeakReference;
+			this.authenticatorService = authenticatorService;
+		}
 
 		@Override
 		protected Intent doInBackground(final UserAccountDto... accountDtos) {
@@ -225,9 +234,10 @@ public class RegisterAccountActivity extends AccountAuthenticatorActivity {
 			if (intent == null) {
 				return;
 			}
-			Optional.of(registerAccountActivityWeakReference)
-				.map(WeakReference::get)
-				.ifPresent(a -> a.finishRegistering(intent));
+			final RegisterAccountActivity activity = registerAccountActivityWeakReference.get();
+			if (activity != null) {
+				activity.finishRegistering(intent);
+			}
 		}
 
 		private String validateToken(final Token token) {
