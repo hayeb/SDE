@@ -5,6 +5,7 @@ import javax.validation.Valid;
 
 import nl.giphouse.propr.dto.user.UserDTO;
 import nl.giphouse.propr.model.user.User;
+import nl.giphouse.propr.model.user.UserFactory;
 import nl.giphouse.propr.repository.UserRepository;
 
 import org.apache.commons.lang3.StringUtils;
@@ -29,6 +30,9 @@ public class UserController
 
 	@Inject
 	private PasswordEncoder passwordEncoder;
+
+	@Inject
+	private UserFactory userFactory;
 
 	@RequestMapping(value = "/register", method = RequestMethod.POST)
 	public ResponseEntity registerUser(@RequestBody @Valid final UserDTO userDto)
@@ -61,7 +65,7 @@ public class UserController
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
 		}
 
-		return ResponseEntity.ok(user);
+		return ResponseEntity.ok(userFactory.fromEntity(user));
 	}
 
 }
