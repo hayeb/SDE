@@ -15,7 +15,7 @@ CREATE TABLE assigned_task
 	assignee   BIGINT CONSTRAINT fk__assigned_task__assignee REFERENCES users (user_id),
 	definition BIGINT CONSTRAINT fk__assigned_task_definition REFERENCES task_definition (id),
 	due_date   DATE       NOT NULL,
-	status     VARCHAR(6) NOT NULL
+	status     VARCHAR(7) NOT NULL
 );
 
 INSERT INTO task_definition (id, name, description, "group", weight, period_type, frequency)

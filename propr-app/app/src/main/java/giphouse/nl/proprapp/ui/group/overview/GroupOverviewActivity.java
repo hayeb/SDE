@@ -14,8 +14,9 @@ import android.view.MenuItem;
 import org.apache.commons.lang3.StringUtils;
 
 import giphouse.nl.proprapp.R;
+import nl.giphouse.propr.dto.task.TaskDto;
 
-public class GroupOverviewActivity extends AppCompatActivity implements MyTasksFragment.MyTasksInteractionListener, GroupMembersFragment.GroupMembersInteractionListener, ScheduleFragment.ScheduleInteractionListener {
+public class GroupOverviewActivity extends AppCompatActivity implements MyTasksFragment.MyTasksInteractionListener, GroupMembersFragment.GroupMembersInteractionListener, ScheduleFragment.ScheduleInteractionListener, GroupActivityFragment.OnGroupActivityFragmentInteractionListener {
 
 	private static final String TAG = "GroupOverviewActivity";
 
@@ -46,11 +47,14 @@ public class GroupOverviewActivity extends AppCompatActivity implements MyTasksF
 		bottomNavigationView.setOnNavigationItemSelectedListener(
 			new BottomNavigationView.OnNavigationItemSelectedListener() {
 				@Override
-				public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+				public boolean onNavigationItemSelected(@NonNull final MenuItem item) {
 					item.setChecked(true);
 					switch (item.getItemId()) {
 						case R.id.item_activity:
-
+							getSupportFragmentManager().beginTransaction()
+								.replace(R.id.group_overview_fragment, GroupActivityFragment.newInstance(groupName))
+								.disallowAddToBackStack()
+								.commit();
 							break;
 						case R.id.item_schedule:
 							getSupportFragmentManager().beginTransaction()
@@ -89,5 +93,10 @@ public class GroupOverviewActivity extends AppCompatActivity implements MyTasksF
 	@Override
 	public void onMyTasksInteraction(final Uri uri) {
 		Log.d(TAG, "My Tasks interaction");
+	}
+
+	@Override
+	public void onGroupActivityFragmentInteraction(TaskDto item) {
+
 	}
 }

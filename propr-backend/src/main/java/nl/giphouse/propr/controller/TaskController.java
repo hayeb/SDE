@@ -2,6 +2,7 @@ package nl.giphouse.propr.controller;
 
 import java.security.Principal;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -11,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import nl.giphouse.propr.dto.task.TaskDto;
 import nl.giphouse.propr.model.group.Group;
+import nl.giphouse.propr.model.task.AssignedTask;
 import nl.giphouse.propr.model.task.TaskFactory;
 import nl.giphouse.propr.dto.task.TaskStatus;
 import nl.giphouse.propr.model.user.User;
@@ -44,7 +46,7 @@ public class TaskController
 	@Inject
 	private TaskFactory taskFactory;
 
-	@RequestMapping(method = RequestMethod.GET, value = "/group")
+	@RequestMapping(method = RequestMethod.GET, value = "/group/user")
 	public ResponseEntity<?> getTasksForUserInGroup(final Principal principal, final @RequestParam String groupname)
 	{
 		final User user = (User) userService.loadUserByUsername(principal.getName());
@@ -78,6 +80,7 @@ public class TaskController
 		}
 
 		final List<TaskDto> doneTasks = taskRepository.findAllByDefinitionGroupAndStatusIn(group, Arrays.asList(TaskStatus.DONE, TaskStatus.OVERDUE)).stream()
+			.sorted(Comparator.comparing(AssignedTask::getDueDate))
 			.map(taskFactory::fromEntity)
 			.collect(Collectors.toList());
 

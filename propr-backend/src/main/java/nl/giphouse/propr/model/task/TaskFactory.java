@@ -19,7 +19,7 @@ public class TaskFactory
 			.description(task.getDefinition().getDescription())
 			.assigneeId(task.getAssignee().getId())
 			.groupId(task.getAssignee().getId())
-			.dueDate(task.getDueDate().format(DateTimeFormatter.ofPattern("d-M-yyyy")))
+			.dueDate(task.getDueDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
 			.weight(task.getDefinition().getWeight())
 			.status(task.getStatus())
 			.build();

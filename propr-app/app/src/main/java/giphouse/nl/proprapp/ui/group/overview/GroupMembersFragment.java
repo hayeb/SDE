@@ -32,6 +32,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+// TODO: Move to a separate activity
 public class GroupMembersFragment extends Fragment {
 	private static final String ARG_PARAM1 = "groupname";
 

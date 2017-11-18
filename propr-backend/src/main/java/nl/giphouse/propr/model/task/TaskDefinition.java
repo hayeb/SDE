@@ -44,7 +44,7 @@ public class TaskDefinition {
 	@Column
 	private TaskWeight weight;
 
-	@Enumerated
+	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private PeriodType periodType;
 	

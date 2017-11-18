@@ -112,12 +112,12 @@ public class GroupController
 	@RequestMapping(value = "/join", method = RequestMethod.POST)
 	public ResponseEntity<Void> joinGroup(@RequestBody final GroupJoinDto groupJoinDto, final Principal principal)
 	{
-		if (groupRepository.countByName(groupJoinDto.getGroupName()) == 0)
+		final Group group = groupRepository.findGroupByName(groupJoinDto.getGroupName());
+
+		if (group == null)
 		{
 			return ResponseEntity.notFound().build();
 		}
-
-		final Group group = groupRepository.findGroupByName(groupJoinDto.getGroupName());
 
 		if (!group.getInviteCode().equals(groupJoinDto.getEnteredCode()))
 		{

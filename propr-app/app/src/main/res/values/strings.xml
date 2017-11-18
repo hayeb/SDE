@@ -80,4 +80,8 @@
 	<string name="item_title_settings">Settings</string>
 	<string name="item_title_tasks">Tasks</string>
 	<string name="item_title_members">Members</string>
+	<string name="description_task_assignee">Task assignee image</string>
+	<string name="description_task_state">Task state image</string>
+	<string name="placeholder_task_name">This is the task name</string>
+	<string name="placeholder_date">01-01-2017</string>
 </resources>

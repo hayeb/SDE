@@ -12,6 +12,9 @@ import retrofit2.http.Query;
  */
 public interface TaskService {
 
-	@GET("api/task/group")
+	@GET("api/task/group/user")
 	Call<List<TaskDto>> getTasksForUserInGroup(final @Query("groupname") String groupname);
+
+	@GET("api/task/group/done")
+	Call<List<TaskDto>> getDoneTasksInGroup(final @Query("groupname") String groupname);
 }
