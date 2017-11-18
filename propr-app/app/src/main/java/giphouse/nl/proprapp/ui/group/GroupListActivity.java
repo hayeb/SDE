@@ -1,10 +1,7 @@
 package giphouse.nl.proprapp.ui.group;
 
 import android.app.ListActivity;
-import android.app.LoaderManager;
 import android.content.Intent;
-import android.content.Loader;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -36,12 +33,12 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 /**
- * Main layout using a DrawerLayout (https://developer.android.com/training/implementing-navigation/nav-drawer.html#DrawerLayout)
+ * Main layout using a  BottomNavigationLayout
  *
  * @author haye
  */
 public class GroupListActivity extends ListActivity
-	implements NavigationView.OnNavigationItemSelectedListener, LoaderManager.LoaderCallbacks<Cursor> {
+	implements NavigationView.OnNavigationItemSelectedListener {
 
 	private static final String TAG = "GroupListActivity";
 
@@ -160,21 +157,6 @@ public class GroupListActivity extends ListActivity
 		final DrawerLayout drawer = findViewById(R.id.drawer_layout);
 		drawer.closeDrawer(GravityCompat.START);
 		return true;
-	}
-
-	@Override
-	public Loader<Cursor> onCreateLoader(final int id, final Bundle args) {
-		return null;
-	}
-
-	@Override
-	public void onLoadFinished(final Loader<Cursor> loader, final Cursor data) {
-
-	}
-
-	@Override
-	public void onLoaderReset(final Loader<Cursor> loader) {
-
 	}
 
 	private void updateUserInfoUI() {

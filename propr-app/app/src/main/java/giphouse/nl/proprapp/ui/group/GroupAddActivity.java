@@ -1,7 +1,6 @@
 package giphouse.nl.proprapp.ui.group;
 
 import android.content.Intent;
-import android.drm.DrmStore;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
@@ -12,19 +11,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.ImageButton;
 
 import java.io.ByteArrayOutputStream;
-import java.util.Optional;
 
 import javax.inject.Inject;
 
 import giphouse.nl.proprapp.ProprApplication;
 import giphouse.nl.proprapp.R;
 import giphouse.nl.proprapp.service.group.GroupService;
-import giphouse.nl.proprapp.ui.group.overview.GroupTabbedActivity;
+import giphouse.nl.proprapp.ui.group.overview.GroupOverviewActivity;
 import nl.giphouse.propr.dto.group.GroupAddDto;
 import nl.giphouse.propr.dto.group.GroupDto;
 import retrofit2.Call;
@@ -62,24 +58,6 @@ public class GroupAddActivity extends AppCompatActivity {
 		groupImageButton = findViewById(R.id.groupImageButton);
 	}
 
-	@Override
-	public boolean onCreateOptionsMenu(final Menu menu) {
-		getMenuInflater().inflate(R.menu.menu_group_add, menu);
-		return true;
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(final MenuItem item) {
-		final int i = item.getItemId();
-		switch(i) {
-			case R.id.submit_add_group:
-				submit();
-				return true;
-			default:
-				return super.onOptionsItemSelected(item);
-		}
-	}
-
 	private void submit() {
 		groupNameEdit.setError(null);
 		groupCodeEdit.setError(null);
@@ -104,7 +82,7 @@ public class GroupAddActivity extends AppCompatActivity {
 					}
 				} else {
 					Log.i(TAG, "Succesfully created a group");
-					final Intent intent = new Intent(GroupAddActivity.this, GroupTabbedActivity.class);
+					final Intent intent = new Intent(GroupAddActivity.this, GroupOverviewActivity.class);
 					final GroupDto dto = response.body();
 					if (dto != null)
 					{
