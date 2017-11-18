@@ -1,7 +1,5 @@
 package nl.giphouse.propr.dto.task;
 
-import java.time.LocalDate;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,4 +21,8 @@ public class TaskDto
 	private Long groupId;
 
 	private String dueDate;
+
+	private TaskStatus status;
+
+	private TaskWeight weight;
 }

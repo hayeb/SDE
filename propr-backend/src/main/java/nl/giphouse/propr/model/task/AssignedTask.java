@@ -5,6 +5,8 @@ import java.time.LocalDate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -14,7 +16,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import nl.giphouse.propr.model.group.Group;
+import nl.giphouse.propr.dto.task.TaskStatus;
 import nl.giphouse.propr.model.user.User;
 
 /**
@@ -26,27 +28,26 @@ import nl.giphouse.propr.model.user.User;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "task")
-public class Task implements Serializable
+@Entity(name = "assigned_task")
+public class AssignedTask implements Serializable
 {
 	@Id
 	private Long id;
-
-	@Column(nullable = false)
-	private String name;
-
-	@Column(nullable = false)
-	private String description;
 
 	@ManyToOne
 	@JoinColumn(name = "assignee")
 	private User assignee;
 
 	@ManyToOne
-	@JoinColumn(name = "group")
-	private Group group;
+	@JoinColumn(name = "definition")
+	private TaskDefinition definition;
 
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	@Column(nullable = false)
 	private LocalDate dueDate;
+
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
+	private TaskStatus status;
+
 }
