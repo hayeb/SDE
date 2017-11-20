@@ -111,20 +111,15 @@ public class GroupController
 	}
 
 	@RequestMapping(value = "/join", method = RequestMethod.POST)
-	public ResponseEntity<?> joinGroup(@RequestBody final GroupJoinDto groupJoinDto, final Principal principal)
+	public ResponseEntity<GroupDto> joinGroup(@RequestBody final GroupJoinDto groupJoinDto, final Principal principal)
 	{
-		final Group group = groupRepository.findGroupByName(groupJoinDto.getGroupName());
-
-		if (group == null)
-		{
-			return ResponseEntity.notFound().build();
+		// no group found, code is not valid.
+		if (groupRepository.countByInviteCode(groupJoinDto.getEnteredCode()) == 0) {
+			return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(null);
 		}
 
-		if (!group.getInviteCode().equals(groupJoinDto.getEnteredCode()))
-		{
-			return ResponseEntity.unprocessableEntity().body("Entered code is invalid.");
-		}
-
+		// group exists
+		final Group group = groupRepository.findGroupByInviteCode(groupJoinDto.getEnteredCode());
 		final User user = (User) userService.loadUserByUsername(principal.getName());
 		log.debug("Handling /api/group/join");
 
@@ -135,7 +130,8 @@ public class GroupController
 
 		group.getUsers().add(user);
 		groupRepository.save(group);
-		return ResponseEntity.ok(null);
+
+		return ResponseEntity.ok(groupFactory.fromEntity(group));
 	}
 
 	@RequestMapping(value = "/search", method = RequestMethod.GET)
