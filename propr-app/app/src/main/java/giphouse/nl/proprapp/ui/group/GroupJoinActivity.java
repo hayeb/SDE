@@ -4,6 +4,7 @@ import android.app.ListActivity;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputEditText;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -43,7 +44,11 @@ public class GroupJoinActivity extends AppCompatActivity {
 
 		final Toolbar toolbar = findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
-		Optional.ofNullable(getSupportActionBar()).ifPresent(bar -> bar.setDisplayHomeAsUpEnabled(true));
+		final ActionBar bar = getSupportActionBar();
+		if (bar != null)
+		{
+			bar.setDisplayHomeAsUpEnabled(true);
+		}
 
 		enterGroupcode = findViewById(R.id.enterGroupcode);
 		button = findViewById(R.id.button);
