@@ -10,7 +10,6 @@ import lombok.Getter;
 @Getter
 public class GroupJoinDto
 {
-	private final String groupName;
 
 	private final String enteredCode;
 }

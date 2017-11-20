@@ -25,7 +25,7 @@ public interface GroupService {
 	Call<GroupDto> createGroup(@Body final GroupAddDto groupAddDto);
 
 	@POST("api/group/join")
-	Call<Void> joinGroup(@Body final GroupJoinDto groupJoinDto);
+	Call<GroupDto> joinGroup(@Body final GroupJoinDto groupJoinDto);
 
 	@GET("api/group/search")
 	Call<List<GroupSearchResult>> searchGroups(@Query("query") final String query);

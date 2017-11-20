@@ -62,6 +62,7 @@
 	<string name="first_name_error">Please fill in a first name</string>
 	<string name="error_enter_groupname">Please enter a name</string>
 	<string name="error_enter_groupcode">Please enter a group code</string>
+	<string name="error_length_groupcode">The invite code must contain at least 5 characters</string>
 	<string name="error_groupname_exists">This groupname already exists. Please choose another name</string>
 	<string name="error_unknown_request_error">Unknown error. Statuscode: %d, message: %s</string>
 	<string name="title_activity_group_tabbed">View group</string>

@@ -139,7 +139,7 @@ public class GroupAddActivity extends AppCompatActivity {
 			groupCodeEdit.setError(getString(R.string.error_enter_groupcode));
 			isError = true;
 		} else if (groupCode.length() < 5) {
-			groupCodeEdit.setError("The invite code must contain at least 5 characters");
+			groupCodeEdit.setError(getString(R.string.error_length_groupcode));
 			isError = true;
 		}
 
