@@ -34,8 +34,6 @@ public class GroupOverviewActivity extends AppCompatActivity implements MyTasksI
 		} else if (getIntent() != null && getIntent().getExtras() != null) {
 			groupName = getIntent().getExtras().getString("groupname");
 		}
-
-		Log.e(TAG, "onCreate " + groupName);
 	}
 
 	@Override
@@ -83,12 +81,10 @@ public class GroupOverviewActivity extends AppCompatActivity implements MyTasksI
 					return false;
 				}
 			});
-		Log.e(TAG, "onResume " + groupName);
 	}
 
 	@Override
 	protected void onSaveInstanceState(final Bundle outState) {
-		Log.e(TAG, "Saving instance state " + groupName);
 		outState.putString("groupname", groupName);
 		super.onSaveInstanceState(outState);
 	}
@@ -98,38 +94,6 @@ public class GroupOverviewActivity extends AppCompatActivity implements MyTasksI
 		super.onRestoreInstanceState(savedInstanceState);
 
 		groupName = savedInstanceState.getString("groupname");
-		Log.e(TAG, "Restoring instance state " + groupName);
-	}
-
-	@Override
-	protected void onStart() {
-		super.onStart();
-		Log.e(TAG, "onStart " + groupName);
-	}
-
-	@Override
-	protected void onPause() {
-		super.onPause();
-		Log.e(TAG, "onPause " + groupName);
-
-	}
-
-	@Override
-	protected void onRestart() {
-		super.onRestart();
-		Log.e(TAG, "onRestart " + groupName);
-	}
-
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-		Log.e(TAG, "onDestroy " + groupName);
-	}
-
-	@Override
-	protected void onStop() {
-		super.onStop();
-		Log.e(TAG, "onStop " + groupName);
 	}
 
 	@Override
