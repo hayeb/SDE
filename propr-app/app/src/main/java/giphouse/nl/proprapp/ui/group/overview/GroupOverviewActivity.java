@@ -11,7 +11,6 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
 
 import giphouse.nl.proprapp.R;
 import giphouse.nl.proprapp.ui.group.GroupMembersActivity;
@@ -50,13 +49,10 @@ public class GroupOverviewActivity extends AppCompatActivity implements MyTasksI
 			bar.setTitle(groupName);
 		}
 
-//		getSupportFragmentManager().beginTransaction()
-//			.add(R.id.group_overview_fragment, MyTasksFragment.newInstance(groupName), null)
-//			.disallowAddToBackStack()
-//			.commit();
-
-		TextView test = findViewById(R.id.testcontent);
-		test.setText(groupName);
+		getSupportFragmentManager().beginTransaction()
+			.replace(R.id.group_overview_fragment_container, GroupMyTasksFragment.newInstance(groupName), null)
+			.disallowAddToBackStack()
+			.commit();
 
 		final BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
 		bottomNavigationView.setOnNavigationItemSelectedListener(
@@ -66,22 +62,22 @@ public class GroupOverviewActivity extends AppCompatActivity implements MyTasksI
 					item.setChecked(true);
 					switch (item.getItemId()) {
 						case R.id.item_activity:
-//							getSupportFragmentManager().beginTransaction()
-//								.replace(R.id.group_overview_fragment, GroupActivityFragment.newInstance(groupName))
-//								.disallowAddToBackStack()
-//								.commit();
+							getSupportFragmentManager().beginTransaction()
+								.replace(R.id.group_overview_fragment_container, GroupActivityFragment.newInstance(groupName))
+								.disallowAddToBackStack()
+								.commit();
 							break;
 						case R.id.item_schedule:
-//							getSupportFragmentManager().beginTransaction()
-//								.replace(R.id.group_overview_fragment, GroupScheduleFragment.newInstance(groupName))
-//								.disallowAddToBackStack()
-//								.commit();
+							getSupportFragmentManager().beginTransaction()
+								.replace(R.id.group_overview_fragment_container, GroupScheduleFragment.newInstance(groupName))
+								.disallowAddToBackStack()
+								.commit();
 							break;
 						case R.id.item_tasks:
-//							getSupportFragmentManager().beginTransaction()
-//								.replace(R.id.group_overview_fragment, GroupMyTasksFragment.newInstance(groupName))
-//								.disallowAddToBackStack()
-//								.commit();
+							getSupportFragmentManager().beginTransaction()
+								.replace(R.id.group_overview_fragment_container, GroupMyTasksFragment.newInstance(groupName))
+								.disallowAddToBackStack()
+								.commit();
 							break;
 					}
 					return false;
@@ -91,14 +87,14 @@ public class GroupOverviewActivity extends AppCompatActivity implements MyTasksI
 	}
 
 	@Override
-	protected void onSaveInstanceState(Bundle outState) {
+	protected void onSaveInstanceState(final Bundle outState) {
 		Log.e(TAG, "Saving instance state " + groupName);
 		outState.putString("groupname", groupName);
 		super.onSaveInstanceState(outState);
 	}
 
 	@Override
-	protected void onRestoreInstanceState(Bundle savedInstanceState) {
+	protected void onRestoreInstanceState(final Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
 
 		groupName = savedInstanceState.getString("groupname");

@@ -97,7 +97,7 @@ INSERT INTO assigned_task (id, assignee, definition, due_date, status) VALUES
 	(44, 6, 24, '10-12-2017', 'TODO'),
 	(45, 7, 25, '11-12-2017', 'TODO'),
 
-	-- DEVTE
+	-- DEVTEAM
 	(46, 9, 26, '01-02-2017', 'OVERDUE'),
 	(47, 8, 27, '01-03-2017', 'OVERDUE'),
 	(48, 8, 28, '11-12-2017', 'DONE'),
@@ -106,7 +106,12 @@ INSERT INTO assigned_task (id, assignee, definition, due_date, status) VALUES
 	(51, 9, 31, '05-01-2018', 'TODO'),
 	(52, 9, 32, '06-02-2018', 'TODO'),
 	(53, 9, 33, '20-02-2018', 'TODO'),
-	(54, 9, 34, '23-02-2018', 'TODO');
+	(54, 9, 34, '23-02-2018', 'TODO'),
+	(55, 9, 30, '24-02-2018', 'TODO'),
+	(56, 9, 31, '26-02-2018', 'TODO'),
+	(57, 9, 32, '15-03-2018', 'TODO'),
+	(58, 9, 33, '17-03-2018', 'TODO'),
+	(59, 9, 34, '30-03-2018', 'TODO');
 
 
 ALTER SEQUENCE hibernate_sequence RESTART WITH 1111;

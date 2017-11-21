@@ -39,13 +39,7 @@ public class GroupMembersActivity extends AppCompatActivity {
 	@Inject
 	GroupService groupService;
 
-	private String groupname;
-
 	private GroupUserAdapter adapter;
-
-	public GroupMembersActivity() {
-		// Required empty public constructor
-	}
 
 	@Override
 	public void onCreate(final Bundle savedInstanceState) {
@@ -53,7 +47,7 @@ public class GroupMembersActivity extends AppCompatActivity {
 
 		((ProprApplication) getApplication()).getComponent().inject(this);
 
-		groupname = getIntent().getStringExtra(ARG_PARAM1);
+		final String groupname = getIntent().getStringExtra(ARG_PARAM1);
 
 		setContentView(R.layout.activity_group_members);
 
@@ -82,11 +76,15 @@ public class GroupMembersActivity extends AppCompatActivity {
 		});
 	}
 
+	/**
+	 * The default implementation of the back button ALWAYS creates a new activity. In this case, we
+	 * want to return to the existing group overview activity, so we override this default functionality.
+	 */
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		int id = item.getItemId();
+	public boolean onOptionsItemSelected(final MenuItem item) {
+		final int id = item.getItemId();
 		if (id == android.R.id.home) {
-			Intent intent = NavUtils.getParentActivityIntent(this);
+			final Intent intent = NavUtils.getParentActivityIntent(this);
 			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
 				| Intent.FLAG_ACTIVITY_SINGLE_TOP);
 			NavUtils.navigateUpTo(this, intent);

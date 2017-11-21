@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools"
 	android:id="@+id/main_content"
@@ -8,38 +8,45 @@
 	tools:context="giphouse.nl.proprapp.ui.group.overview.GroupOverviewActivity">
 
 	<android.support.design.widget.AppBarLayout
-		android:layout_width="match_parent"
+		android:id="@+id/appBarLayout"
+		android:layout_width="0dp"
 		android:layout_height="wrap_content"
 		android:theme="@style/ProprTheme.AppBarOverlay"
-		android:id="@+id/appBarLayout">
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toTopOf="parent">
 
 		<android.support.v7.widget.Toolbar
 			android:id="@+id/toolbar"
-			android:layout_width="match_parent"
-			android:layout_height="?attr/actionBarSize"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
 			android:background="?attr/colorPrimary"
 			app:popupTheme="@style/ProprTheme.PopupOverlay" />
 
 	</android.support.design.widget.AppBarLayout>
 
-	<TextView
-		android:id="@+id/testcontent"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_alignParentStart="true"
-		android:layout_below="@+id/appBarLayout" />
-
+	<FrameLayout
+		android:id="@+id/group_overview_fragment_container"
+		android:layout_width="0dp"
+		android:layout_height="0dp"
+		app:layout_constraintBottom_toTopOf="@+id/bottom_navigation"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toBottomOf="@+id/appBarLayout" />
 
 	<android.support.design.widget.BottomNavigationView
 		android:id="@+id/bottom_navigation"
-		android:layout_width="match_parent"
+		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
+		android:background="@color/colorPrimary"
 		app:itemBackground="@color/colorPrimary"
 		app:itemIconTint="@drawable/nav_item_color_state"
 		app:itemTextColor="@drawable/nav_item_color_state"
-		android:layout_alignParentBottom="true"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toStartOf="@+id/group_overview_fragment_container"
 		app:menu="@menu/bottom_navigation_group_overview">
 
 	</android.support.design.widget.BottomNavigationView>
 
-</RelativeLayout>
+</android.support.constraint.ConstraintLayout>
