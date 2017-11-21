@@ -1,5 +1,6 @@
 BEGIN TRANSACTION;
 
+-- Alle gebruikers hebben het wachtwoord 'testtest12'
 INSERT INTO users (user_id, username, email, password, enabled, firstname, lastname) VALUES
 	(1, 'peter.vdbroek', 'peter@example.com', '$2a$10$WXhYLzz3/Fp3hBkk.vvVd.bhDcusdWLr4AZGSs.au8pwoYwAAOCbe', TRUE,
 	 'Peter',
