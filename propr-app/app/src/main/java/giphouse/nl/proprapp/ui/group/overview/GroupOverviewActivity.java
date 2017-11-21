@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -34,11 +35,6 @@ public class GroupOverviewActivity extends AppCompatActivity implements MyTasksI
 		} else if (getIntent() != null && getIntent().getExtras() != null) {
 			groupName = getIntent().getExtras().getString("groupname");
 		}
-	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();
 
 		setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
 		final ActionBar bar = getSupportActionBar();
@@ -53,6 +49,8 @@ public class GroupOverviewActivity extends AppCompatActivity implements MyTasksI
 			.commit();
 
 		final BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+		bottomNavigationView.getMenu().getItem(0).setChecked(true);
+
 		bottomNavigationView.setOnNavigationItemSelectedListener(
 			new BottomNavigationView.OnNavigationItemSelectedListener() {
 				@Override
@@ -109,6 +107,12 @@ public class GroupOverviewActivity extends AppCompatActivity implements MyTasksI
 
 			intent.putExtra(GroupMembersActivity.ARG_PARAM1, groupName);
 			startActivity(intent);
+		} else if (item.getItemId() == android.R.id.home) {
+			final Intent intent = NavUtils.getParentActivityIntent(this);
+			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
+				| Intent.FLAG_ACTIVITY_SINGLE_TOP);
+			NavUtils.navigateUpTo(this, intent);
+			return true;
 		}
 
 		return super.onOptionsItemSelected(item);

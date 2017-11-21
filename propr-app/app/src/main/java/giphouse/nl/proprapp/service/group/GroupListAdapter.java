@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.apache.commons.lang3.StringUtils;
@@ -63,6 +64,9 @@ public class GroupListAdapter extends BaseAdapter {
 
 		final TextView titleText = itemView.findViewById(R.id.listTitle);
 		final TextView descriptionText = itemView.findViewById(R.id.listDescription);
+		final ImageView groupAvatarView = itemView.findViewById(R.id.group_avatar_image);
+
+		groupAvatarView.setImageResource(R.drawable.placeholder_group);
 
 		final GroupDto dto = groupListItemDtos.get(position);
 

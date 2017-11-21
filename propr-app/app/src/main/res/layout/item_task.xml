@@ -7,8 +7,8 @@
 
 	<ImageView
 		android:id="@+id/task_status_image"
-		android:layout_width="36dp"
-		android:layout_height="36dp"
+		android:layout_width="24dp"
+		android:layout_height="24dp"
 		android:layout_marginBottom="8dp"
 		android:layout_marginStart="4dp"
 		android:layout_marginTop="8dp"
@@ -19,12 +19,13 @@
 		app:srcCompat="@drawable/ic_task_todo" />
 
 	<LinearLayout
+		android:id="@+id/linearLayout"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:layout_marginStart="48dp"
+		android:layout_marginStart="8dp"
 		android:orientation="vertical"
 		app:layout_constraintBottom_toBottomOf="parent"
-		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintStart_toEndOf="@+id/task_status_image"
 		app:layout_constraintTop_toTopOf="parent"
 		app:layout_constraintVertical_bias="0.571">
 

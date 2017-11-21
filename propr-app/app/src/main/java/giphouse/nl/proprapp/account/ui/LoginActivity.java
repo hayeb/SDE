@@ -85,7 +85,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 		}
 		// Fill the username field if one is provided
 		if (extras != null && extras.containsKey(USERNAME_KEY)) {
-			mLoginReasonTextView.setText(extras.getString(USERNAME_KEY));
+			mUsernameTextView.setText(extras.getString(USERNAME_KEY));
 		}
 
 		final Button mSignInButton = findViewById(R.id.sign_in_button);
