@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
@@ -89,7 +90,7 @@ public class TaskController
 
 		log.debug("Handling /api/task/group/done");
 
-		return getTasksByStatus(group, Arrays.asList(TaskStatus.DONE, TaskStatus.OVERDUE));
+		return ResponseEntity.ok(getTasksByStatus(group, Arrays.asList(TaskStatus.DONE, TaskStatus.OVERDUE), null));
 	}
 
 	@RequestMapping(method = RequestMethod.GET, value = "/group/todo")
@@ -106,7 +107,7 @@ public class TaskController
 
 		log.debug("Handling /api/task/group/todo");
 
-		return getTasksByStatus(group, Collections.singletonList(TaskStatus.TODO));
+		return ResponseEntity.ok(getTasksByStatus(group, Collections.singletonList(TaskStatus.TODO), user));
 	}
 
 	@RequestMapping(method = RequestMethod.GET, value = "/group/schedule")
@@ -131,15 +132,18 @@ public class TaskController
 		return ResponseEntity.ok(definitions);
 	}
 
-	private ResponseEntity<List<TaskDto>> getTasksByStatus(final Group group, final List<TaskStatus> statuses)
+	private List<TaskDto> getTasksByStatus(final Group group, final List<TaskStatus> statuses, final User excludedAssignee)
 	{
-		final List<TaskDto> doneTasks = taskRepository.findAllByDefinitionGroupAndStatusIn(group, statuses)
-			.stream()
-			.sorted(Comparator.comparing(AssignedTask::getDueDate))
+		Stream<AssignedTask> taskStream = taskRepository.findAllByDefinitionGroupAndStatusIn(group, statuses).stream();
+
+		if (excludedAssignee != null)
+		{
+			taskStream = taskStream.filter(assignedTask -> !assignedTask.getAssignee().equals(excludedAssignee));
+		}
+
+		return taskStream.sorted(Comparator.comparing(AssignedTask::getDueDate))
 			.map(taskFactory::fromEntity)
 			.collect(Collectors.toList());
-
-		return ResponseEntity.ok(doneTasks);
 	}
 
 	private ResponseEntity<?> checkAuthorized(final User user, final Group group)

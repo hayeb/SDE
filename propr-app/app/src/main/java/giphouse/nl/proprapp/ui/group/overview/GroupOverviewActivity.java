@@ -147,7 +147,7 @@ public class GroupOverviewActivity extends AppCompatActivity implements MyTasksI
 			startActivity(intent);
 		}
 
-		return true;
+		return super.onOptionsItemSelected(item);
 	}
 
 	@Override

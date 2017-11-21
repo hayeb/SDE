@@ -1,11 +1,11 @@
 package nl.giphouse.propr.repository;
 
+import java.util.List;
+
 import nl.giphouse.propr.model.group.Group;
 import nl.giphouse.propr.model.task.TaskDefinition;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-
-import java.util.List;
 
 /**
  * @author haye.
