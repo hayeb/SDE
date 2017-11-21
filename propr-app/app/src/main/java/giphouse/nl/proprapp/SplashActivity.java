@@ -22,7 +22,6 @@ import giphouse.nl.proprapp.account.AccountUtils;
 import giphouse.nl.proprapp.account.AuthenticatorService;
 import giphouse.nl.proprapp.account.ui.LoginActivity;
 import giphouse.nl.proprapp.ui.group.GroupListActivity;
-import lombok.AllArgsConstructor;
 
 public class SplashActivity extends AppCompatActivity {
 
@@ -90,7 +89,7 @@ public class SplashActivity extends AppCompatActivity {
 
 		private final String username;
 
-		public TokenValidTask(final AuthenticatorService authenticatorService, final WeakReference<SplashActivity> contextReference, final String username) {
+		TokenValidTask(final AuthenticatorService authenticatorService, final WeakReference<SplashActivity> contextReference, final String username) {
 			this.authenticatorService = authenticatorService;
 			this.contextReference = contextReference;
 			this.username = username;
@@ -107,18 +106,21 @@ public class SplashActivity extends AppCompatActivity {
 
 		@Override
 		protected void onPostExecute(final Boolean tokenValid) {
-			if (tokenValid) {
-				contextReference.get().startActivity(new Intent(contextReference.get(), GroupListActivity.class));
-			} else {
-				final Context context = contextReference.get();
-				if (context != null) {
-					final Intent intent = new Intent(context, LoginActivity.class);
-					intent.putExtra(LoginActivity.LOGIN_REASON_KEY, context.getString(R.string.expired_login_reason));
-					intent.putExtra(LoginActivity.USERNAME_KEY, username);
-					contextReference.get().startActivityForResult(intent, LoginActivity.CODE_LOGGED_IN);
-				}
-
+			final Context context = contextReference.get();
+			if (context == null)
+			{
+				Log.e(TAG, "No context attached to TokenValidTask");
+				return;
 			}
+			if (tokenValid) {
+				context.startActivity(new Intent(context, GroupListActivity.class));
+				return;
+			}
+			final Intent intent = new Intent(context, LoginActivity.class);
+			intent.putExtra(LoginActivity.LOGIN_REASON_KEY, context.getString(R.string.expired_login_reason));
+			intent.putExtra(LoginActivity.USERNAME_KEY, username);
+			contextReference.get().startActivityForResult(intent, LoginActivity.CODE_LOGGED_IN);
+
 		}
 	}
 

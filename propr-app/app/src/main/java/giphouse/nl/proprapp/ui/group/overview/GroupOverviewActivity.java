@@ -11,6 +11,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import giphouse.nl.proprapp.R;
 import giphouse.nl.proprapp.ui.group.GroupMembersActivity;
@@ -26,6 +27,7 @@ public class GroupOverviewActivity extends AppCompatActivity implements MyTasksI
 	@Override
 	protected void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
 		setContentView(R.layout.activity_group_overview);
 
 		if (savedInstanceState != null) {
@@ -33,6 +35,8 @@ public class GroupOverviewActivity extends AppCompatActivity implements MyTasksI
 		} else if (getIntent() != null && getIntent().getExtras() != null) {
 			groupName = getIntent().getExtras().getString("groupname");
 		}
+
+		Log.e(TAG, "onCreate " + groupName);
 	}
 
 	@Override
@@ -46,10 +50,13 @@ public class GroupOverviewActivity extends AppCompatActivity implements MyTasksI
 			bar.setTitle(groupName);
 		}
 
-		getSupportFragmentManager().beginTransaction()
-			.add(R.id.group_overview_fragment, GroupMyTasksFragment.newInstance(groupName), null)
-			.disallowAddToBackStack()
-			.commit();
+//		getSupportFragmentManager().beginTransaction()
+//			.add(R.id.group_overview_fragment, MyTasksFragment.newInstance(groupName), null)
+//			.disallowAddToBackStack()
+//			.commit();
+
+		TextView test = findViewById(R.id.testcontent);
+		test.setText(groupName);
 
 		final BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
 		bottomNavigationView.setOnNavigationItemSelectedListener(
@@ -59,34 +66,74 @@ public class GroupOverviewActivity extends AppCompatActivity implements MyTasksI
 					item.setChecked(true);
 					switch (item.getItemId()) {
 						case R.id.item_activity:
-							getSupportFragmentManager().beginTransaction()
-								.replace(R.id.group_overview_fragment, GroupActivityFragment.newInstance(groupName))
-								.disallowAddToBackStack()
-								.commit();
+//							getSupportFragmentManager().beginTransaction()
+//								.replace(R.id.group_overview_fragment, GroupActivityFragment.newInstance(groupName))
+//								.disallowAddToBackStack()
+//								.commit();
 							break;
 						case R.id.item_schedule:
-							getSupportFragmentManager().beginTransaction()
-								.replace(R.id.group_overview_fragment, GroupScheduleFragment.newInstance(groupName))
-								.disallowAddToBackStack()
-								.commit();
+//							getSupportFragmentManager().beginTransaction()
+//								.replace(R.id.group_overview_fragment, GroupScheduleFragment.newInstance(groupName))
+//								.disallowAddToBackStack()
+//								.commit();
 							break;
 						case R.id.item_tasks:
-							getSupportFragmentManager().beginTransaction()
-								.replace(R.id.group_overview_fragment, GroupMyTasksFragment.newInstance(groupName))
-								.disallowAddToBackStack()
-								.commit();
+//							getSupportFragmentManager().beginTransaction()
+//								.replace(R.id.group_overview_fragment, GroupMyTasksFragment.newInstance(groupName))
+//								.disallowAddToBackStack()
+//								.commit();
 							break;
 					}
 					return false;
 				}
 			});
+		Log.e(TAG, "onResume " + groupName);
 	}
 
 	@Override
-	protected void onSaveInstanceState(final Bundle outState) {
+	protected void onSaveInstanceState(Bundle outState) {
+		Log.e(TAG, "Saving instance state " + groupName);
 		outState.putString("groupname", groupName);
-
 		super.onSaveInstanceState(outState);
+	}
+
+	@Override
+	protected void onRestoreInstanceState(Bundle savedInstanceState) {
+		super.onRestoreInstanceState(savedInstanceState);
+
+		groupName = savedInstanceState.getString("groupname");
+		Log.e(TAG, "Restoring instance state " + groupName);
+	}
+
+	@Override
+	protected void onStart() {
+		super.onStart();
+		Log.e(TAG, "onStart " + groupName);
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		Log.e(TAG, "onPause " + groupName);
+
+	}
+
+	@Override
+	protected void onRestart() {
+		super.onRestart();
+		Log.e(TAG, "onRestart " + groupName);
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		Log.e(TAG, "onDestroy " + groupName);
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+		Log.e(TAG, "onStop " + groupName);
 	}
 
 	@Override
@@ -109,7 +156,7 @@ public class GroupOverviewActivity extends AppCompatActivity implements MyTasksI
 
 	@Override
 	public void onMyTasksInteraction(final Uri uri) {
-		Log.d(TAG, "My Tasks interaction");
+		Log.e(TAG, "My Tasks interaction");
 	}
 
 	@Override

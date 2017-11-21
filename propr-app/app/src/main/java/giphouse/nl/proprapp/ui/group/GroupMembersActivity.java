@@ -1,12 +1,15 @@
 package giphouse.nl.proprapp.ui.group;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -77,6 +80,19 @@ public class GroupMembersActivity extends AppCompatActivity {
 
 			}
 		});
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		int id = item.getItemId();
+		if (id == android.R.id.home) {
+			Intent intent = NavUtils.getParentActivityIntent(this);
+			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
+				| Intent.FLAG_ACTIVITY_SINGLE_TOP);
+			NavUtils.navigateUpTo(this, intent);
+			return true;
+		}
+		return true;
 	}
 
 	private class GroupUserAdapter extends BaseAdapter {
