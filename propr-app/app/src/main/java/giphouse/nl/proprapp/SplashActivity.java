@@ -6,7 +6,6 @@ import android.accounts.AccountManagerCallback;
 import android.accounts.AccountManagerFuture;
 import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
-import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -42,7 +41,7 @@ public class SplashActivity extends AppCompatActivity {
 
 		if (accounts.length == 0) {
 			Log.d(TAG, "No account found on device. Starting LoginActivity");
-			startActivityForResult(new Intent(this, LoginActivity.class), 11);
+			startActivityForResult(new Intent(this, LoginActivity.class), LoginActivity.CODE_LOGGED_IN);
 		} else {
 			Log.d(TAG, "Account found on device. Getting additional information");
 			final Account account = accounts[0];
@@ -77,9 +76,18 @@ public class SplashActivity extends AppCompatActivity {
 
 	@Override
 	protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-		if (requestCode == 11) {
-			startActivity(new Intent(this, GroupListActivity.class));
+		if (requestCode == LoginActivity.CODE_LOGGED_IN && resultCode == LoginActivity.CODE_LOGGED_IN) {
+			startGroupListActivity();
 		}
+	}
+
+	private void startGroupListActivity()
+	{
+		Intent i = new Intent(this, GroupListActivity.class);
+		i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
+			| Intent.FLAG_ACTIVITY_NEW_TASK
+			| Intent.FLAG_ACTIVITY_CLEAR_TASK);
+		startActivity(i);
 	}
 
 	private static class TokenValidTask extends AsyncTask<String, Void, Boolean> {
@@ -106,28 +114,21 @@ public class SplashActivity extends AppCompatActivity {
 
 		@Override
 		protected void onPostExecute(final Boolean tokenValid) {
-			final Context context = contextReference.get();
-			if (context == null)
+			final SplashActivity splashActivity = contextReference.get();
+			if (splashActivity == null)
 			{
-				Log.e(TAG, "No context attached to TokenValidTask");
+				Log.e(TAG, "No SplashActivity attached to TokenValidTask");
 				return;
 			}
 			if (tokenValid) {
-				context.startActivity(new Intent(context, GroupListActivity.class));
+				splashActivity.startGroupListActivity();
 				return;
 			}
-			final Intent intent = new Intent(context, LoginActivity.class);
-			intent.putExtra(LoginActivity.LOGIN_REASON_KEY, context.getString(R.string.expired_login_reason));
+			final Intent intent = new Intent(splashActivity, LoginActivity.class);
+			intent.putExtra(LoginActivity.LOGIN_REASON_KEY, splashActivity.getString(R.string.expired_login_reason));
 			intent.putExtra(LoginActivity.USERNAME_KEY, username);
 			contextReference.get().startActivityForResult(intent, LoginActivity.CODE_LOGGED_IN);
 
-		}
-	}
-
-	@Override
-	public void onActivityReenter(final int resultCode, final Intent data) {
-		if (resultCode ==  LoginActivity.CODE_LOGGED_IN) {
-			startActivity(new Intent(this, GroupListActivity.class));
 		}
 	}
 }

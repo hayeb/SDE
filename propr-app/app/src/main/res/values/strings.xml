@@ -31,7 +31,7 @@
 	<string name="join_toolbar">Join a group</string>
 
 	<!-- IP-adres van de host-machine, voor emulators -->
-	<string name="backend_url">http://192.168.0.128:8000/propr/</string>
+	<string name="backend_url">http://artificiallunacy.com:7080/propr/</string>
 	<string name="account_type">nl.giphouse.propr</string>
 	<string name="loading_placeholder">Loading…</string>
 	<string name="connection_failed">Connection failed</string>
@@ -69,7 +69,6 @@
 	<string name="tab_text_1">My tasks</string>
 	<string name="tab_text_2">Groupmembers</string>
 	<string name="tab_text_3">Schedule</string>
-	<string name="section_format">Hello World from section: %1$d</string>
 	<string name="name_format">%1$s %2$s</string>
 	<string name="action_groep_wijzigen">Edit</string>
 	<string name="action_groep_verlaten">Leave</string>
