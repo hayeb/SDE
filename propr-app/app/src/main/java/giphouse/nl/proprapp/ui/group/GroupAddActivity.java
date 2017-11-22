@@ -11,6 +11,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.ImageButton;
 
 import java.io.ByteArrayOutputStream;
@@ -56,6 +58,24 @@ public class GroupAddActivity extends AppCompatActivity {
 		groupNameEdit = findViewById(R.id.editGroupname);
 		groupCodeEdit = findViewById(R.id.editGroupcode);
 		groupImageButton = findViewById(R.id.groupImageButton);
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(final Menu menu) {
+		getMenuInflater().inflate(R.menu.menu_group_add, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(final MenuItem item) {
+		final int i = item.getItemId();
+		switch(i) {
+			case R.id.submit_add_group:
+				submit();
+				return true;
+			default:
+				return super.onOptionsItemSelected(item);
+		}
 	}
 
 	private void submit() {

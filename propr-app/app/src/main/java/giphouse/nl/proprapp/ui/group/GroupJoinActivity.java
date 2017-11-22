@@ -83,12 +83,6 @@ public class GroupJoinActivity extends AppCompatActivity {
 			@Override
 			public void onResponse(@NonNull final Call<GroupDto> call, @NonNull final Response<GroupDto> response) {
 				if (!response.isSuccessful()) {
-					final int responseCode = response.code();
-					/*if (responseCode == 422) {
-						groupNameEdit.setError(getString(R.string.error_groupname_exists));
-					} else {
-						Log.e(TAG, String.format(getString(R.string.error_unknown_request_error), responseCode, response.message()));
-					}*/
 				} else {
 					Log.i(TAG, "Succesfully created a group");
 					final Intent intent = new Intent(GroupJoinActivity.this, GroupOverviewActivity.class);
