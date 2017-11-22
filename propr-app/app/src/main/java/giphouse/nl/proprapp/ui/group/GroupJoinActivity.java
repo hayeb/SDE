@@ -25,7 +25,7 @@ import giphouse.nl.proprapp.R;
 import giphouse.nl.proprapp.service.group.GroupService;
 import giphouse.nl.proprapp.service.group.search.GroupSearchAdapter;
 import giphouse.nl.proprapp.service.group.search.GroupSearchResult;
-import giphouse.nl.proprapp.ui.group.overview.GroupTabbedActivity;
+import giphouse.nl.proprapp.ui.group.overview.GroupOverviewActivity;
 import nl.giphouse.propr.dto.group.GroupAddDto;
 import nl.giphouse.propr.dto.group.GroupDto;
 import nl.giphouse.propr.dto.group.GroupJoinDto;
@@ -91,7 +91,7 @@ public class GroupJoinActivity extends AppCompatActivity {
 					}*/
 				} else {
 					Log.i(TAG, "Succesfully created a group");
-					final Intent intent = new Intent(GroupJoinActivity.this, GroupTabbedActivity.class);
+					final Intent intent = new Intent(GroupJoinActivity.this, GroupOverviewActivity.class);
 					final GroupDto dto = response.body();
 					if (dto != null)
 					{
