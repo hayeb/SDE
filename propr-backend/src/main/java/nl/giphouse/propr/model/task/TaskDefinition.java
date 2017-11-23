@@ -12,6 +12,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -24,10 +26,11 @@ import javax.persistence.ManyToOne;
 @NoArgsConstructor
 @Getter
 @Setter
-@Entity
+@Entity(name = "task_definition")
 public class TaskDefinition {
 
 	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
 	@Column
@@ -37,7 +40,7 @@ public class TaskDefinition {
 	private String description;
 
 	@ManyToOne
-	@JoinColumn(name = "group")
+	@JoinColumn(name = "groep")
 	private Group group;
 
 	@Enumerated(EnumType.STRING)

@@ -6,5 +6,5 @@ package nl.giphouse.propr.dto.task;
 public enum TaskStatus {
 	TODO,
 	DONE,
-	OVERDUE;
+	OVERDUE
 }

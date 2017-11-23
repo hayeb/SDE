@@ -7,4 +7,9 @@ public enum TaskWeight {
 	LIGHT,
 	MEDIUM,
 	HEAVY;
+
+	public int getValue()
+	{
+		return ordinal() + 1;
+	}
 }
