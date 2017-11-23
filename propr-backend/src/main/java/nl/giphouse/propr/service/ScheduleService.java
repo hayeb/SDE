@@ -9,5 +9,5 @@ import java.time.LocalDate;
  */
 public interface ScheduleService {
 
-	void reschedule(final Group group, final LocalDate date, final int days);
+	void reschedule(Group group, LocalDate date, LocalDate endDate);
 }

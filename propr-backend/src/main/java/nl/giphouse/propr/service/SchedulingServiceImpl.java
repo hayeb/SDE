@@ -4,15 +4,16 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.time.temporal.TemporalAmount;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import javax.inject.Inject;
 
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 import nl.giphouse.propr.dto.task.TaskRepetitionType;
@@ -46,73 +47,116 @@ public class SchedulingServiceImpl implements ScheduleService
 	}
 
 	/**
-	 * Reschedules all task definitions in a group for a given period. It is assumed that the day from which to reschedule is the current day.
-	 * 
+	 * @formatter:off
+	 * Reschedules all task definitions in a group for a given period. Tries to take into account:
+	 * - The tasks which may have already been completed after the startdate of the new schedule. Users who have already
+	 *  completed tasks in this period will get less tasks until the distribution is balanced.
+	 * - The weight of tasks
+	 * - Users who have since been removed from the group
+	 * -
+	 * @formatter:on
 	 * @param group
 	 *            The group for which to reschedule tasks
-	 * @param date
-	 *            The amount of time in days to reschedule the tasks for.
-	 * @param days
-	 *            The amount of days to reschedule for
+	 * @param startDate
+	 *            The startdate of the new schedule
+	 * @param endDate
+	 *            The enddate of the new schedule
 	 */
-	public void reschedule(final Group group, final LocalDate date, final int days)
+	public void reschedule(@NonNull final Group group, @NonNull final LocalDate startDate, @NonNull final LocalDate endDate)
 	{
-		// 1. For each user, count the number of tasks already done which have a due date >= current date.
-		final Map<User, Integer> doneTasksInSchedule = taskRepository
-			.findAllByDefinitionGroupAndDueDateGreaterThanEqualAndStatusIs(group, date, TaskStatus.DONE).stream()
+		// 1. Determine which tasks may have already been completed, they do not have to be planned again.
+		final List<AssignedTask> doneTasksInNewSchedule = taskRepository
+			.findAllByDefinitionGroupAndDueDateGreaterThanEqualAndStatusIs(group, startDate, TaskStatus.DONE);
+
+		// 2. For each user, count the number of tasks already done which have a due date >= current date.
+		final Map<User, Integer> userToDoneTasks = doneTasksInNewSchedule.stream()
 			.collect(Collectors.groupingBy(AssignedTask::getAssignee,
 				Collectors.summingInt(t -> t.getDefinition().getWeight().getValue())));
 
-		// 2. Remove users from the map who have been removed from the group.
-		doneTasksInSchedule.keySet().removeIf(user -> !group.getUsers().contains(user));
+		// 3. Remove users from the map who have been removed from the group.
+		userToDoneTasks.keySet().removeIf(user -> !group.getUsers().contains(user));
 
-		// 2. Create a priority queue over users to record their number of tasks in the new schedule
+		// 4. Create a priority queue of users to record their total number of task "weight" in the new schedule
 		final PriorityQueue<Pair<User, Integer>> userQueue = new PriorityQueue<>(Comparator.comparing(Pair::getRight));
-		doneTasksInSchedule.entrySet().stream()
+		userToDoneTasks.entrySet().stream()
 			.map(entry -> Pair.of(entry.getKey(), entry.getValue()))
 			.forEach(userQueue::add);
 
-		// 3. Add all users
+		// 5. Add all users
 		group.getUsers().stream()
-			.filter(user -> !doneTasksInSchedule.containsKey(user))
+			.filter(user -> !userToDoneTasks.containsKey(user))
 			.forEach(user -> userQueue.add(Pair.of(user, 0)));
 
-		// 4. Remove all assigned tasks in the schedule
-		taskRepository.delete(taskRepository.findAllByDefinitionGroupAndDueDateGreaterThanEqualAndStatusIs(group, date, TaskStatus.TODO));
+		// 6. Remove all assigned tasks in the schedule
+		taskRepository.delete(taskRepository.findAllByDefinitionGroupAndDueDateGreaterThanEqualAndStatusIs(group, startDate, TaskStatus.TODO));
 
-		// 4. For each task definition, we collect the last date on which it was completed.
-		final Map<TaskDefinition, LocalDate> lastCompleted = taskRepository
-			.findAllByDefinitionGroupAndStatusIn(group, Collections.singletonList(TaskStatus.DONE)).stream()
-			.collect(Collectors.groupingBy(AssignedTask::getDefinition,
-				Collectors.mapping(AssignedTask::getDueDate, Collectors.collectingAndThen(Collectors.toList(), Collections::max))));
+		// 8. Calculate the list of tasks needed to be done in ascending order of date.
+		final List<AssignedTask> tasks = getTaskStack(taskDefinitionRepository.findAllByGroup(group), startDate, endDate);
 
-		// 5. Given all the task definitions, calculate the list of tasks needed to be done in ascending order of date.
-		final List<AssignedTask> tasks = getTaskStack(taskDefinitionRepository.findAllByGroup(group), lastCompleted, date, date.plusDays(days));
+		// 9. It could be that some of these tasks have already been finished.. So remove them.
+		removeDoneTasks(tasks, doneTasksInNewSchedule);
 
-		// 6. Assign each task to a user. We update the total task weight for each user, so that we can distribute the tasks evenly.
+		// 10. Assign each task to a user. We update the total task weight for each user, so that we can distribute the tasks evenly.
 		for (final AssignedTask task : tasks)
 		{
+			// Pairs are immutable, so we just pop the off the queue and place them back.
 			final Pair<User, Integer> userTasks = userQueue.poll();
 
 			task.setAssignee(userTasks.getLeft());
 			userQueue.add(Pair.of(userTasks.getLeft(), userTasks.getRight() + task.getDefinition().getWeight().getValue()));
 		}
 
-		// 6. Save all task definitions.
+		// 11. Save all task definitions.
 		taskRepository.save(tasks);
 	}
 
-	public List<AssignedTask> getTaskStack(final List<TaskDefinition> definitions, final Map<TaskDefinition, LocalDate> lastCompleted,
-		final LocalDate startDate, final LocalDate endDate)
+	/**
+	 * For every task in {@code doneTasksInNewSchedule}, remove the first tasks is tasks.
+	 * 
+	 * @param tasks
+	 *            The list from which tasks are removed
+	 * @param doneTasksInNewSchedule
+	 *            The list with completed tasks
+	 */
+	private void removeDoneTasks(final @NonNull List<AssignedTask> tasks, @NonNull final List<AssignedTask> doneTasksInNewSchedule)
+	{
+		doneTasksInNewSchedule.sort(Comparator.comparing(AssignedTask::getDueDate));
+
+		// Here, for every task which is already completed, we remove the first task which has the same definition.
+		for (final AssignedTask task : doneTasksInNewSchedule)
+		{
+			IntStream.range(0, tasks.size())
+				.filter(i -> tasks.get(i).getDefinition().equals(task.getDefinition()))
+				.findFirst()
+				.ifPresent(tasks::remove);
+		}
+	}
+
+	/**
+	 * Builds a "task stack" from a list of task definitions. The tasks will have due dates between {@code startDate} and {@code endDate}. The
+	 * strategy for doing this is roughly the following:
+	 *
+	 * <ol>
+	 * <li>For every definition, split the total period into blocks according to the period type (day, week, month, ...).</li>
+	 * <li>For every block generated this way, start from the end and add {code freq} tasks according to the frequency in the definition. Starts from
+	 * the back of the blocks, because we do not want to generate a due date on {@code startDate} if we can help it.</li>
+	 * <li>At the end, sort the tasks according to their {@code dueDate}</li>
+	 * </ol>
+	 *
+	 * @param definitions
+	 *  The list of definitions for which tasks need to be generated
+	 * @return
+	 * A sorted list of tasks
+	 */
+	public List<AssignedTask> getTaskStack(final @NonNull List<TaskDefinition> definitions,
+		final @NonNull LocalDate startDate, final @NonNull LocalDate endDate)
 	{
 		final List<AssignedTask> tasks = new ArrayList<>();
 		for (final TaskDefinition def : definitions)
 		{
-			// Calculate the length of the period according to the last time the task was completed, of the start date of scheduling.
-			final LocalDate lastCompletedDate = lastCompleted.getOrDefault(def, startDate);
-			final List<LocalDate> blockStartDates = getPeriodBlocks(lastCompletedDate, endDate, def.getPeriodType());
+			final List<LocalDate> blockEndDates = getPeriodBlocks(startDate, endDate, def.getPeriodType());
 
-			for (final LocalDate date : blockStartDates)
+			for (final LocalDate date : blockEndDates)
 			{
 				final int taskDays = (int) Math.floor(repetitionTypeToDuration(def.getPeriodType()).getDays() / def.getFrequency());
 				for (int i = 0; i < def.getFrequency(); i++)
@@ -120,7 +164,7 @@ public class SchedulingServiceImpl implements ScheduleService
 					final AssignedTask task = new AssignedTask();
 					task.setDefinition(def);
 					task.setStatus(TaskStatus.TODO);
-					task.setDueDate(date.plusDays(i * taskDays));
+					task.setDueDate(date.minusDays(i * taskDays));
 
 					tasks.add(task);
 				}
@@ -130,15 +174,16 @@ public class SchedulingServiceImpl implements ScheduleService
 		return tasks;
 	}
 
-	public List<LocalDate> getPeriodBlocks(final LocalDate startDate, final LocalDate endDate, final TaskRepetitionType type)
+	public List<LocalDate> getPeriodBlocks(final @NonNull LocalDate startDate, final @NonNull LocalDate endDate,
+		final @NonNull TaskRepetitionType type)
 	{
 		final TemporalAmount periodTypeDuration = repetitionTypeToDuration(type);
-		final List<LocalDate> periodStartDates = new ArrayList<>();
+		final List<LocalDate> periodEndDates = new ArrayList<>();
 
-		LocalDate currentDate = startDate;
-		while (!currentDate.plus(periodTypeDuration).isAfter(endDate))
+		LocalDate currentDate = startDate.plus(periodTypeDuration);
+		while (!currentDate.isAfter(endDate))
 		{
-			periodStartDates.add(currentDate);
+			periodEndDates.add(currentDate);
 			switch (type)
 			{
 			case DAY:
@@ -156,7 +201,7 @@ public class SchedulingServiceImpl implements ScheduleService
 			}
 		}
 
-		return periodStartDates;
+		return periodEndDates;
 	}
 
 	private Period repetitionTypeToDuration(final TaskRepetitionType type)
@@ -175,5 +220,4 @@ public class SchedulingServiceImpl implements ScheduleService
 			throw new IllegalArgumentException("Unkown TaskRepetitionType " + type);
 		}
 	}
-
 }

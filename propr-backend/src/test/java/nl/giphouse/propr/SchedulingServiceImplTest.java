@@ -2,9 +2,12 @@ package nl.giphouse.propr;
 
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
+
+import lombok.extern.slf4j.Slf4j;
 
 import nl.giphouse.propr.dto.task.TaskRepetitionType;
 import nl.giphouse.propr.dto.task.TaskStatus;
@@ -17,6 +20,7 @@ import nl.giphouse.propr.repository.TaskDefinitionRepository;
 import nl.giphouse.propr.repository.TaskRepository;
 import nl.giphouse.propr.service.SchedulingServiceImpl;
 
+import org.apache.commons.lang3.time.StopWatch;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,10 +31,12 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author haye.
  */
+@Slf4j
 @RunWith(SpringRunner.class)
 @ComponentScan({ "nl.giphouse.propr" })
 @DataJpaTest
@@ -49,108 +55,10 @@ public class SchedulingServiceImplTest
 
 	private SchedulingServiceImpl schedulingService;
 
-	private User user1;
-
-	private User user2;
-
-	private User user3;
-
-	private User user4;
-
-	private Group group;
-
 	@Before
 	public void setup()
 	{
 		schedulingService = new SchedulingServiceImpl(taskRepository, taskDefinitionRepository);
-
-		user1 = new User();
-		user1.setEmail("test@test.nl");
-		user1.setFirstname("test");
-		user1.setLastname("van der testen");
-		user1.setPassword("testtesttest");
-		user1.setUsername("user1");
-
-		user2 = new User();
-		user2.setEmail("test@test.nl");
-		user2.setFirstname("test");
-		user2.setLastname("van der testen");
-		user2.setPassword("testtesttest");
-		user2.setUsername("user2");
-
-		user3 = new User();
-		user3.setEmail("test@test.nl");
-		user3.setFirstname("test");
-		user3.setLastname("van der testen");
-		user3.setPassword("testtesttest");
-		user3.setUsername("user3");
-
-		user4 = new User();
-		user4.setEmail("test@test.nl");
-		user4.setFirstname("test");
-		user4.setLastname("van der testen");
-		user4.setPassword("testtesttest");
-		user4.setUsername("user4");
-
-		group = new Group();
-		group.setUsers(Arrays.asList(user1, user2, user3, user4));
-		group.setAdmin(user1);
-		group.setName("group1");
-
-		testEntityManager.persist(user1);
-		testEntityManager.persist(user2);
-		testEntityManager.persist(user3);
-		testEntityManager.persist(user4);
-		testEntityManager.persist(group);
-
-		final TaskDefinition d1 = new TaskDefinition();
-		d1.setWeight(TaskWeight.HEAVY);
-		d1.setPeriodType(TaskRepetitionType.WEEK);
-		d1.setName("d1");
-		d1.setGroup(group);
-
-		final TaskDefinition d2 = new TaskDefinition();
-		d2.setWeight(TaskWeight.MEDIUM);
-		d2.setPeriodType(TaskRepetitionType.WEEK);
-		d2.setName("d2");
-		d2.setGroup(group);
-
-		final TaskDefinition d3 = new TaskDefinition();
-		d3.setWeight(TaskWeight.LIGHT);
-		d3.setPeriodType(TaskRepetitionType.WEEK);
-		d3.setName("d3");
-		d3.setGroup(group);
-		testEntityManager.persist(d1);
-		testEntityManager.persist(d2);
-		testEntityManager.persist(d3);
-
-		final AssignedTask t1 = new AssignedTask();
-		t1.setDefinition(d1);
-		t1.setAssignee(user1);
-		t1.setStatus(TaskStatus.OVERDUE);
-		t1.setDueDate(LocalDate.now().minusDays(1));
-
-		final AssignedTask t2 = new AssignedTask();
-		t2.setDefinition(d2);
-		t2.setAssignee(user1);
-		t2.setStatus(TaskStatus.DONE);
-		t2.setDueDate(LocalDate.now());
-
-		final AssignedTask t3 = new AssignedTask();
-		t3.setDefinition(d3);
-		t3.setAssignee(user1);
-		t3.setStatus(TaskStatus.TODO);
-		t3.setDueDate(LocalDate.now().plusDays(1));
-
-		testEntityManager.persist(t1);
-		testEntityManager.persist(t2);
-		testEntityManager.persist(t3);
-	}
-
-	@Test
-	public void simpleTest()
-	{
-		schedulingService.reschedule(group, LocalDate.now(), 15);
 	}
 
 	@Test
@@ -170,4 +78,148 @@ public class SchedulingServiceImplTest
 		final List<LocalDate> sixMonths = schedulingService.getPeriodBlocks(LocalDate.now(), LocalDate.now().plusMonths(6), TaskRepetitionType.MONTH);
 		assertEquals("Six months", 6, sixMonths.size());
 	}
+
+	/**
+	 * A very simple scenario. There is just a single task definition and a single user.
+	 */
+	@Test
+	public void simple_scheduling()
+	{
+		final User user1 = testUser("user1");
+		final Group group = testGroup("group1", user1, Collections.singletonList(user1));
+
+		testEntityManager.persist(user1);
+		testEntityManager.persist(group);
+
+		schedulingService.reschedule(group, LocalDate.now(), LocalDate.now().plusMonths(1));
+
+		final List<AssignedTask> tasks = taskRepository.findAllByAssigneeAndDefinitionGroup(user1, group);
+
+		assertEquals("8 tasks total", 8, tasks.size());
+		assertTrue("all assigned to user1", tasks.stream().allMatch(t -> t.getAssignee().equals(user1)));
+	}
+
+	@Test
+	public void simple_scheduling_multiple_users()
+	{
+		final User user1 = testUser("user1");
+		final User user2 = testUser("user2");
+		final User user3 = testUser("user3");
+		final User user4 = testUser("user4");
+		testEntityManager.persist(user1);
+		testEntityManager.persist(user2);
+		testEntityManager.persist(user3);
+		testEntityManager.persist(user4);
+
+		final Group group = testGroup("groupname", user1, Arrays.asList(user1, user2, user3, user4));
+		testEntityManager.persist(group);
+
+		final TaskDefinition def1 = testDefinition(group, "task1", TaskRepetitionType.WEEK, TaskWeight.LIGHT, 2);
+		final TaskDefinition def2 = testDefinition(group, "task2", TaskRepetitionType.WEEK, TaskWeight.MEDIUM, 1);
+		final TaskDefinition def3 = testDefinition(group, "task3", TaskRepetitionType.MONTH, TaskWeight.HEAVY, 1);
+		final TaskDefinition def4 = testDefinition(group, "task4", TaskRepetitionType.MONTH, TaskWeight.HEAVY, 1);
+		testEntityManager.persist(def1);
+		testEntityManager.persist(def2);
+		testEntityManager.persist(def3);
+		testEntityManager.persist(def4);
+
+		final StopWatch sw = new StopWatch();
+		sw.start();
+		schedulingService.reschedule(group, LocalDate.now(), LocalDate.now().plusMonths(1));
+		sw.stop();
+		log.info("Rescheduling case 1 took {}ms", sw.getTime());
+		final List<AssignedTask> tasks = taskRepository.findAllByDefinitionGroupAndStatusIn(group, Collections.singletonList(TaskStatus.TODO));
+		assertTrue("14 tasks scheduled", tasks.size() == 14);
+	}
+
+	@Test
+	public void test_task_already_done_in_schedule()
+	{
+		final User user1 = testUser("user1");
+		final User user2 = testUser("user2");
+		final User user3 = testUser("user3");
+		final User user4 = testUser("user4");
+		testEntityManager.persist(user1);
+		testEntityManager.persist(user2);
+		testEntityManager.persist(user3);
+		testEntityManager.persist(user4);
+
+		final Group group = testGroup("groupname", user1, Arrays.asList(user1, user2, user3, user4));
+		testEntityManager.persist(group);
+
+		final TaskDefinition def1 = testDefinition(group, "task1", TaskRepetitionType.WEEK, TaskWeight.LIGHT, 2);
+		final TaskDefinition def2 = testDefinition(group, "task2", TaskRepetitionType.WEEK, TaskWeight.MEDIUM, 1);
+		final TaskDefinition def3 = testDefinition(group, "task3", TaskRepetitionType.MONTH, TaskWeight.HEAVY, 1);
+		final TaskDefinition def4 = testDefinition(group, "task4", TaskRepetitionType.MONTH, TaskWeight.HEAVY, 1);
+		testEntityManager.persist(def1);
+		testEntityManager.persist(def2);
+		testEntityManager.persist(def3);
+		testEntityManager.persist(def4);
+
+		final AssignedTask task1 = testTask(def1, user1, LocalDate.now().plusDays(1), TaskStatus.DONE);
+		final AssignedTask task2 = testTask(def2, user1, LocalDate.now().plusWeeks(1), TaskStatus.DONE);
+		final AssignedTask task3 = testTask(def3, user1, LocalDate.now().plusWeeks(2), TaskStatus.DONE);
+		final AssignedTask task4 = testTask(def4, user1, LocalDate.now().plusWeeks(3), TaskStatus.DONE);
+
+		testEntityManager.persist(task1);
+		testEntityManager.persist(task2);
+		testEntityManager.persist(task3);
+		testEntityManager.persist(task4);
+
+		final StopWatch sw = new StopWatch();
+		sw.start();
+		schedulingService.reschedule(group, LocalDate.now(), LocalDate.now().plusMonths(1));
+		sw.stop();
+		log.info("Rescheduling case 1 took {}ms", sw.getTime());
+		final List<AssignedTask> tasks = taskRepository.findAllByDefinitionGroupAndStatusIn(group, Collections.singletonList(TaskStatus.TODO));
+		assertEquals("10 tasks scheduled", 10, tasks.size());
+	}
+
+
+	private User testUser(final String name)
+	{
+		final User user1 = new User();
+		user1.setEmail("name@test.nl");
+		user1.setFirstname("name");
+		user1.setLastname("van der name");
+		user1.setPassword("namenamename");
+		user1.setUsername(name);
+
+		return user1;
+	}
+
+	private Group testGroup(final String name, final User admin, final List<User> users)
+	{
+		final Group group = new Group();
+		group.setName(name);
+		group.setInviteCode("invitecode");
+		group.setAdmin(admin);
+		group.setUsers(users);
+
+		return group;
+	}
+
+	private TaskDefinition testDefinition(final Group group, final String name, final TaskRepetitionType type, final TaskWeight weight,
+		final int freq)
+	{
+		final TaskDefinition taskDefinition = new TaskDefinition();
+		taskDefinition.setWeight(weight);
+		taskDefinition.setPeriodType(type);
+		taskDefinition.setName(name);
+		taskDefinition.setGroup(group);
+		taskDefinition.setFrequency(freq);
+
+		return taskDefinition;
+	}
+
+	private AssignedTask testTask(final TaskDefinition definition, final User assignee, final LocalDate dueDate, final TaskStatus taskStatus)
+	{
+		final AssignedTask task = new AssignedTask();
+		task.setDefinition(definition);
+		task.setAssignee(assignee);
+		task.setDueDate(dueDate);
+		task.setStatus(taskStatus);
+		return task;
+	}
+
 }
