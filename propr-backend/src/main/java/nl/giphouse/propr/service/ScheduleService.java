@@ -7,7 +7,7 @@ import nl.giphouse.propr.model.group.Group;
 /**
  * @author haye.
  */
-public interface ScheduleService {
-
+public interface ScheduleService
+{
 	SchedulingResult reschedule(Group group, LocalDate date, LocalDate endDate);
 }

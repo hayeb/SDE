@@ -1,13 +1,15 @@
 package nl.giphouse.propr.model.user;
 
 import nl.giphouse.propr.dto.user.UserInfoDto;
+
 import org.springframework.stereotype.Component;
 
 /**
  * @author haye.
  */
 @Component
-public class UserFactory {
+public class UserFactory
+{
 
 	public UserInfoDto fromEntity(final User user)
 	{

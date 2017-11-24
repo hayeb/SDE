@@ -19,6 +19,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 import nl.giphouse.propr.model.user.User;
 
 /**
@@ -29,7 +30,7 @@ import nl.giphouse.propr.model.user.User;
 @Getter
 @Setter
 @NoArgsConstructor
-@EqualsAndHashCode(of = {"id"})
+@EqualsAndHashCode(of = { "id" })
 public class Group implements Serializable
 {
 
@@ -55,9 +56,10 @@ public class Group implements Serializable
 	private User admin;
 
 	@OneToMany(fetch = FetchType.EAGER)
-	@JoinTable(name = "users_groups",
-		joinColumns = {@JoinColumn(name = "group_id")},
-		inverseJoinColumns = {@JoinColumn(name = "user_id")})
+	@JoinTable(
+		name = "users_groups",
+		joinColumns = { @JoinColumn(name = "group_id") },
+		inverseJoinColumns = { @JoinColumn(name = "user_id") })
 	private List<User> users;
 
 	public Group(final String name, final String inviteCode, final User admin, final List<User> users)

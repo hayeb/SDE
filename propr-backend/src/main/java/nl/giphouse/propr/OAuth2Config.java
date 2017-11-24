@@ -26,7 +26,8 @@ import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
  */
 @Configuration
 @EnableAuthorizationServer
-public class OAuth2Config extends AuthorizationServerConfigurerAdapter {
+public class OAuth2Config extends AuthorizationServerConfigurerAdapter
+{
 
 	@Inject
 	private UserDetailsService userDetailsService;
@@ -56,7 +57,8 @@ public class OAuth2Config extends AuthorizationServerConfigurerAdapter {
 	}
 
 	@Override
-	public void configure(final AuthorizationServerEndpointsConfigurer configurer) {
+	public void configure(final AuthorizationServerEndpointsConfigurer configurer)
+	{
 		configurer.authenticationManager(authenticationManager)
 			.userDetailsService(userDetailsService)
 			.tokenServices(tokenServices())
@@ -64,12 +66,14 @@ public class OAuth2Config extends AuthorizationServerConfigurerAdapter {
 	}
 
 	@Override
-	public void configure(final AuthorizationServerSecurityConfigurer security) {
+	public void configure(final AuthorizationServerSecurityConfigurer security)
+	{
 		security.checkTokenAccess("hasAuthority('ROLE_USER')");
 	}
 
 	@Override
-	public void configure(final ClientDetailsServiceConfigurer clients) throws Exception {
+	public void configure(final ClientDetailsServiceConfigurer clients) throws Exception
+	{
 		clients.inMemory()
 			.withClient(proprConfiguration.getClientId())
 			.authorities("ROLE_USER")
@@ -80,7 +84,8 @@ public class OAuth2Config extends AuthorizationServerConfigurerAdapter {
 	}
 
 	@Bean
-	public TokenStore tokenStore() {
+	public TokenStore tokenStore()
+	{
 		final DataSource tokenDatasource = DataSourceBuilder.create()
 			.driverClassName("org.postgresql.Driver")
 			.username(user)
@@ -92,7 +97,8 @@ public class OAuth2Config extends AuthorizationServerConfigurerAdapter {
 
 	@Bean
 	@Primary
-	public DefaultTokenServices tokenServices() {
+	public DefaultTokenServices tokenServices()
+	{
 		final DefaultTokenServices defaultTokenServices = new DefaultTokenServices();
 		defaultTokenServices.setTokenStore(tokenStore());
 		defaultTokenServices.setSupportRefreshToken(true);

@@ -20,10 +20,12 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @Configuration
 @EnableWebSecurity
 @Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+public class SecurityConfig extends WebSecurityConfigurerAdapter
+{
 
 	@Override
-	protected void configure(final HttpSecurity http) throws Exception {
+	protected void configure(final HttpSecurity http) throws Exception
+	{
 		http
 			.formLogin().disable()
 			.anonymous().disable()

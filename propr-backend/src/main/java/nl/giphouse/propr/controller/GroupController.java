@@ -19,7 +19,6 @@ import nl.giphouse.propr.model.user.UserFactory;
 import nl.giphouse.propr.repository.GroupRepository;
 import nl.giphouse.propr.service.UserService;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

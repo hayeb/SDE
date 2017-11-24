@@ -5,6 +5,7 @@ import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+
 import nl.giphouse.propr.model.task.AssignedTask;
 
 /**
@@ -35,4 +36,3 @@ public class SchedulingResult
 		return new SchedulingResult(true, "Scheduling succeeded", tasks);
 	}
 }
-

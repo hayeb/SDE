@@ -1,13 +1,5 @@
 package nl.giphouse.propr.model.task;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import nl.giphouse.propr.dto.task.TaskRepetitionType;
-import nl.giphouse.propr.dto.task.TaskWeight;
-import nl.giphouse.propr.model.group.Group;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -18,8 +10,18 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import nl.giphouse.propr.dto.task.TaskRepetitionType;
+import nl.giphouse.propr.dto.task.TaskWeight;
+import nl.giphouse.propr.model.group.Group;
+
 /**
  * The definition of a scheduled task. The task should be done {@code frequency} times per {@code period}.
+ * 
  * @author haye.
  */
 @AllArgsConstructor
@@ -27,7 +29,8 @@ import javax.persistence.ManyToOne;
 @Getter
 @Setter
 @Entity(name = "task_definition")
-public class TaskDefinition {
+public class TaskDefinition
+{
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -35,7 +38,7 @@ public class TaskDefinition {
 
 	@Column
 	private String name;
-	
+
 	@Column
 	private String description;
 
@@ -50,7 +53,7 @@ public class TaskDefinition {
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private TaskRepetitionType periodType;
-	
+
 	@Column(nullable = false)
 	private int frequency;
 }

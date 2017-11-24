@@ -16,6 +16,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -29,13 +30,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(of = {"id"})
-public class User implements UserDetails, Serializable {
+@EqualsAndHashCode(of = { "id" })
+public class User implements UserDetails, Serializable
+{
 
-	private static final long serialVersionUID = 0L;
-	
 	public static final String PROPERTY_ID = "user_id";
-
+	private static final long serialVersionUID = 0L;
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = PROPERTY_ID, nullable = false, updatable = false)
@@ -59,7 +59,8 @@ public class User implements UserDetails, Serializable {
 	@Column(name = "enabled", nullable = false)
 	private boolean enabled;
 
-	public User(final String username, final String password, final String email, final String firstname, final String lastname) {
+	public User(final String username, final String password, final String email, final String firstname, final String lastname)
+	{
 		this.username = username;
 		this.password = password;
 		this.enabled = true;
@@ -70,22 +71,26 @@ public class User implements UserDetails, Serializable {
 
 	// TODO: Goed implementeren in de database
 	@Override
-	public Collection<? extends GrantedAuthority> getAuthorities() {
+	public Collection<? extends GrantedAuthority> getAuthorities()
+	{
 		return Collections.singletonList(new SimpleGrantedAuthority("USER"));
 	}
 
 	@Override
-	public boolean isAccountNonExpired() {
+	public boolean isAccountNonExpired()
+	{
 		return true;
 	}
 
 	@Override
-	public boolean isAccountNonLocked() {
+	public boolean isAccountNonLocked()
+	{
 		return true;
 	}
 
 	@Override
-	public boolean isCredentialsNonExpired() {
+	public boolean isCredentialsNonExpired()
+	{
 		return true;
 	}
 }

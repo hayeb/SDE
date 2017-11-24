@@ -1,0 +1,1 @@
+ALTER TABLE task_definition RENAME COLUMN "group" TO groep;

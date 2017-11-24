@@ -1,16 +1,18 @@
 package nl.giphouse.propr.model.group;
 
+import java.util.stream.Collectors;
+
 import nl.giphouse.propr.dto.group.GroupDto;
 import nl.giphouse.propr.model.user.User;
-import org.springframework.stereotype.Component;
 
-import java.util.stream.Collectors;
+import org.springframework.stereotype.Component;
 
 /**
  * @author haye.
  */
 @Component
-public class GroupFactory {
+public class GroupFactory
+{
 
 	public GroupDto fromEntity(final Group group)
 	{

@@ -19,7 +19,8 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
  */
 @Configuration
 @EnableResourceServer
-public class ProprConfig extends ResourceServerConfigurerAdapter {
+public class ProprConfig extends ResourceServerConfigurerAdapter
+{
 	@Value("${security.oauth2.resource.id}")
 	private String resourceId;
 
@@ -30,14 +31,16 @@ public class ProprConfig extends ResourceServerConfigurerAdapter {
 	private TokenStore tokenStore;
 
 	@Override
-	public void configure(final ResourceServerSecurityConfigurer resources) {
+	public void configure(final ResourceServerSecurityConfigurer resources)
+	{
 		resources.resourceId(resourceId)
 			.tokenServices(tokenServices)
 			.tokenStore(tokenStore);
 	}
 
 	@Override
-	public void configure(final HttpSecurity http) throws Exception {
+	public void configure(final HttpSecurity http) throws Exception
+	{
 		http
 			.requestMatcher(new OAuthRequestedMatcher())
 			.csrf().disable()
@@ -47,14 +50,19 @@ public class ProprConfig extends ResourceServerConfigurerAdapter {
 			.antMatchers("/api/**").authenticated();
 	}
 
-	private static class OAuthRequestedMatcher implements RequestMatcher {
-		public boolean matches(final HttpServletRequest request) {
+	private static class OAuthRequestedMatcher implements RequestMatcher
+	{
+		public boolean matches(final HttpServletRequest request)
+		{
 			// Determine if the resource called is "/api/**"
 			String path = request.getServletPath();
-			if ( path.length() >= 5 ) {
+			if (path.length() >= 5)
+			{
 				path = path.substring(0, 5);
 				return path.equals("/api/");
-			} else return false;
+			}
+			else
+				return false;
 		}
 	}
 }
