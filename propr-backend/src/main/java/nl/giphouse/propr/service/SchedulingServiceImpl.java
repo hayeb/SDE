@@ -2,7 +2,6 @@ package nl.giphouse.propr.service;
 
 import java.time.LocalDate;
 import java.time.Period;
-import java.time.temporal.TemporalAmount;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -25,6 +24,7 @@ import nl.giphouse.propr.model.user.User;
 import nl.giphouse.propr.repository.TaskDefinitionRepository;
 import nl.giphouse.propr.repository.TaskRepository;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
 
@@ -47,14 +47,14 @@ public class SchedulingServiceImpl implements ScheduleService
 	}
 
 	/**
-	 * @formatter:off
 	 * Reschedules all task definitions in a group for a given period. Tries to take into account:
-	 * - The tasks which may have already been completed after the startdate of the new schedule. Users who have already
-	 *  completed tasks in this period will get less tasks until the distribution is balanced.
-	 * - The weight of tasks
-	 * - Users who have since been removed from the group
-	 * -
-	 * @formatter:on
+	 * <ol>
+	 * <li>The tasks which may have already been completed after the {@code startdate} of the new schedule. Users who have already completed tasks in
+	 * this period will get less tasks until the distribution is balanced.</li>
+	 * <li>The weight of tasks</li>
+	 * <li>Users who have since been removed from the group</li>
+	 * </ol>
+	 *
 	 * @param group
 	 *            The group for which to reschedule tasks
 	 * @param startDate
@@ -62,8 +62,17 @@ public class SchedulingServiceImpl implements ScheduleService
 	 * @param endDate
 	 *            The enddate of the new schedule
 	 */
-	public void reschedule(@NonNull final Group group, @NonNull final LocalDate startDate, @NonNull final LocalDate endDate)
+	public SchedulingResult reschedule(@NonNull final Group group, @NonNull final LocalDate startDate, @NonNull final LocalDate endDate)
 	{
+		if (!startDate.isBefore(endDate))
+		{
+			return SchedulingResult.invalidPeriod();
+		}
+		if (CollectionUtils.isEmpty(group.getUsers()))
+		{
+			return SchedulingResult.noUsersInGroup();
+		}
+
 		// 1. Determine which tasks may have already been completed, they do not have to be planned again.
 		final List<AssignedTask> doneTasksInNewSchedule = taskRepository
 			.findAllByDefinitionGroupAndDueDateGreaterThanEqualAndStatusIs(group, startDate, TaskStatus.DONE);
@@ -108,11 +117,13 @@ public class SchedulingServiceImpl implements ScheduleService
 
 		// 11. Save all task definitions.
 		taskRepository.save(tasks);
+
+		return SchedulingResult.success(tasks);
 	}
 
 	/**
 	 * For every task in {@code doneTasksInNewSchedule}, remove the first tasks is tasks.
-	 * 
+	 *
 	 * @param tasks
 	 *            The list from which tasks are removed
 	 * @param doneTasksInNewSchedule
@@ -133,20 +144,22 @@ public class SchedulingServiceImpl implements ScheduleService
 	}
 
 	/**
-	 * Builds a "task stack" from a list of task definitions. The tasks will have due dates between {@code startDate} and {@code endDate}. The
+	 * Builds a "task stack" from a list of task definitions. The tasks will fall in the period between {@code startDate} and {@code endDate}. The
 	 * strategy for doing this is roughly the following:
-	 *
 	 * <ol>
 	 * <li>For every definition, split the total period into blocks according to the period type (day, week, month, ...).</li>
-	 * <li>For every block generated this way, start from the end and add {code freq} tasks according to the frequency in the definition. Starts from
-	 * the back of the blocks, because we do not want to generate a due date on {@code startDate} if we can help it.</li>
-	 * <li>At the end, sort the tasks according to their {@code dueDate}</li>
+	 * <li>For every block generated this way, start from the end of the block and add {@code freq} tasks according to the frequency in the
+	 * definition. Starts from the back of the block, because we do not want to generate a due date on {@code startDate} if we can help it.</li>
+	 * <li>At the end, sort the tasks according to their {@code dueDate}.</li>
 	 * </ol>
 	 *
 	 * @param definitions
-	 *  The list of definitions for which tasks need to be generated
-	 * @return
-	 * A sorted list of tasks
+	 *            The list of definitions for which tasks need to be generated.
+	 * @param startDate
+	 *            The start date of the period, inclusive.
+	 * @param endDate
+	 *            The end date of the period, inclusive.
+	 * @return A sorted list of tasks
 	 */
 	public List<AssignedTask> getTaskStack(final @NonNull List<TaskDefinition> definitions,
 		final @NonNull LocalDate startDate, final @NonNull LocalDate endDate)
@@ -174,10 +187,22 @@ public class SchedulingServiceImpl implements ScheduleService
 		return tasks;
 	}
 
+	/**
+	 * Splits the given period (from {@code startDate} to {@code endDate}) into blocks of the given type. For instance, for a period of 01-01-2017 to
+	 * 31-01-2017 and periodtype WEEK, split the period into four weeks (01-01 - 07-01, 08-01 - 14-01, 15-01 - 21-01, 22-01 - 28-01)
+	 *
+	 * @param startDate
+	 *            start date of the period, inclusive
+	 * @param endDate
+	 *            end date f the period, inclusive
+	 * @param type
+	 *            The type of blocks to be generated
+	 * @return a list of end dates of the generated blocks, in ascending order.
+	 */
 	public List<LocalDate> getPeriodBlocks(final @NonNull LocalDate startDate, final @NonNull LocalDate endDate,
 		final @NonNull TaskRepetitionType type)
 	{
-		final TemporalAmount periodTypeDuration = repetitionTypeToDuration(type);
+		final Period periodTypeDuration = repetitionTypeToDuration(type);
 		final List<LocalDate> periodEndDates = new ArrayList<>();
 
 		LocalDate currentDate = startDate.plus(periodTypeDuration);

@@ -3,13 +3,15 @@ server:
   contextPath: /propr
 
 logging:
-    level.nl.giphouse.propr: DEBUG
+    level.root: INFO
+    level.nl.giphouse.propr: INFO
     level.org.springframework: INFO
     level.org.springframework.security.oauth2: INFO
+    level.org.hibernate: INFO
 
 # Data source properties
 spring:
-  jpa.show-sql: true
+  jpa.show-sql: false
   jpa.database: POSTGRESQL
   datasource.platform: postgres
   datasource.name: postgresdb
