@@ -4,14 +4,14 @@ server:
 
 logging:
     level.root: INFO
-    level.nl.giphouse.propr: INFO
+    level.nl.giphouse.propr: DEBUG
     level.org.springframework: INFO
     level.org.springframework.security.oauth2: INFO
     level.org.hibernate: INFO
 
 # Data source properties
 spring:
-  jpa.show-sql: false
+  jpa.show-sql: true
   jpa.database: POSTGRESQL
   datasource.platform: postgres
   datasource.name: postgresdb

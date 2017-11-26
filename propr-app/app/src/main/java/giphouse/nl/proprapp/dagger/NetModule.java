@@ -2,8 +2,6 @@ package giphouse.nl.proprapp.dagger;
 
 import android.accounts.AccountManager;
 import android.app.Application;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
@@ -19,7 +17,6 @@ import giphouse.nl.proprapp.account.OAuthRequestInterceptor;
 import giphouse.nl.proprapp.account.ProprAuthenticator;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
-import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -40,13 +37,6 @@ public class NetModule {
 		return proprConfiguration;
 	}
 
-
-	@Provides
-	@Singleton
-	SharedPreferences provideOkHttpCache(final Application application) {
-		return PreferenceManager.getDefaultSharedPreferences(application);
-	}
-
 	@Provides
 	@Singleton
 	Cache providesOkHttpCache(final Application application) {
@@ -63,9 +53,9 @@ public class NetModule {
 
 	@Provides
 	@Singleton
-	OkHttpClient provideOkHttpClient(final Cache cache, final Application application, final SharedPreferences sharedPreferences, final ProprConfiguration proprConfiguration) {
+	OkHttpClient provideOkHttpClient(final Cache cache, final Application application, final ProprConfiguration proprConfiguration) {
 
-		final OAuthRequestInterceptor interceptor = new OAuthRequestInterceptor(AccountManager.get(application), sharedPreferences, proprConfiguration);
+		final OAuthRequestInterceptor interceptor = new OAuthRequestInterceptor(AccountManager.get(application), proprConfiguration);
 		final OkHttpClient client = new OkHttpClient.Builder()
 			.cache(cache)
 			.addInterceptor(interceptor)

@@ -11,9 +11,6 @@
 	<string name="error_invalid_password">This password is too short</string>
 	<string name="error_incorrect_password">This password is incorrect</string>
 	<string name="error_field_required">This field is required</string>
-	<string name="permission_rationale">"Contacts permissions are needed for providing email
-        completions."
-    </string>
 	<string name="password">Password</string>
 	<string name="repeat_password">Repeat password</string>
 	<string name="email_address">Email address</string>
@@ -31,11 +28,10 @@
 	<string name="join_toolbar">Join a group</string>
 
 	<!-- IP-adres van de host-machine, voor emulators -->
-	<string name="backend_url">http://10.0.2.2:8000propr/</string>
+	<string name="backend_url">http://10.0.2.2:8000/propr/</string>
 	<string name="account_type">nl.giphouse.propr</string>
 	<string name="loading_placeholder">Loading…</string>
 	<string name="connection_failed">Connection failed</string>
-	<string name="title_activity_group_overview">GroupOverviewActivity</string>
 	<string name="action_settings">Settings</string>
 	<string name="title_activity_main">Propr</string>
 
@@ -89,5 +85,10 @@
 	<string name="description_task_assignee">Task assignee image</string>
 	<string name="description_task_state">Task state image</string>
 	<string name="placeholder_task_name">This is the task name</string>
-	<string name="placeholder_date">01-01-2017</string>
+	<string name="placeholder_date">01–01–2017</string>
+	<string name="hint_complete_task_additional_notes">Additional notes</string>
+	<string name="title_photo_upload">Upload a photo of your work!</string>
+	<string name="placeholder_task_description">Task description</string>
+	<string name="title_task_description">Task description:</string>
+	<string name="title_complete_task">Complete task</string>
 </resources>
