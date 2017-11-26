@@ -9,7 +9,6 @@ import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
 import android.app.ActionBar;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -47,9 +46,6 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 
 	@Inject
 	AuthenticatorService authenticatorService;
-
-	@Inject
-	SharedPreferences sharedPreferences;
 
 	// UI references.
 	private EditText mUsernameTextView;
@@ -117,7 +113,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 			focusView.requestFocus();
 			return;
 		}
-		new LoginTask(new WeakReference<>(this), authenticatorService, sharedPreferences, username, password)
+		new LoginTask(new WeakReference<>(this), authenticatorService, username, password)
 			.execute();
 	}
 
@@ -234,15 +230,13 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 
 		private final WeakReference<LoginActivity> loginActivityWeakReference;
 		private final AuthenticatorService authenticatorService;
-		private final SharedPreferences sharedPreferences;
 
 		private final String username;
 		private final String password;
 
-		LoginTask(final WeakReference<LoginActivity> loginActivityWeakReference, final AuthenticatorService authenticatorService, final SharedPreferences sharedPreferences, final String username, final String password) {
+		LoginTask(final WeakReference<LoginActivity> loginActivityWeakReference, final AuthenticatorService authenticatorService, final String username, final String password) {
 			this.loginActivityWeakReference = loginActivityWeakReference;
 			this.authenticatorService = authenticatorService;
-			this.sharedPreferences = sharedPreferences;
 			this.username = username;
 			this.password = password;
 		}
@@ -260,11 +254,6 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 			}
 
 			Log.d(TAG, "Authentication succeeded");
-
-			sharedPreferences.edit()
-				.putString(AccountUtils.PREF_AUTH_TOKEN, authToken.getAuthToken())
-				.putString(AccountUtils.PREF_REFRESH_TOKEN, authToken.getRefreshToken())
-				.apply();
 
 			final Intent intent = new Intent();
 			intent.putExtra(AccountManager.KEY_ACCOUNT_NAME, username);

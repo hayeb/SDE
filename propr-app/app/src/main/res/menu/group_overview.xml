@@ -5,8 +5,6 @@
 	<item android:title="@string/item_title_members"
 		android:id="@+id/item_members"
 		android:icon="@drawable/ic_people_black_24dp"
-		app:showAsAction="always">
-
-	</item>
+		app:showAsAction="always"/>
 
 </menu>

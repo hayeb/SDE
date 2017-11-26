@@ -6,8 +6,6 @@
 	android:name="giphouse.nl.proprapp.ui.group.overview.GroupActivityFragment"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:layout_marginLeft="16dp"
-	android:layout_marginRight="16dp"
 	app:layoutManager="LinearLayoutManager"
 	tools:context="giphouse.nl.proprapp.ui.group.overview.GroupActivityFragment"
-	tools:listitem="@layout/item_grouptask" />
+	tools:listitem="@layout/item_grouptask"/>

@@ -83,7 +83,7 @@ public class SplashActivity extends AppCompatActivity {
 
 	private void startGroupListActivity()
 	{
-		Intent i = new Intent(this, GroupListActivity.class);
+		final Intent i = new Intent(this, GroupListActivity.class);
 		i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
 			| Intent.FLAG_ACTIVITY_NEW_TASK
 			| Intent.FLAG_ACTIVITY_CLEAR_TASK);

@@ -92,6 +92,11 @@
 				android:name="android.support.PARENT_ACTIVITY"
 				android:value="giphouse.nl.proprapp.ui.group.overview.GroupOverviewActivity" />
 		</activity>
+		<activity android:name=".ui.task.CompleteTaskActivity" >
+			<meta-data
+				android:name="android.support.PARENT_ACTIVITY"
+				android:value="giphouse.nl.proprapp.ui.group.overview.GroupOverviewActivity" />
+		</activity>
 	</application>
 
 </manifest>

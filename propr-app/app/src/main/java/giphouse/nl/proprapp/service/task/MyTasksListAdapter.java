@@ -1,12 +1,17 @@
 package giphouse.nl.proprapp.service.task;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -20,12 +25,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import giphouse.nl.proprapp.R;
+import giphouse.nl.proprapp.ui.task.CompleteTaskActivity;
 import nl.giphouse.propr.dto.task.TaskDto;
 
 /**
  * @author haye
  */
-public class TaskListAdapter extends BaseAdapter {
+public class MyTasksListAdapter extends BaseAdapter {
 
 	private final LayoutInflater mLayoutInflater;
 
@@ -33,7 +39,7 @@ public class TaskListAdapter extends BaseAdapter {
 
 	private final Context context;
 
-	public TaskListAdapter(final LayoutInflater mLayoutInflater, final Context context) {
+	public MyTasksListAdapter(final LayoutInflater mLayoutInflater, final Context context) {
 		this.mLayoutInflater = mLayoutInflater;
 		this.context = context;
 	}
@@ -68,12 +74,27 @@ public class TaskListAdapter extends BaseAdapter {
 		final TextView taskNameTextView = itemView.findViewById(R.id.task_name);
 		final TextView descriptionTextView = itemView.findViewById(R.id.task_description);
 		final TextView dueDateTextView = itemView.findViewById(R.id.task_due_date);
+		final ImageButton taskCompleteButtun = itemView.findViewById(R.id.task_complete_button);
 
 		final TaskDto dto = taskDtos.get(position);
 
 		taskNameTextView.setText(dto.getName());
 		descriptionTextView.setText(dto.getDescription());
 		dueDateTextView.setText(dto.getDueDate());
+
+		taskCompleteButtun.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(final View v) {
+				Log.i("hue", "huehue");
+				final Bundle bundle = new Bundle();
+				bundle.putLong(CompleteTaskActivity.ARG_TASK_ID, dto.getTaskId());
+				bundle.putString(CompleteTaskActivity.ARG_TASK_NAME, dto.getName());
+				bundle.putString(CompleteTaskActivity.ARG_TASK_DESCRIPTION, dto.getDescription());
+				final Intent intent = new Intent(context, CompleteTaskActivity.class);
+				intent.putExtras(bundle);
+				context.startActivity(intent, bundle);
+			}
+		});
 
 		return itemView;
 	}
