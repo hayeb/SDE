@@ -6,7 +6,6 @@ import android.accounts.AccountManager;
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -28,7 +27,6 @@ import giphouse.nl.proprapp.account.AccountUtils;
 import giphouse.nl.proprapp.account.AuthenticatorService;
 import giphouse.nl.proprapp.account.Token;
 import giphouse.nl.proprapp.account.UserAccountDto;
-import lombok.AllArgsConstructor;
 
 /**
  * @author haye
@@ -43,9 +41,6 @@ public class RegisterAccountActivity extends AccountAuthenticatorActivity {
 
 	@Inject
 	AuthenticatorService authenticatorService;
-
-	@Inject
-	SharedPreferences sharedPreferences;
 
 	private TextView mUsernameField;
 	private TextView mEmailField;
@@ -162,11 +157,6 @@ public class RegisterAccountActivity extends AccountAuthenticatorActivity {
 		mAccountManager.addAccountExplicitly(account, accountPassword, userdata);
 		mAccountManager.setAuthToken(account, AccountUtils.AUTH_TOKEN_TYPE, authtoken);
 
-		sharedPreferences.edit()
-			.putString(AccountUtils.PREF_REFRESH_TOKEN, refreshToken)
-			.putString(AccountUtils.PREF_AUTH_TOKEN, authtoken)
-			.apply();
-
 		setAccountAuthenticatorResult(intent.getExtras());
 		setResult(CODE_ACCOUNT_REGISTERED, intent);
 		finish();
@@ -200,7 +190,7 @@ public class RegisterAccountActivity extends AccountAuthenticatorActivity {
 		private final WeakReference<RegisterAccountActivity> registerAccountActivityWeakReference;
 		private final AuthenticatorService authenticatorService;
 
-		public RegisterTask(final WeakReference<RegisterAccountActivity> registerAccountActivityWeakReference, final AuthenticatorService authenticatorService) {
+		RegisterTask(final WeakReference<RegisterAccountActivity> registerAccountActivityWeakReference, final AuthenticatorService authenticatorService) {
 			this.registerAccountActivityWeakReference = registerAccountActivityWeakReference;
 			this.authenticatorService = authenticatorService;
 		}

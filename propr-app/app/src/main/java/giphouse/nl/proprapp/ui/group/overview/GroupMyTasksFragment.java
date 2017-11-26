@@ -12,7 +12,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import giphouse.nl.proprapp.ProprApplication;
-import giphouse.nl.proprapp.service.task.TaskListAdapter;
+import giphouse.nl.proprapp.service.task.MyTasksListAdapter;
 import giphouse.nl.proprapp.service.task.TaskService;
 import nl.giphouse.propr.dto.task.TaskDto;
 import retrofit2.Call;
@@ -32,7 +32,7 @@ public class GroupMyTasksFragment extends ListFragment {
 
 	private MyTasksInteractionListener mListener;
 
-	private TaskListAdapter taskListAdapter;
+	private MyTasksListAdapter myTasksListAdapter;
 
 	public GroupMyTasksFragment() {
 		// Required empty public constructor
@@ -56,16 +56,19 @@ public class GroupMyTasksFragment extends ListFragment {
 			groupName = getArguments().getString(ARG_PARAM1);
 		}
 
-		taskListAdapter = new TaskListAdapter(getLayoutInflater(), this.getContext());
-		setListAdapter(taskListAdapter);
+		myTasksListAdapter = new MyTasksListAdapter(getLayoutInflater(), this.getContext());
+		setListAdapter(myTasksListAdapter);
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
 
 		taskService.getTasksForUserInGroup(groupName).enqueue(new Callback<List<TaskDto>>() {
 			@Override
 			public void onResponse(@NonNull final Call<List<TaskDto>> call, @NonNull final Response<List<TaskDto>> response) {
 				if (response.isSuccessful()) {
-					taskListAdapter.updateData(response.body());
-				} else {
-					// Something went wrong..
+					myTasksListAdapter.updateData(response.body());
 				}
 			}
 

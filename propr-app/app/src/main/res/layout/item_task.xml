@@ -3,31 +3,22 @@
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
-	android:layout_height="wrap_content">
-
-	<ImageView
-		android:id="@+id/task_status_image"
-		android:layout_width="24dp"
-		android:layout_height="24dp"
-		android:layout_marginBottom="8dp"
-		android:layout_marginStart="4dp"
-		android:layout_marginTop="8dp"
-		app:layout_constraintBottom_toBottomOf="parent"
-		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toTopOf="parent"
-		app:layout_constraintVertical_chainStyle="packed"
-		app:srcCompat="@drawable/ic_task_todo" />
+	android:layout_height="wrap_content"
+	android:background="@color/colorBackground">
 
 	<LinearLayout
 		android:id="@+id/linearLayout"
-		android:layout_width="wrap_content"
+		android:layout_width="0dp"
 		android:layout_height="wrap_content"
+		android:layout_marginBottom="8dp"
+		android:layout_marginEnd="8dp"
 		android:layout_marginStart="8dp"
+		android:layout_marginTop="8dp"
 		android:orientation="vertical"
 		app:layout_constraintBottom_toBottomOf="parent"
-		app:layout_constraintStart_toEndOf="@+id/task_status_image"
-		app:layout_constraintTop_toTopOf="parent"
-		app:layout_constraintVertical_bias="0.571">
+		app:layout_constraintEnd_toStartOf="@+id/task_due_date"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toTopOf="parent">
 
 		<TextView
 			android:id="@+id/task_name"
@@ -35,8 +26,8 @@
 			android:layout_height="wrap_content"
 			android:includeFontPadding="false"
 			android:text="Task name text"
-			android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
-			android:textSize="14sp"
+			android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+			android:textColor="@color/colorAccent"
 			tools:layout_editor_absoluteX="51dp"
 			tools:layout_editor_absoluteY="7dp" />
 
@@ -45,9 +36,7 @@
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:text="Task description text"
-			android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Subtitle"
-			android:textSize="12sp"
-			android:textStyle="italic" />
+			android:textAppearance="@android:style/TextAppearance.Material.Small" />
 	</LinearLayout>
 
 	<TextView
@@ -57,7 +46,20 @@
 		android:layout_marginEnd="8dp"
 		android:text="08-12-2017"
 		app:layout_constraintBottom_toBottomOf="parent"
-		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintEnd_toStartOf="@+id/task_complete_button"
 		app:layout_constraintTop_toTopOf="parent" />
+
+	<ImageButton
+		android:id="@+id/task_complete_button"
+		android:layout_width="48dp"
+		android:layout_height="48dp"
+		android:layout_marginBottom="8dp"
+		android:layout_marginEnd="8dp"
+		android:layout_marginTop="8dp"
+		android:background="@color/colorBackground"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintTop_toTopOf="parent"
+		app:srcCompat="@drawable/ic_check_circle_black_24dp" />
 
 </android.support.constraint.ConstraintLayout>

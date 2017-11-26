@@ -3,6 +3,7 @@ package nl.giphouse.propr.model.task;
 import java.io.Serializable;
 import java.time.LocalDate;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -12,6 +13,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -55,4 +57,7 @@ public class AssignedTask implements Serializable
 	@Column(nullable = false)
 	private TaskStatus status;
 
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "completed_task")
+	private CompletedTask completedTask;
 }

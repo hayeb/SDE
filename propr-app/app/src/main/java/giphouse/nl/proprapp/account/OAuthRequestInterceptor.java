@@ -2,7 +2,8 @@ package giphouse.nl.proprapp.account;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.content.SharedPreferences;
+import android.accounts.AuthenticatorException;
+import android.accounts.OperationCanceledException;
 import android.support.annotation.NonNull;
 import android.util.Base64;
 import android.util.Log;
@@ -36,14 +37,11 @@ public class OAuthRequestInterceptor implements Interceptor {
 
 	private OkHttpClient okHttpClient;
 
-	private final SharedPreferences sharedPreferences;
-
 	private final ProprConfiguration proprConfiguration;
 
 	@Inject
-	public OAuthRequestInterceptor(final AccountManager accountManager, final SharedPreferences sharedPreferences, final ProprConfiguration proprConfiguration) {
+	public OAuthRequestInterceptor(final AccountManager accountManager, final ProprConfiguration proprConfiguration) {
 		this.accountManager = accountManager;
-		this.sharedPreferences = sharedPreferences;
 		this.proprConfiguration = proprConfiguration;
 	}
 
@@ -59,36 +57,33 @@ public class OAuthRequestInterceptor implements Interceptor {
 			return chain.proceed(request);
 		}
 
-		//Log.d(TAG, "Intercepting request: [" + request.method() + "] " + request.url().toString());
-
 		final Request.Builder builder = request.newBuilder();
-		final String token = sharedPreferences.getString(AccountUtils.PREF_AUTH_TOKEN, null);
-		setAuthHeader(builder, token);
+
+		final Account account = accountManager.getAccountsByType(AccountUtils.ACCOUNT_TYPE)[0];
+		final String authToken;
+
+		try {
+			authToken = accountManager.blockingGetAuthToken(account, AccountUtils.AUTH_TOKEN_TYPE, false);
+		} catch (OperationCanceledException | AuthenticatorException e) {
+			Log.e(TAG, "Unable to get token from account manager");
+			return chain.proceed(request);
+		}
+		setAuthHeader(builder, authToken);
 
 		request = builder.build();
 		final Response response = chain.proceed(request);
 
 		if (response.code() != 401) {
-			//Log.d(TAG, "Token still fresh");
 			return response;
 		}
-		final String currentToken = sharedPreferences.getString(AccountUtils.PREF_AUTH_TOKEN, null);
 
-		if (currentToken != null && currentToken.equals(token)) {
-
-			if (!refreshToken(sharedPreferences.getString(AccountUtils.PREF_REFRESH_TOKEN, null))) {
-				//Log.e(TAG, "Refreshing token failed, returning original response");
-				return response;
-			}
+		final String newAuthToken = refreshToken(accountManager.getUserData(account, AccountUtils.KEY_REFRESH_TOKEN));
+		if (newAuthToken == null) {
+			return response;
 		}
-
-		if (sharedPreferences.getString(AccountUtils.PREF_AUTH_TOKEN, null) != null) { //retry requires new auth token,
-			setAuthHeader(builder, sharedPreferences.getString(AccountUtils.PREF_AUTH_TOKEN, null)); //set auth token to updateds
-			request = builder.build();
-			return chain.proceed(request); //repeat request with new token
-		}
-
-		return response;
+		setAuthHeader(builder, newAuthToken);
+		request = builder.build();
+		return chain.proceed(request);
 	}
 
 	private void setAuthHeader(final Request.Builder builder, final String token) {
@@ -98,10 +93,10 @@ public class OAuthRequestInterceptor implements Interceptor {
 	}
 
 	@SuppressWarnings("SynchronizeOnNonFinalField")
-	private boolean refreshToken(final String refreshToken) {
+	private String refreshToken(final String refreshToken) {
 		if (refreshToken == null) {
 			Log.e(TAG, "Not trying to refresh token: refreshtoken is null");
-			return false;
+			return null;
 		}
 		final Request request = buildRefreshTokenRequest(refreshToken);
 
@@ -111,7 +106,7 @@ public class OAuthRequestInterceptor implements Interceptor {
 			final String validationMessage;
 			if ((validationMessage = validateRefreshResponse(parsedResponse)) != null) {
 				Log.e(TAG, validationMessage);
-				return false;
+				return null;
 			}
 
 			final String newAuthToken;
@@ -120,18 +115,13 @@ public class OAuthRequestInterceptor implements Interceptor {
 				newAuthToken = parsedResponse.getString("access_token");
 				newRefreshToken = parsedResponse.getString("refresh_token");
 			} catch (final JSONException ignored) {
-				return false;
+				return null;
 			}
-
-			sharedPreferences.edit()
-				.putString(AccountUtils.PREF_AUTH_TOKEN, newAuthToken)
-				.putString(AccountUtils.PREF_REFRESH_TOKEN, newRefreshToken)
-				.apply();
 
 			final Account account = accountManager.getAccountsByType(AccountUtils.ACCOUNT_TYPE)[0];
 			accountManager.setUserData(account, AccountUtils.KEY_REFRESH_TOKEN, newRefreshToken);
 			accountManager.setAuthToken(account, AccountUtils.AUTH_TOKEN_TYPE, newAuthToken);
-			return true;
+			return newAuthToken;
 		}
 	}
 
@@ -165,7 +155,8 @@ public class OAuthRequestInterceptor implements Interceptor {
 
 		try {
 			body.put("refresh_token", refreshToken);
-		} catch (final JSONException ignored) {}
+		} catch (final JSONException ignored) {
+		}
 
 		final String authorizationHeader = "Basic " + Base64.encodeToString((proprConfiguration.getClientId() + ":" + proprConfiguration.getClientSecret()).getBytes(), Base64.NO_WRAP);
 

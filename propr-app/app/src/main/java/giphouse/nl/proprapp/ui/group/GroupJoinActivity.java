@@ -41,7 +41,6 @@ public class GroupJoinActivity extends AppCompatActivity {
 	GroupService groupService;
 
 	private TextInputEditText enterGroupcode;
-	private Button button;
 
 	@Override
 	protected void onCreate(final Bundle savedInstanceState) {
@@ -58,9 +57,8 @@ public class GroupJoinActivity extends AppCompatActivity {
 		}
 
 		enterGroupcode = findViewById(R.id.enterGroupcode);
-		button = findViewById(R.id.button);
 
-		button.setOnClickListener(new View.OnClickListener() {
+		findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				submit();
 			}

@@ -39,9 +39,7 @@ public class GroupActivityFragment extends Fragment {
 	private OnGroupTasksFragmentInteractionListener mListener;
 
 	private String groupName;
-
-	public GroupActivityFragment() {
-	}
+	private GroupTasksAdapter adapter;
 
 	public static GroupActivityFragment newInstance(final String groupName) {
 		final GroupActivityFragment fragment = new GroupActivityFragment();
@@ -71,8 +69,15 @@ public class GroupActivityFragment extends Fragment {
 		view.addItemDecoration(dividerItemDecoration);
 		view.setLayoutManager(new LinearLayoutManager(view.getContext()));
 
-		final GroupTasksAdapter adapter = new GroupTasksAdapter(mListener);
+		adapter = new GroupTasksAdapter(mListener);
 		view.setAdapter(adapter);
+
+		return view;
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
 
 		taskService.getDoneTasksInGroup(groupName).enqueue(new Callback<List<TaskDto>>() {
 			@Override
@@ -87,11 +92,7 @@ public class GroupActivityFragment extends Fragment {
 				Toast.makeText(GroupActivityFragment.this.getContext(), "Unable to connect to server", Toast.LENGTH_LONG).show();
 			}
 		});
-
-
-		return view;
 	}
-
 
 	@Override
 	public void onAttach(final Context context) {

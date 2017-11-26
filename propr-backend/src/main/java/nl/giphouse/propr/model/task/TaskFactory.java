@@ -16,6 +16,7 @@ public class TaskFactory
 	public TaskDto fromEntity(final AssignedTask task)
 	{
 		return TaskDto.builder()
+			.taskId(task.getId())
 			.name(task.getDefinition().getName())
 			.description(task.getDefinition().getDescription())
 			.assigneeId(task.getAssignee().getId())
