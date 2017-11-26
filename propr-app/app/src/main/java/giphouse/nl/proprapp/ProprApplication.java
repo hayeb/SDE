@@ -7,7 +7,6 @@ import giphouse.nl.proprapp.dagger.AppModule;
 import giphouse.nl.proprapp.dagger.DaggerProprApplicationComponent;
 import giphouse.nl.proprapp.dagger.NetModule;
 import giphouse.nl.proprapp.dagger.ProprApplicationComponent;
-import lombok.Getter;
 
 /**
  * @author haye

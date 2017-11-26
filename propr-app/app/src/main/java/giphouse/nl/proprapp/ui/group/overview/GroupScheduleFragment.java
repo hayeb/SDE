@@ -36,6 +36,8 @@ public class GroupScheduleFragment extends Fragment {
 	@Inject
 	TaskService taskService;
 
+	private GroupTasksAdapter adapter;
+
 	private String groupName;
 
 	private OnGroupTasksFragmentInteractionListener mListener;
@@ -73,8 +75,15 @@ public class GroupScheduleFragment extends Fragment {
 		view.addItemDecoration(dividerItemDecoration);
 		view.setLayoutManager(new LinearLayoutManager(view.getContext()));
 
-		final GroupTasksAdapter adapter = new GroupTasksAdapter(mListener);
+		adapter = new GroupTasksAdapter(mListener);
 		view.setAdapter(adapter);
+
+		return view;
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
 
 		taskService.getTodoTasksInGroup(groupName).enqueue(new Callback<List<TaskDto>>() {
 			@Override
@@ -90,10 +99,7 @@ public class GroupScheduleFragment extends Fragment {
 			}
 		});
 
-
-		return view;
 	}
-
 	@Override
 	public void onAttach(final Context context) {
 		super.onAttach(context);

@@ -12,6 +12,8 @@ import lombok.Getter;
 @Getter
 public class TaskDto
 {
+	private Long taskId;
+
 	private String name;
 
 	private String description;
