@@ -31,7 +31,8 @@
 		android:layout_gravity="bottom|end"
 		android:layout_margin="@dimen/fab_margin"
 		fab:fab_addButtonColorNormal="@color/colorAccent"
-		fab:fab_labelsPosition="left">
+		fab:fab_labelsPosition="left"
+		fab:fab_labelStyle="@style/menu_labels_style">
 
 		<com.getbase.floatingactionbutton.FloatingActionButton
 			android:id="@+id/join_group"
