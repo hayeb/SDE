@@ -1,5 +1,6 @@
 package giphouse.nl.proprapp.ui.group.overview;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -7,33 +8,51 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
+import javax.inject.Inject;
+
+import giphouse.nl.proprapp.ProprApplication;
 import giphouse.nl.proprapp.R;
+import giphouse.nl.proprapp.service.group.GroupService;
+import giphouse.nl.proprapp.ui.group.GroupListActivity;
 import giphouse.nl.proprapp.ui.group.GroupMembersActivity;
 import giphouse.nl.proprapp.ui.group.overview.GroupMyTasksFragment.MyTasksInteractionListener;
 import nl.giphouse.propr.dto.task.TaskDto;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class GroupOverviewActivity extends AppCompatActivity implements MyTasksInteractionListener, OnGroupTasksFragmentInteractionListener {
 
+	@Inject
+	GroupService groupService;
 	private static final String TAG = "GroupOverviewActivity";
 
 	private String groupName;
+
+	private Long groupId;
 
 	@Override
 	protected void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		((ProprApplication) getApplication()).getComponent().inject(this);
+
 		setContentView(R.layout.activity_group_overview);
 
 		if (savedInstanceState != null) {
 			groupName = savedInstanceState.getString("groupname");
+			groupId = savedInstanceState.getLong("groupId");
 		} else if (getIntent() != null && getIntent().getExtras() != null) {
 			groupName = getIntent().getExtras().getString("groupname");
+			groupId = getIntent().getExtras().getLong("groupId");
 		}
 
 		setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
@@ -112,6 +131,37 @@ public class GroupOverviewActivity extends AppCompatActivity implements MyTasksI
 			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
 				| Intent.FLAG_ACTIVITY_SINGLE_TOP);
 			NavUtils.navigateUpTo(this, intent);
+			return true;
+		} else if (item.getItemId() == R.id.item_leave_group) {
+			new AlertDialog.Builder(this)
+				.setMessage(R.string.message_leave_group)
+				.setPositiveButton(R.string.label_leave_group, new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						groupService.leaveGroup(groupId).enqueue(new Callback<Void>() {
+							@Override
+							public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+								if (response.isSuccessful()) {
+									final Intent intent = new Intent(GroupOverviewActivity.this, GroupListActivity.class);
+									intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
+										| Intent.FLAG_ACTIVITY_SINGLE_TOP);
+									NavUtils.navigateUpTo(GroupOverviewActivity.this, intent);
+								} else {
+									Toast.makeText(GroupOverviewActivity.this, "Error leaving group!", Toast.LENGTH_LONG).show();
+								}
+							}
+
+							@Override
+							public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+								Toast.makeText(GroupOverviewActivity.this, "Unable to contact server.", Toast.LENGTH_LONG).show();
+							}
+						});
+					}
+				})
+				.setNegativeButton(R.string.label_cancel, new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+
+					}
+				}).create().show();
 			return true;
 		}
 

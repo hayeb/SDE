@@ -17,11 +17,13 @@ import nl.giphouse.propr.model.group.GroupFactory;
 import nl.giphouse.propr.model.user.User;
 import nl.giphouse.propr.model.user.UserFactory;
 import nl.giphouse.propr.repository.GroupRepository;
+import nl.giphouse.propr.repository.TaskRepository;
 import nl.giphouse.propr.service.UserService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -43,6 +45,9 @@ public class GroupController
 	private GroupRepository groupRepository;
 
 	@Inject
+	private TaskRepository taskRepository;
+
+	@Inject
 	private GroupFactory groupFactory;
 
 	@Inject
@@ -58,8 +63,7 @@ public class GroupController
 		final List<Group> groups = groupRepository.findGroupsByUsers(user);
 
 		final List<GroupDto> dtos = groups.stream()
-			.map(group -> new GroupDto(group.getName(), group.getAdmin().getUsername(),
-				group.getUsers().stream().map(User::getUsername).collect(Collectors.toList())))
+			.map(groupFactory::fromEntity)
 			.collect(Collectors.toList());
 
 		return ResponseEntity.ok(dtos);
@@ -113,7 +117,8 @@ public class GroupController
 	public ResponseEntity<GroupDto> joinGroup(@RequestBody final GroupJoinDto groupJoinDto, final Principal principal)
 	{
 		// no group found, code is not valid.
-		if (groupRepository.countByInviteCode(groupJoinDto.getEnteredCode()) == 0) {
+		if (groupRepository.countByInviteCode(groupJoinDto.getEnteredCode()) == 0)
+		{
 			return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(null);
 		}
 
@@ -149,5 +154,28 @@ public class GroupController
 			.collect(Collectors.toList());
 
 		return ResponseEntity.ok(groupDtos);
+	}
+
+	@RequestMapping(value = "/{groupId}/leave", method = RequestMethod.POST)
+	public ResponseEntity<Void> leaveGroup(final Principal principal, final @PathVariable("groupId") long groupId)
+	{
+		final User user = (User) userService.loadUserByUsername(principal.getName());
+		final Group group = groupRepository.findOne(groupId);
+		if (group == null)
+		{
+			return ResponseEntity.notFound().build();
+		}
+
+		// TODO: Handle admin leaving group. Is disallowing enough?
+		if (group.getAdmin().equals(user))
+		{
+			return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).build();
+		}
+
+		group.getUsers().remove(user);
+
+		taskRepository.delete(taskRepository.findAllByAssigneeAndDefinitionGroup(user, group));
+
+		return ResponseEntity.ok(null);
 	}
 }

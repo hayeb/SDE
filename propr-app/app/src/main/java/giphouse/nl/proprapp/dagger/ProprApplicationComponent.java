@@ -7,12 +7,14 @@ import giphouse.nl.proprapp.SplashActivity;
 import giphouse.nl.proprapp.account.service.AuthenticatorService;
 import giphouse.nl.proprapp.account.ui.LoginActivity;
 import giphouse.nl.proprapp.account.ui.RegisterAccountActivity;
+import giphouse.nl.proprapp.service.group.GroupListAdapter;
 import giphouse.nl.proprapp.ui.group.GroupAddActivity;
 import giphouse.nl.proprapp.ui.group.GroupJoinActivity;
 import giphouse.nl.proprapp.ui.group.GroupListActivity;
 import giphouse.nl.proprapp.ui.group.GroupMembersActivity;
 import giphouse.nl.proprapp.ui.group.overview.GroupActivityFragment;
 import giphouse.nl.proprapp.ui.group.overview.GroupMyTasksFragment;
+import giphouse.nl.proprapp.ui.group.overview.GroupOverviewActivity;
 import giphouse.nl.proprapp.ui.group.overview.GroupScheduleFragment;
 import giphouse.nl.proprapp.ui.task.CompleteTaskActivity;
 
@@ -46,4 +48,6 @@ public interface ProprApplicationComponent {
 	void inject(GroupScheduleFragment groupScheduleFragment);
 
 	void inject(CompleteTaskActivity completeTaskActivity);
+
+	void inject(GroupOverviewActivity groupOverviewActivity);
 }

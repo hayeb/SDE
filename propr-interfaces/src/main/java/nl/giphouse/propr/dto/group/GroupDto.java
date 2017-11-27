@@ -14,6 +14,8 @@ import lombok.Getter;
 @Getter
 public class GroupDto
 {
+	private Long groupId;
+
 	private String groupName;
 
 	private String admin;

@@ -14,7 +14,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import giphouse.nl.proprapp.R;
 import giphouse.nl.proprapp.ui.group.overview.GroupOverviewActivity;
@@ -73,11 +72,18 @@ public class GroupListAdapter extends BaseAdapter {
 		final String title = StringUtils.capitalize(dto.getGroupName());
 		titleText.setText(title);
 
-		final String description = dto.getUsernames().stream().collect(Collectors.joining(", "));
-		descriptionText.setText(description);
+		final StringBuilder sb = new StringBuilder(dto.getUsernames().get(0));
+		for (final String userName : dto.getUsernames().subList(1, dto.getUsernames().size()))
+		{
+			sb.append(", ");
+			sb.append(userName);
+		}
+
+		descriptionText.setText(sb.toString());
 
 		final Intent intent = new Intent(context, GroupOverviewActivity.class);
 		intent.putExtra("groupname", dto.getGroupName());
+		intent.putExtra("groupId", dto.getGroupId());
 
 		itemView.setOnClickListener(new View.OnClickListener() {
 			@Override

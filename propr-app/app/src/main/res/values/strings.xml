@@ -91,4 +91,8 @@
 	<string name="placeholder_task_description">Task description</string>
 	<string name="title_task_description">Task description:</string>
 	<string name="title_complete_task">Complete task</string>
+	<string name="item_leave_group">Leave</string>
+	<string name="message_leave_group">Do you really want to leave this group? Your data will be deleted and you will not be able to join unless you know the code!</string>
+	<string name="label_leave_group">Leave</string>
+	<string name="label_cancel">Cancel</string>
 </resources>

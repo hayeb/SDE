@@ -17,6 +17,7 @@ public class GroupFactory
 	public GroupDto fromEntity(final Group group)
 	{
 		return GroupDto.builder()
+			.groupId(group.getId())
 			.admin(group.getAdmin().getUsername())
 			.groupName(group.getName())
 			.usernames(group.getUsers().stream().map(User::getUsername).collect(Collectors.toList()))

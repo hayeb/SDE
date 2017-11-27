@@ -11,6 +11,7 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 /**
@@ -24,6 +25,7 @@ public interface GroupService {
 	@POST("api/group/create")
 	Call<GroupDto> createGroup(@Body final GroupAddDto groupAddDto);
 
+
 	@POST("api/group/join")
 	Call<GroupDto> joinGroup(@Body final GroupJoinDto groupJoinDto);
 
@@ -32,4 +34,7 @@ public interface GroupService {
 
 	@GET("api/group/users")
 	Call<List<UserInfoDto>> getUsersInGroup(@Query("groupName") final String groupName);
+
+	@POST("api/group/{groupId}/leave")
+	Call<Void> leaveGroup(@Path("groupId") long groupId);
 }
