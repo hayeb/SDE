@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:background="@color/colorBackground">
+
+	<android.support.design.widget.AppBarLayout
+		android:id="@+id/appBarLayout2"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:theme="@style/ProprTheme.AppBarOverlay">
+
+		<android.support.v7.widget.Toolbar
+			android:id="@+id/toolbar"
+			android:layout_width="match_parent"
+			android:layout_height="?attr/actionBarSize"
+			app:popupTheme="@style/ProprTheme.PopupOverlay" />
+
+	</android.support.design.widget.AppBarLayout>
+
+	<TextView
+		android:id="@+id/title_notes"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginEnd="8dp"
+		android:layout_marginStart="8dp"
+		android:layout_marginTop="8dp"
+		android:text="@string/title_notes"
+		android:textAppearance="@style/TextAppearance.AppCompat.Title"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintHorizontal_bias="0.5"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toBottomOf="@+id/appBarLayout2" />
+
+	<TextView
+		android:id="@+id/completed_task_notes"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginEnd="8dp"
+		android:layout_marginStart="8dp"
+		android:layout_marginTop="8dp"
+		android:text="@string/placeholder_task_notes"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintHorizontal_bias="0.5"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toBottomOf="@+id/title_notes" />
+
+	<ImageView
+		android:id="@+id/completed_task_image"
+		android:layout_width="256dp"
+		android:layout_height="256dp"
+		android:layout_marginEnd="8dp"
+		android:layout_marginStart="8dp"
+		android:layout_marginTop="24dp"
+		android:contentDescription="@string/description_task_image"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintHorizontal_bias="0.5"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toBottomOf="@+id/completed_task_notes"
+		app:srcCompat="@drawable/ic_menu_gallery" />
+
+	<TextView
+		android:id="@+id/no_image_available"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginEnd="8dp"
+		android:layout_marginStart="8dp"
+		android:layout_marginTop="24dp"
+		android:text="@string/no_image_taken"
+		android:visibility="invisible"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toBottomOf="@+id/completed_task_notes" />
+
+</android.support.constraint.ConstraintLayout>

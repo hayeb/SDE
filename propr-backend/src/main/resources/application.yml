@@ -11,7 +11,7 @@ logging:
 
 # Data source properties
 spring:
-  jpa.show-sql: true
+  jpa.show-sql: false
   jpa.database: POSTGRESQL
   datasource.platform: postgres
   datasource.name: postgresdb

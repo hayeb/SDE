@@ -28,7 +28,7 @@
 	<string name="join_toolbar">Join a group</string>
 
 	<!-- IP-adres van de host-machine, voor emulators -->
-	<string name="backend_url">http://artificiallunacy.com:7080/propr/</string>
+	<string name="backend_url">http://10.0.2.2:8000/propr/</string>
 	<string name="account_type">nl.giphouse.propr</string>
 	<string name="loading_placeholder">Loading…</string>
 	<string name="connection_failed">Connection failed</string>
@@ -95,4 +95,11 @@
 	<string name="message_leave_group">Do you really want to leave this group? Your data will be deleted and you will not be able to join unless you know the code!</string>
 	<string name="label_leave_group">Leave</string>
 	<string name="label_cancel">Cancel</string>
+	<string name="title_notes">Notes</string>
+	<string name="placeholder_task_notes">Here will possibly be some notes about task completion</string>
+	<string name="title_task_image">Image</string>
+	<string name="description_task_image">Task image</string>
+	<string name="title_rate_this_task">Rate this task</string>
+	<string name="no_image_taken">No image was taken for this task</string>
+	<string name="take_picture">Take picture</string>
 </resources>

@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
@@ -16,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import nl.giphouse.propr.dto.task.TaskCompletionDto;
 import nl.giphouse.propr.dto.task.TaskDefinitionDto;
 import nl.giphouse.propr.dto.task.TaskDto;
+import nl.giphouse.propr.dto.task.TaskImagePayload;
 import nl.giphouse.propr.dto.task.TaskStatus;
 import nl.giphouse.propr.model.group.Group;
 import nl.giphouse.propr.model.task.AssignedTask;
@@ -30,8 +30,6 @@ import nl.giphouse.propr.service.UserService;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -82,7 +80,7 @@ public class TaskController
 		final List<TaskDto> tasks = taskRepository.findAllByAssigneeAndDefinitionGroup(user, group)
 			.stream()
 			.filter(t -> t.getStatus() == TaskStatus.TODO || t.getStatus() == TaskStatus.OVERDUE)
-			.map(taskFactory::fromEntity)
+			.map(taskFactory::toTaskDto)
 			.collect(Collectors.toList());
 
 		return ResponseEntity.ok(tasks);
@@ -102,7 +100,7 @@ public class TaskController
 
 		log.debug("Handling /api/task/group/done");
 
-		return ResponseEntity.ok(getTasksByStatus(group, Arrays.asList(TaskStatus.DONE, TaskStatus.OVERDUE), null));
+		return ResponseEntity.ok(getTasksByStatus(group, Arrays.asList(TaskStatus.DONE, TaskStatus.OVERDUE)));
 	}
 
 	@RequestMapping(method = RequestMethod.GET, value = "/group/todo")
@@ -119,7 +117,7 @@ public class TaskController
 
 		log.debug("Handling /api/task/group/todo");
 
-		return ResponseEntity.ok(getTasksByStatus(group, Collections.singletonList(TaskStatus.TODO), user));
+		return ResponseEntity.ok(getTasksByStatus(group, Collections.singletonList(TaskStatus.TODO)));
 	}
 
 	@RequestMapping(method = RequestMethod.GET, value = "/group/schedule")
@@ -138,13 +136,12 @@ public class TaskController
 
 		final List<TaskDefinitionDto> definitions = taskDefinitionRepository.findAllByGroup(group)
 			.stream()
-			.map(taskFactory::fromEntity)
+			.map(taskFactory::toTaskDefinitionDto)
 			.collect(Collectors.toList());
 
 		return ResponseEntity.ok(definitions);
 	}
 
-	@Transactional(propagation = Propagation.REQUIRED)
 	@RequestMapping(method = RequestMethod.POST, value = "/{taskId}/complete")
 	public ResponseEntity<?> completeTask(final Principal principal, final @PathVariable Long taskId,
 		final @RequestBody TaskCompletionDto taskCompletionDto)
@@ -188,17 +185,33 @@ public class TaskController
 		return ResponseEntity.ok(null);
 	}
 
-	private List<TaskDto> getTasksByStatus(final Group group, final List<TaskStatus> statuses, final User excludedAssignee)
+	@RequestMapping(method = RequestMethod.GET, value = "/{taskId}/image")
+	public ResponseEntity<?> getImageForTask(final Principal principal, final @PathVariable long taskId)
 	{
-		Stream<AssignedTask> taskStream = taskRepository.findAllByDefinitionGroupAndStatusIn(group, statuses).stream();
+		final AssignedTask task = taskRepository.findOne(taskId);
 
-		if (excludedAssignee != null)
+		log.debug("Handling /api/task/{taskId}/image");
+
+		if (task == null)
 		{
-			taskStream = taskStream.filter(assignedTask -> !assignedTask.getAssignee().equals(excludedAssignee));
+			return ResponseEntity.notFound().build();
 		}
 
-		return taskStream.sorted(Comparator.comparing(AssignedTask::getDueDate))
-			.map(taskFactory::fromEntity)
+		final User user = (User) userService.loadUserByUsername(principal.getName());
+
+		if (!task.getDefinition().getGroup().getUsers().contains(user))
+		{
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+		}
+
+		return ResponseEntity.ok(new TaskImagePayload(task.getCompletedTask().getImage()));
+	}
+
+	private List<TaskDto> getTasksByStatus(final Group group, final List<TaskStatus> statuses)
+	{
+		return taskRepository.findAllByDefinitionGroupAndStatusIn(group, statuses).stream()
+			.sorted(Comparator.comparing(AssignedTask::getDueDate))
+			.map(taskFactory::toTaskDto)
 			.collect(Collectors.toList());
 	}
 

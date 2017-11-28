@@ -27,4 +27,8 @@ public class TaskDto
 	private TaskStatus status;
 
 	private TaskWeight weight;
+
+	private String completionNotes;
+
+	private String completionDate;
 }

@@ -24,6 +24,7 @@ import giphouse.nl.proprapp.service.group.GroupService;
 import giphouse.nl.proprapp.ui.group.GroupListActivity;
 import giphouse.nl.proprapp.ui.group.GroupMembersActivity;
 import giphouse.nl.proprapp.ui.group.overview.GroupMyTasksFragment.MyTasksInteractionListener;
+import giphouse.nl.proprapp.ui.task.ShowCompletedTaskActivity;
 import nl.giphouse.propr.dto.task.TaskDto;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -133,39 +134,43 @@ public class GroupOverviewActivity extends AppCompatActivity implements MyTasksI
 			NavUtils.navigateUpTo(this, intent);
 			return true;
 		} else if (item.getItemId() == R.id.item_leave_group) {
-			new AlertDialog.Builder(this)
-				.setMessage(R.string.message_leave_group)
-				.setPositiveButton(R.string.label_leave_group, new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int id) {
-						groupService.leaveGroup(groupId).enqueue(new Callback<Void>() {
-							@Override
-							public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
-								if (response.isSuccessful()) {
-									final Intent intent = new Intent(GroupOverviewActivity.this, GroupListActivity.class);
-									intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
-										| Intent.FLAG_ACTIVITY_SINGLE_TOP);
-									NavUtils.navigateUpTo(GroupOverviewActivity.this, intent);
-								} else {
-									Toast.makeText(GroupOverviewActivity.this, "Error leaving group!", Toast.LENGTH_LONG).show();
-								}
-							}
-
-							@Override
-							public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
-								Toast.makeText(GroupOverviewActivity.this, "Unable to contact server.", Toast.LENGTH_LONG).show();
-							}
-						});
-					}
-				})
-				.setNegativeButton(R.string.label_cancel, new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int id) {
-
-					}
-				}).create().show();
+			leaveGroup();
 			return true;
 		}
 
 		return super.onOptionsItemSelected(item);
+	}
+
+	private void leaveGroup() {
+		new AlertDialog.Builder(this)
+			.setMessage(R.string.message_leave_group)
+			.setPositiveButton(R.string.label_leave_group, new DialogInterface.OnClickListener() {
+				public void onClick(final DialogInterface dialog, final int id) {
+					groupService.leaveGroup(groupId).enqueue(new Callback<Void>() {
+						@Override
+						public void onResponse(@NonNull final Call<Void> call, @NonNull final Response<Void> response) {
+							if (response.isSuccessful()) {
+								final Intent intent = new Intent(GroupOverviewActivity.this, GroupListActivity.class);
+								intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
+									| Intent.FLAG_ACTIVITY_SINGLE_TOP);
+								NavUtils.navigateUpTo(GroupOverviewActivity.this, intent);
+							} else {
+								Toast.makeText(GroupOverviewActivity.this, "Error leaving group!", Toast.LENGTH_LONG).show();
+							}
+						}
+
+						@Override
+						public void onFailure(@NonNull final Call<Void> call, @NonNull final Throwable t) {
+							Toast.makeText(GroupOverviewActivity.this, "Unable to contact server.", Toast.LENGTH_LONG).show();
+						}
+					});
+				}
+			})
+			.setNegativeButton(R.string.label_cancel, new DialogInterface.OnClickListener() {
+				public void onClick(final DialogInterface dialog, final int id) {
+
+				}
+			}).create().show();
 	}
 
 	@Override
@@ -175,7 +180,12 @@ public class GroupOverviewActivity extends AppCompatActivity implements MyTasksI
 
 	@Override
 	public void onGroupActivityFragmentInteraction(final TaskDto item) {
-
+		final Intent intent = new Intent(this, ShowCompletedTaskActivity.class);
+		final Bundle bundle = new Bundle();
+		bundle.putLong(ShowCompletedTaskActivity.ARG_TASK_ID, item.getTaskId());
+		bundle.putString(ShowCompletedTaskActivity.ARG_TASK_COMPLETION_NOTES, item.getCompletionNotes());
+		intent.putExtras(bundle);
+		startActivity(intent);
 	}
 
 	@Override

@@ -48,6 +48,7 @@ public class NetModule {
 	Gson provideGson() {
 		final GsonBuilder gsonBuilder = new GsonBuilder();
 		gsonBuilder.setFieldNamingPolicy(FieldNamingPolicy.IDENTITY);
+		gsonBuilder.registerTypeAdapter(byte[].class, new ByteArrayToBase64TypeAdapter());
 		return gsonBuilder.create();
 	}
 

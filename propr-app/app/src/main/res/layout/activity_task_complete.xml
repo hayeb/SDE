@@ -1,133 +1,149 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools"
+	android:id="@+id/linearLayout4"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	tools:context="giphouse.nl.proprapp.ui.task.CompleteTaskActivity"
 	android:background="@color/colorBackground"
-	android:orientation="vertical">
+	android:orientation="vertical"
+	tools:context="giphouse.nl.proprapp.ui.task.CompleteTaskActivity">
 
 	<android.support.design.widget.AppBarLayout
-		android:layout_width="match_parent"
+		android:id="@+id/appBarLayout3"
+		android:layout_width="0dp"
 		android:layout_height="wrap_content"
-		android:theme="@style/ProprTheme.AppBarOverlay">
+		android:theme="@style/ProprTheme.AppBarOverlay"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toTopOf="parent"
+		tools:layout_conversion_absoluteHeight="56dp"
+		tools:layout_conversion_absoluteWidth="411dp">
 
 		<android.support.v7.widget.Toolbar
 			android:id="@+id/toolbar"
 			android:layout_width="match_parent"
-			android:layout_height="?attr/actionBarSize"
+			android:layout_height="wrap_content"
 			android:background="?attr/colorPrimary"
-			app:popupTheme="@style/ProprTheme.PopupOverlay" />
+			app:popupTheme="@style/ProprTheme.PopupOverlay"
+			tools:layout_conversion_absoluteHeight="56dp"
+			tools:layout_conversion_absoluteWidth="411dp"
+			tools:layout_editor_absoluteX="0dp"
+			tools:layout_editor_absoluteY="0dp" />
 
 	</android.support.design.widget.AppBarLayout>
 
-	<ScrollView
-		android:layout_width="match_parent"
-		android:layout_height="match_parent">
+	<TextView
+		android:id="@+id/task_description_title"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="8dp"
+		android:text="@string/title_task_description"
+		android:textAlignment="center"
+		android:textAppearance="@style/TextAppearance.AppCompat.Small"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintHorizontal_bias="0.5"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toBottomOf="@+id/appBarLayout3"
+		tools:layout_conversion_absoluteHeight="19dp"
+		tools:layout_conversion_absoluteWidth="395dp" />
 
-		<android.support.constraint.ConstraintLayout
+
+	<TextView
+		android:id="@+id/task_description"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginEnd="8dp"
+		android:layout_marginStart="8dp"
+		android:layout_marginTop="16dp"
+		android:text="@string/placeholder_task_description"
+		android:textAlignment="center"
+		android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+		android:textSize="16sp"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintHorizontal_bias="0.498"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toBottomOf="@+id/task_description_title"
+		tools:layout_conversion_absoluteHeight="20dp"
+		tools:layout_conversion_absoluteWidth="379dp" />
+
+
+	<TextView
+		android:id="@+id/textView5"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="16dp"
+		android:text="@string/title_photo_upload"
+		android:textAlignment="center"
+		android:textAppearance="@style/TextAppearance.AppCompat.Small"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintHorizontal_bias="0.497"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toBottomOf="@+id/task_description"
+		tools:layout_conversion_absoluteHeight="19dp"
+		tools:layout_conversion_absoluteWidth="395dp" />
+
+	<ImageView
+		android:id="@+id/task_complete_image"
+		style="@style/Widget.AppCompat.ImageButton"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginBottom="16dp"
+		android:layout_marginEnd="8dp"
+		android:layout_marginStart="8dp"
+		android:layout_marginTop="16dp"
+		android:adjustViewBounds="true"
+		android:contentDescription="@string/title_photo_upload"
+		android:cropToPadding="true"
+		android:padding="0dp"
+		android:paddingBottom="0dp"
+		android:paddingEnd="0dp"
+		android:paddingLeft="0dp"
+		android:paddingRight="0dp"
+		android:paddingStart="0dp"
+		android:paddingTop="0dp"
+		android:scaleType="centerInside"
+		android:visibility="invisible"
+		app:layout_constraintBottom_toTopOf="@+id/take_picture_button"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintHorizontal_bias="0.498"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toBottomOf="@+id/textView5" />
+
+	<android.support.design.widget.TextInputLayout
+		android:id="@+id/textInputLayout5"
+		android:layout_width="0dp"
+		android:layout_height="128dp"
+		android:layout_marginBottom="8dp"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintHorizontal_bias="0.547"
+		app:layout_constraintStart_toStartOf="parent"
+		tools:layout_conversion_absoluteHeight="128dp"
+		tools:layout_conversion_absoluteWidth="395dp">
+
+		<android.support.design.widget.TextInputEditText
+			android:id="@+id/task_completion_notes"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			app:layout_behavior="@string/appbar_scrolling_view_behavior">
+			android:hint="@string/hint_complete_task_additional_notes"
+			android:inputType="textMultiLine"
+			android:singleLine="false"
+			tools:layout_conversion_absoluteHeight="116dp"
+			tools:layout_conversion_absoluteWidth="395dp"
+			tools:layout_editor_absoluteX="8dp"
+			tools:layout_editor_absoluteY="323dp" />
+	</android.support.design.widget.TextInputLayout>
 
-			<TextView
-				android:id="@+id/task_description_title"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_marginEnd="8dp"
-				android:layout_marginStart="8dp"
-				android:layout_marginTop="8dp"
-				android:text="@string/title_task_description"
-				android:textAppearance="@style/TextAppearance.AppCompat.Small"
-				app:layout_constraintEnd_toEndOf="parent"
-				app:layout_constraintStart_toStartOf="parent"
-				app:layout_constraintTop_toTopOf="parent" />
-
-			<ScrollView
-				android:id="@+id/scrollView2"
-				android:layout_width="0dp"
-				android:layout_height="128dp"
-				android:layout_marginEnd="8dp"
-				android:layout_marginStart="8dp"
-				app:layout_constraintEnd_toEndOf="parent"
-				app:layout_constraintStart_toStartOf="parent"
-				app:layout_constraintTop_toBottomOf="@+id/task_description_title">
-
-				<LinearLayout
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:orientation="vertical">
-
-					<TextView
-						android:id="@+id/task_description"
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:layout_marginEnd="8dp"
-						android:layout_marginStart="8dp"
-						android:layout_marginTop="8dp"
-						android:text="@string/placeholder_task_description"
-						android:textAlignment="center"
-						android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-						android:textSize="16sp"
-						app:layout_constraintEnd_toEndOf="parent"
-						app:layout_constraintStart_toStartOf="parent"
-						app:layout_constraintTop_toBottomOf="@+id/task_description_title" />
-				</LinearLayout>
-			</ScrollView>
-
-			<TextView
-				android:id="@+id/textView5"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_marginEnd="8dp"
-				android:layout_marginStart="8dp"
-				android:layout_marginTop="8dp"
-				android:text="@string/title_photo_upload"
-				android:textAppearance="@style/TextAppearance.AppCompat.Small"
-				app:layout_constraintEnd_toEndOf="parent"
-				app:layout_constraintHorizontal_bias="0.497"
-				app:layout_constraintStart_toStartOf="parent"
-				app:layout_constraintTop_toBottomOf="@+id/scrollView2" />
-
-			<ImageButton
-				android:id="@+id/task_complete_image"
-				android:layout_width="0dp"
-				android:layout_height="256dp"
-				android:layout_marginEnd="16dp"
-				android:layout_marginStart="16dp"
-				android:layout_marginTop="8dp"
-				android:contentDescription="@string/title_photo_upload"
-				app:layout_constraintEnd_toEndOf="parent"
-				app:layout_constraintHorizontal_bias="0.0"
-				app:layout_constraintStart_toStartOf="parent"
-				app:layout_constraintTop_toBottomOf="@+id/textView5"
-				app:srcCompat="@drawable/ic_menu_camera" />
-
-			<android.support.design.widget.TextInputLayout
-				android:id="@+id/textInputLayout5"
-				android:layout_width="match_parent"
-				android:layout_height="128dp"
-				android:layout_marginBottom="8dp"
-				android:layout_marginEnd="8dp"
-				android:layout_marginStart="8dp"
-				android:layout_marginTop="8dp"
-				app:layout_constraintBottom_toBottomOf="parent"
-				app:layout_constraintEnd_toEndOf="parent"
-				app:layout_constraintHorizontal_bias="0.0"
-				app:layout_constraintStart_toStartOf="parent"
-				app:layout_constraintTop_toBottomOf="@+id/task_complete_image">
-
-				<android.support.design.widget.TextInputEditText
-					android:id="@+id/task_completion_notes"
-					android:layout_width="match_parent"
-					android:layout_height="match_parent"
-					android:hint="@string/hint_complete_task_additional_notes"
-					android:inputType="textMultiLine"
-					android:singleLine="false" />
-			</android.support.design.widget.TextInputLayout>
-
-		</android.support.constraint.ConstraintLayout>
-	</ScrollView>
-
-</LinearLayout>
+	<Button
+		android:id="@+id/take_picture_button"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginBottom="8dp"
+		android:layout_marginEnd="8dp"
+		android:layout_marginStart="8dp"
+		android:text="@string/take_picture"
+		app:layout_constraintBottom_toTopOf="@+id/textInputLayout5"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toStartOf="parent" />
+</android.support.constraint.ConstraintLayout>

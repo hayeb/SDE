@@ -51,7 +51,7 @@ INSERT INTO users_groups (group_id, user_id) VALUES
 	(14, 8),
 	(14, 10);
 
-INSERT INTO task_definition (id, name, description, "group", weight, period_type, frequency) VALUES
+INSERT INTO task_definition (id, name, description, "groep", weight, period_type, frequency) VALUES
 	-- Deuvelenstraat
 	(15, 'Badkamer schoonmaken', 'Badkamer schoonmaken, leegmaken doucheputje', 11, 'MEDIUM', 'WEEK', 1),
 	(16, 'WC schoonmaken', 'WC schoonmaken, bijvullen TP', 11, 'MEDIUM', 'WEEK', 1),
@@ -101,7 +101,7 @@ INSERT INTO assigned_task (id, assignee, definition, due_date, status) VALUES
 	-- DEVTEAM
 	(46, 9, 26, '01-02-2017', 'OVERDUE'),
 	(47, 8, 27, '01-03-2017', 'OVERDUE'),
-	(48, 8, 28, '11-12-2017', 'DONE'),
+	(48, 8, 28, '11-12-2017', 'TODO'),
 	(49, 10, 29, '11-12-2017', 'TODO'),
 	(50, 9, 30, '01-01-2018', 'TODO'),
 	(51, 9, 31, '05-01-2018', 'TODO'),

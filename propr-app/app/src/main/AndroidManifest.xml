@@ -16,6 +16,7 @@
 		android:maxSdkVersion="22" />
 
 	<uses-permission android:name="android.permission.CAMERA" />
+	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
 	<uses-feature android:name="android.hardware.camera" />
 	<uses-feature android:name="android.hardware.camera.autofocus" />
@@ -26,27 +27,14 @@
 		android:icon="@drawable/icon"
 		android:label="@string/app_name"
 		android:roundIcon="@drawable/iconcircle"
-		android:theme="@style/ProprTheme"
-		android:supportsRtl="true">
+		android:supportsRtl="true"
+		android:theme="@style/ProprTheme">
 		<activity
 			android:name=".account.ui.LoginActivity"
 			android:label="@string/login_title" />
 		<activity
 			android:name=".account.ui.RegisterAccountActivity"
 			android:label="@string/register_account_title" />
-
-		<service
-			android:name=".account.service.AuthenticatorService"
-			android:enabled="true"
-			android:exported="true">
-			<intent-filter>
-				<action android:name="android.accounts.AccountAuthenticator" />
-			</intent-filter>
-
-			<meta-data
-				android:name="android.accounts.AccountAuthenticator"
-				android:resource="@xml/authenticator" />
-		</service>
 
 		<activity
 			android:name=".ui.group.GroupListActivity"
@@ -90,18 +78,49 @@
 				android:value="giphouse.nl.proprapp.ui.group.GroupListActivity" />
 		</activity>
 
-		<activity android:name=".ui.group.GroupMembersActivity"
+		<activity
+			android:name=".ui.group.GroupMembersActivity"
 			android:label="@string/item_title_members"
 			android:parentActivityName=".ui.group.overview.GroupOverviewActivity">
 			<meta-data
 				android:name="android.support.PARENT_ACTIVITY"
 				android:value="giphouse.nl.proprapp.ui.group.overview.GroupOverviewActivity" />
 		</activity>
-		<activity android:name=".ui.task.CompleteTaskActivity" >
+
+		<activity android:name=".ui.task.CompleteTaskActivity">
 			<meta-data
 				android:name="android.support.PARENT_ACTIVITY"
 				android:value="giphouse.nl.proprapp.ui.group.overview.GroupOverviewActivity" />
 		</activity>
+
+		<activity android:name=".ui.task.ShowCompletedTaskActivity">
+			<meta-data
+				android:name="android.support.PARENT_ACTIVITY"
+				android:value="giphouse.nl.proprapp.ui.group.overview.GroupOverviewActivity" />
+		</activity>
+
+		<provider
+			android:name="android.support.v4.content.FileProvider"
+			android:authorities="nl.giphouse.propr.fileprovider"
+			android:exported="false"
+			android:grantUriPermissions="true">
+			<meta-data
+				android:name="android.support.FILE_PROVIDER_PATHS"
+				android:resource="@xml/file_paths" />
+		</provider>
+
+		<service
+			android:name=".account.service.AuthenticatorService"
+			android:enabled="true"
+			android:exported="true">
+			<intent-filter>
+				<action android:name="android.accounts.AccountAuthenticator" />
+			</intent-filter>
+
+			<meta-data
+				android:name="android.accounts.AccountAuthenticator"
+				android:resource="@xml/authenticator" />
+		</service>
 	</application>
 
 </manifest>
