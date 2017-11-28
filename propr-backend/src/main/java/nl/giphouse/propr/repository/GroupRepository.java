@@ -12,10 +12,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
  */
 public interface GroupRepository extends JpaRepository<Group, Long>
 {
-
 	List<Group> findGroupsByUsers(final User user);
 
 	int countByName(final String name);
+
 	int countByInviteCode(final String inviteCode);
 
 	Group findGroupByName(final String name);

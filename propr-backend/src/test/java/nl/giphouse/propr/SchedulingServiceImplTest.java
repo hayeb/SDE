@@ -11,6 +11,7 @@ import java.util.stream.IntStream;
 import javax.inject.Inject;
 
 import lombok.extern.slf4j.Slf4j;
+
 import nl.giphouse.propr.dto.task.TaskRepetitionType;
 import nl.giphouse.propr.dto.task.TaskStatus;
 import nl.giphouse.propr.dto.task.TaskWeight;
@@ -22,6 +23,7 @@ import nl.giphouse.propr.repository.TaskDefinitionRepository;
 import nl.giphouse.propr.repository.TaskRepository;
 import nl.giphouse.propr.service.SchedulingResult;
 import nl.giphouse.propr.service.SchedulingServiceImpl;
+
 import org.apache.commons.lang3.time.StopWatch;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,9 +45,9 @@ import static org.junit.Assert.assertTrue;
 @DataJpaTest(showSql = false)
 public class SchedulingServiceImplTest
 {
-	private static List<TaskRepetitionType> types = Collections.unmodifiableList(Arrays.asList(TaskRepetitionType.values()));
+	private static final List<TaskRepetitionType> types = Collections.unmodifiableList(Arrays.asList(TaskRepetitionType.values()));
 
-	private static List<TaskWeight> weights = Collections.unmodifiableList(Arrays.asList(TaskWeight.values()));
+	private static final List<TaskWeight> weights = Collections.unmodifiableList(Arrays.asList(TaskWeight.values()));
 
 	@Inject
 	private TestEntityManager testEntityManager;
@@ -128,7 +130,7 @@ public class SchedulingServiceImplTest
 			Total:                    332 tasks
 			@formatter:on
 		 */
-		StopWatch sw = new StopWatch();
+		final StopWatch sw = new StopWatch();
 		sw.start();
 		final List<AssignedTask> tasksTotal = schedulingService.getTaskStack(Arrays.asList(def1, def2, def3, def4), LocalDate.now(),
 			LocalDate.now().plusYears(1));
