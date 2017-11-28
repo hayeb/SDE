@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
@@ -11,9 +12,12 @@ import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,6 +38,9 @@ import retrofit2.Response;
  */
 public class CompleteTaskActivity extends AppCompatActivity {
 
+	private static final int REQUEST_IMAGE_CAPTURE = 1;
+	private static final String TAG = "CompleteTaskActivity";
+
 	public static String ARG_TASK_ID = "taskId";
 	public static String ARG_TASK_NAME = "taskName";
 	public static String ARG_TASK_DESCRIPTION = "taskDescription";
@@ -46,7 +53,7 @@ public class CompleteTaskActivity extends AppCompatActivity {
 	private Long taskId;
 
 	private TextInputEditText descriptionField;
-	private ImageButton imageField;
+	private ImageButton imageButton;
 
 	@Override
 	protected void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -60,11 +67,6 @@ public class CompleteTaskActivity extends AppCompatActivity {
 			taskDescription = arguments.getString(ARG_TASK_DESCRIPTION);
 			taskId = arguments.getLong(ARG_TASK_ID);
 		}
-	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();
 
 		setContentView(R.layout.activity_task_complete);
 
@@ -73,11 +75,32 @@ public class CompleteTaskActivity extends AppCompatActivity {
 		bar.setDisplayHomeAsUpEnabled(true);
 		bar.setTitle("Complete \'" + taskName + "\'");
 
+		imageButton = findViewById(R.id.task_complete_image);
+		descriptionField = findViewById(R.id.task_completion_notes);
+
 		final TextView descriptionText = findViewById(R.id.task_description);
 		descriptionText.setText(taskDescription);
 
-		descriptionField = findViewById(R.id.task_completion_notes);
-		imageField = findViewById(R.id.task_complete_image);
+		imageButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(final View v) {
+				final Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+				if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+					startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+				}
+			}
+		});
+	}
+
+	@Override
+	protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+		if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+			Log.d(TAG, "Picture taken");
+			final Bundle extras = data.getExtras();
+			final Bitmap imageBitmap = (Bitmap) extras.get("data");
+			imageButton.setImageBitmap(imageBitmap);
+			imageButton.invalidate();
+		}
 	}
 
 	@Override
@@ -90,7 +113,7 @@ public class CompleteTaskActivity extends AppCompatActivity {
 			NavUtils.navigateUpTo(this, intent);
 			return true;
 		} else if (id == R.id.complete_task) {
-			final Bitmap bitmap = ((BitmapDrawable) imageField.getDrawable()).getBitmap();
+			final Bitmap bitmap = ((BitmapDrawable) imageButton.getDrawable()).getBitmap();
 			final ByteArrayOutputStream stream = new ByteArrayOutputStream();
 			bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
 			final byte[] byteArray = stream.toByteArray();
