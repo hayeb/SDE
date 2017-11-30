@@ -80,39 +80,53 @@ INSERT INTO task_definition (id, name, description, "groep", weight, period_type
 	(33, 'Design verbeteren', 'Het ziet er nu uit als shit', 14, 'MEDIUM', 'MONTH', 1),
 	(34, 'Interfaces extraheren', 'Voorkomen van dubbel werk', 14, 'LIGHT', 'MONTH', 1);
 
-INSERT INTO assigned_task (id, assignee, definition, due_date, status) VALUES
+INSERT INTO completed_task (id, description, date, image) VALUES
+	(101, 'Gedaan 1', '01-01-2017', null),
+	(102, 'Gedaan 2', '01-01-2017', null),
+	(103, 'Gedaan 3', '01-01-2017', null),
+	(104, 'Gedaan 4', '01-01-2017', null);
+
+INSERT INTO assigned_task (id, assignee, definition, due_date, completed_task) VALUES
 	-- Deuvelenstraat
-	(35, 1, 15, '01-12-2017', 'TODO'),
-	(36, 2, 16, '02-12-2017', 'TODO'),
-	(37, 3, 17, '03-12-2017', 'TODO'),
-	(38, 2, 18, '04-12-2017', 'TODO'),
+	(35, 1, 15, '01-12-2017', null),
+	(36, 2, 16, '02-12-2017', null),
+	(37, 3, 17, '03-12-2017', null),
+	(38, 2, 18, '04-12-2017', null),
 
 	-- Sportvereniging
-	(39, 4, 19, '05-12-2017', 'TODO'),
-	(40, 5, 20, '06-12-2017', 'TODO'),
-	(41, 4, 21, '07-12-2017', 'TODO'),
-	(42, 5, 22, '08-12-2017', 'TODO'),
+	(39, 4, 19, '05-12-2017', null),
+	(40, 5, 20, '06-12-2017', null),
+	(41, 4, 21, '07-12-2017', null),
+	(42, 5, 22, '08-12-2017', null),
 
 	-- TEAM
-	(43, 6, 23, '09-12-2017', 'TODO'),
-	(44, 6, 24, '10-12-2017', 'TODO'),
-	(45, 7, 25, '11-12-2017', 'TODO'),
+	(43, 6, 23, '09-12-2017', null),
+	(44, 6, 24, '10-12-2017', null),
+	(45, 7, 25, '11-12-2017', null),
 
 	-- DEVTEAM
-	(46, 9, 26, '01-02-2017', 'OVERDUE'),
-	(47, 8, 27, '01-03-2017', 'OVERDUE'),
-	(48, 8, 28, '11-12-2017', 'TODO'),
-	(49, 10, 29, '11-12-2017', 'TODO'),
-	(50, 9, 30, '01-01-2018', 'TODO'),
-	(51, 9, 31, '05-01-2018', 'TODO'),
-	(52, 9, 32, '06-02-2018', 'TODO'),
-	(53, 9, 33, '20-02-2018', 'TODO'),
-	(54, 9, 34, '23-02-2018', 'TODO'),
-	(55, 9, 30, '24-02-2018', 'TODO'),
-	(56, 9, 31, '26-02-2018', 'TODO'),
-	(57, 9, 32, '15-03-2018', 'TODO'),
-	(58, 9, 33, '17-03-2018', 'TODO'),
-	(59, 9, 34, '30-03-2018', 'TODO');
+	--	Haye
+	-- 	done
+	(46, 9, 26, '01-02-2017', 101),
+	(47, 9, 30, '01-03-2017', 102),
+	(48, 9, 31, '11-10-2017', 103),
+
+	-- Overdue
+	(49, 9, 32, '01-03-2017', null),
+	(50, 9, 33, '15-02-2017', null),
+	(51, 9, 34, '31-08-2017', null),
+	(52, 9, 30, '20-06-2017', null),
+	(53, 9, 31, '01-11-2017', null),
+
+	-- to do
+	(54, 9, 32, '15-03-2018', null),
+	(55, 9, 33, '17-03-2018', null),
+	(56, 9, 34, '30-03-2018', null),
+	--	Rick
+	(57, 8, 27, '01-03-2017', null),
+	(58, 8, 28, '11-12-2017', null),
+	--	Marlies
+	(60, 10, 29, '11-11-2017', 104);
 
 
 ALTER SEQUENCE hibernate_sequence RESTART WITH 1111;

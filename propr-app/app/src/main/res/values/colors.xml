@@ -4,6 +4,7 @@
 	<color name="colorPrimary">#1C9BA9</color>
 	<color name="colorPrimaryDark">#055263</color>
 	<color name="colorAccent">#E4634D</color>
+	<color name="colorRed">#d90000</color>
 
 	<color name="colorPrimaryDarkOpague">#88055263</color>
 

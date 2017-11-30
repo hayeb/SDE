@@ -2,9 +2,6 @@ package nl.giphouse.propr.controller;
 
 import java.security.Principal;
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -14,9 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import nl.giphouse.propr.dto.task.TaskCompletionDto;
 import nl.giphouse.propr.dto.task.TaskDefinitionDto;
-import nl.giphouse.propr.dto.task.TaskDto;
 import nl.giphouse.propr.dto.task.TaskImagePayload;
-import nl.giphouse.propr.dto.task.TaskStatus;
 import nl.giphouse.propr.model.group.Group;
 import nl.giphouse.propr.model.task.AssignedTask;
 import nl.giphouse.propr.model.task.CompletedTask;
@@ -77,16 +72,12 @@ public class TaskController
 
 		log.debug("Handling /api/task/group/user");
 
-		final List<TaskDto> tasks = taskRepository.findAllByAssigneeAndDefinitionGroup(user, group)
-			.stream()
-			.filter(t -> t.getStatus() == TaskStatus.TODO || t.getStatus() == TaskStatus.OVERDUE)
+		return ResponseEntity.ok(taskRepository.findTasksForUserInGroup(group, user).stream()
 			.map(taskFactory::toTaskDto)
-			.collect(Collectors.toList());
-
-		return ResponseEntity.ok(tasks);
+			.collect(Collectors.toList()));
 	}
 
-	@RequestMapping(method = RequestMethod.GET, value = "/group/done")
+	@RequestMapping(method = RequestMethod.GET, value = "/group/activity")
 	public ResponseEntity<?> getDoneTasksInGroup(final Principal principal, final @RequestParam String groupname)
 	{
 		final User user = (User) userService.loadUserByUsername(principal.getName());
@@ -100,10 +91,12 @@ public class TaskController
 
 		log.debug("Handling /api/task/group/done");
 
-		return ResponseEntity.ok(getTasksByStatus(group, Arrays.asList(TaskStatus.DONE, TaskStatus.OVERDUE)));
+		return ResponseEntity.ok(taskRepository.findActivityInGroup(group).stream()
+			.map(taskFactory::toTaskDto)
+			.collect(Collectors.toList()));
 	}
 
-	@RequestMapping(method = RequestMethod.GET, value = "/group/todo")
+	@RequestMapping(method = RequestMethod.GET, value = "/group/scheduled")
 	public ResponseEntity<?> getTodoTasksInGroup(final Principal principal, final @RequestParam String groupname)
 	{
 		final User user = (User) userService.loadUserByUsername(principal.getName());
@@ -117,7 +110,9 @@ public class TaskController
 
 		log.debug("Handling /api/task/group/todo");
 
-		return ResponseEntity.ok(getTasksByStatus(group, Collections.singletonList(TaskStatus.TODO)));
+		return ResponseEntity.ok(taskRepository.findTodoTasksInGroup(group).stream()
+			.map(taskFactory::toTaskDto)
+			.collect(Collectors.toList()));
 	}
 
 	@RequestMapping(method = RequestMethod.GET, value = "/group/schedule")
@@ -166,7 +161,7 @@ public class TaskController
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 		}
 
-		if (task.getStatus() == TaskStatus.DONE)
+		if (task.getCompletedTask() != null)
 		{
 			return ResponseEntity.badRequest().build();
 		}
@@ -179,7 +174,6 @@ public class TaskController
 		completedTaskRepository.save(completedTask);
 
 		task.setCompletedTask(completedTask);
-		task.setStatus(TaskStatus.DONE);
 		taskRepository.save(task);
 
 		return ResponseEntity.ok(null);
@@ -205,14 +199,6 @@ public class TaskController
 		}
 
 		return ResponseEntity.ok(new TaskImagePayload(task.getCompletedTask().getImage()));
-	}
-
-	private List<TaskDto> getTasksByStatus(final Group group, final List<TaskStatus> statuses)
-	{
-		return taskRepository.findAllByDefinitionGroupAndStatusIn(group, statuses).stream()
-			.sorted(Comparator.comparing(AssignedTask::getDueDate))
-			.map(taskFactory::toTaskDto)
-			.collect(Collectors.toList());
 	}
 
 	private ResponseEntity<?> checkAuthorized(final User user, final Group group)

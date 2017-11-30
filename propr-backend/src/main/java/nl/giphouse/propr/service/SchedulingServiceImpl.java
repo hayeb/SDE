@@ -14,16 +14,13 @@ import javax.inject.Inject;
 
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-
 import nl.giphouse.propr.dto.task.TaskRepetitionType;
-import nl.giphouse.propr.dto.task.TaskStatus;
 import nl.giphouse.propr.model.group.Group;
 import nl.giphouse.propr.model.task.AssignedTask;
 import nl.giphouse.propr.model.task.TaskDefinition;
 import nl.giphouse.propr.model.user.User;
 import nl.giphouse.propr.repository.TaskDefinitionRepository;
 import nl.giphouse.propr.repository.TaskRepository;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
@@ -74,8 +71,7 @@ public class SchedulingServiceImpl implements ScheduleService
 		}
 
 		// 1. Determine which tasks may have already been completed, they do not have to be planned again.
-		final List<AssignedTask> doneTasksInNewSchedule = taskRepository
-			.findAllByDefinitionGroupAndDueDateGreaterThanEqualAndStatusIs(group, startDate, TaskStatus.DONE);
+		final List<AssignedTask> doneTasksInNewSchedule = taskRepository.findAllByDefinitionGroupAndDueDateGreaterThanEqualAndCompletedTaskIsNotNull(group, startDate);
 
 		// 2. For each user, count the number of tasks already done which have a due date >= current date.
 		final Map<User, Integer> userToDoneTasks = doneTasksInNewSchedule.stream()
@@ -97,7 +93,7 @@ public class SchedulingServiceImpl implements ScheduleService
 			.forEach(user -> userQueue.add(Pair.of(user, 0)));
 
 		// 6. Remove all assigned tasks in the schedule
-		taskRepository.delete(taskRepository.findAllByDefinitionGroupAndDueDateGreaterThanEqualAndStatusIs(group, startDate, TaskStatus.TODO));
+		taskRepository.delete(taskRepository.findAllByDefinitionGroupAndDueDateGreaterThanEqualAndCompletedTaskIsNull(group, startDate));
 
 		// 8. Calculate the list of tasks needed to be done in ascending order of date.
 		final List<AssignedTask> tasks = getTaskStack(taskDefinitionRepository.findAllByGroup(group), startDate, endDate);
@@ -176,7 +172,6 @@ public class SchedulingServiceImpl implements ScheduleService
 				{
 					final AssignedTask task = new AssignedTask();
 					task.setDefinition(def);
-					task.setStatus(TaskStatus.TODO);
 					task.setDueDate(date.minusDays(i * taskDays));
 
 					tasks.add(task);

@@ -20,10 +20,10 @@ public interface TaskService {
 	@GET("api/task/group/user")
 	Call<List<TaskDto>> getTasksForUserInGroup(@Query("groupname") String groupname);
 
-	@GET("api/task/group/done")
+	@GET("api/task/group/activity")
 	Call<List<TaskDto>> getDoneTasksInGroup(@Query("groupname") String groupname);
 
-	@GET("api/task/group/todo")
+	@GET("api/task/group/scheduled")
 	Call<List<TaskDto>> getTodoTasksInGroup(@Query("groupname") String groupname);
 
 	@POST("api/task/{taskId}/complete")

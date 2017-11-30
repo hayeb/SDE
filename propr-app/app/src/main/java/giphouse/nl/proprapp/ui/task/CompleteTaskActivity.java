@@ -163,11 +163,15 @@ public class CompleteTaskActivity extends AppCompatActivity {
 	private void completeTask() {
 		// TODO: Move out of main thread
 		final ByteArrayOutputStream stream = new ByteArrayOutputStream();
-		((BitmapDrawable) imageView.getDrawable()).getBitmap().compress(Bitmap.CompressFormat.JPEG, 85, stream);
-		final byte[] byteArray = stream.toByteArray();
-		Log.d(TAG, "Size of image: " + byteArray.length);
 
-		taskService.completeTask(taskId, TaskCompletionDto.builder().taskCompletionDescription(notesField.getText().toString()).taskComppletionImage(byteArray).build()).enqueue(new Callback<Void>() {
+		byte[] image = null;
+		if (imageView.getDrawable() != null)
+		{
+			((BitmapDrawable) imageView.getDrawable()).getBitmap().compress(Bitmap.CompressFormat.JPEG, 85, stream);
+			image = stream.toByteArray();
+		}
+
+		taskService.completeTask(taskId, TaskCompletionDto.builder().taskCompletionDescription(notesField.getText().toString()).taskComppletionImage(image).build()).enqueue(new Callback<Void>() {
 			@Override
 			public void onResponse(@NonNull final Call<Void> call, @NonNull final Response<Void> response) {
 				if (response.isSuccessful()) {

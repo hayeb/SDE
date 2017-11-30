@@ -6,21 +6,20 @@ import java.time.LocalDate;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import nl.giphouse.propr.dto.task.TaskStatus;
 import nl.giphouse.propr.model.user.User;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -34,7 +33,9 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "assigned_task")
+@Entity
+@EqualsAndHashCode(of = "id")
+@Table(name = "assigned_task")
 public class AssignedTask implements Serializable
 {
 	@Id
@@ -52,10 +53,6 @@ public class AssignedTask implements Serializable
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	@Column(nullable = false)
 	private LocalDate dueDate;
-
-	@Enumerated(EnumType.STRING)
-	@Column(nullable = false)
-	private TaskStatus status;
 
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "completed_task")

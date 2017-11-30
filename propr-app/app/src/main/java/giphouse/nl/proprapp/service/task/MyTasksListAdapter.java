@@ -2,25 +2,18 @@ package giphouse.nl.proprapp.service.task;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.apache.commons.lang3.StringUtils;
-
-import java.sql.Date;
-import java.text.DateFormat;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -81,6 +74,12 @@ public class MyTasksListAdapter extends BaseAdapter {
 		taskNameTextView.setText(dto.getName());
 		descriptionTextView.setText(dto.getDescription());
 		dueDateTextView.setText(dto.getDueDate());
+
+		if (dto.isOverdue())
+		{
+			dueDateTextView.setTextColor(ContextCompat.getColor(context, R.color.colorRed));
+			dueDateTextView.setTypeface(null, Typeface.BOLD);
+		}
 
 		taskCompleteButtun.setOnClickListener(new View.OnClickListener() {
 			@Override

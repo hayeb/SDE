@@ -24,11 +24,11 @@ public class TaskDto
 
 	private String dueDate;
 
-	private TaskStatus status;
-
 	private TaskWeight weight;
 
 	private String completionNotes;
 
 	private String completionDate;
+
+	private boolean overdue;
 }

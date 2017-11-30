@@ -25,7 +25,6 @@ public class TaskFactory
 			.groupId(task.getDefinition().getGroup().getId())
 			.dueDate(formatDate(task.getDueDate()))
 			.weight(task.getDefinition().getWeight())
-			.status(task.getStatus())
 			.completionDate(Optional.ofNullable(task.getCompletedTask())
 				.map(CompletedTask::getDate)
 				.map(TaskFactory::formatDate)
@@ -33,6 +32,7 @@ public class TaskFactory
 			.completionNotes(Optional.ofNullable(task.getCompletedTask())
 				.map(CompletedTask::getDescription)
 				.orElse(null))
+			.overdue(task.getCompletedTask() == null && task.getDueDate().isBefore(LocalDate.now()))
 			.build();
 	}
 

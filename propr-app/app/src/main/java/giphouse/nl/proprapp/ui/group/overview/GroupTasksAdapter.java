@@ -12,7 +12,6 @@ import java.util.List;
 
 import giphouse.nl.proprapp.R;
 import nl.giphouse.propr.dto.task.TaskDto;
-import nl.giphouse.propr.dto.task.TaskStatus;
 
 /**
  * @author haye
@@ -39,9 +38,9 @@ public class GroupTasksAdapter extends RecyclerView.Adapter<GroupTasksAdapter.Vi
 		holder.mItem = task;
 		// TODO: Set image
 		// holder.assigneeImageView
-		holder.statusImageView.setImageResource(getImageResourceForStatus(task.getStatus()));
+		holder.statusImageView.setImageResource(getImageResourceForStatus(task));
 		holder.taskTitleView.setText(task.getName());
-		holder.dueDateView.setText(task.getDueDate());
+		holder.dueDateView.setText(task.getCompletionDate() != null ? task.getCompletionDate() : task.getDueDate());
 
 		holder.mView.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -55,14 +54,13 @@ public class GroupTasksAdapter extends RecyclerView.Adapter<GroupTasksAdapter.Vi
 		});
 	}
 
-	private int getImageResourceForStatus(final TaskStatus status) {
-		switch (status) {
-			case DONE:
-				return R.drawable.ic_assignment_turned_in_black_24dp;
-			case OVERDUE:
-				return R.drawable.ic_assignment_late_black_24dp;
-			default:
-				return R.drawable.ic_task_todo;
+	private int getImageResourceForStatus(final TaskDto dto) {
+		if (dto.isOverdue()) {
+			return R.drawable.ic_assignment_late_black_24dp;
+		} else if (dto.getCompletionDate() != null) {
+			return R.drawable.ic_assignment_turned_in_black_24dp;
+		} else {
+			return R.drawable.ic_task_todo;
 		}
 	}
 
@@ -92,8 +90,7 @@ public class GroupTasksAdapter extends RecyclerView.Adapter<GroupTasksAdapter.Vi
 		}
 	}
 
-	public void updateEntries(final List<TaskDto> tasks)
-	{
+	public void updateEntries(final List<TaskDto> tasks) {
 		mValues = tasks;
 		notifyDataSetChanged();
 	}

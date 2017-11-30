@@ -4,26 +4,21 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import javax.inject.Inject;
 
 import lombok.extern.slf4j.Slf4j;
-
 import nl.giphouse.propr.dto.task.TaskRepetitionType;
-import nl.giphouse.propr.dto.task.TaskStatus;
 import nl.giphouse.propr.dto.task.TaskWeight;
 import nl.giphouse.propr.model.group.Group;
 import nl.giphouse.propr.model.task.AssignedTask;
+import nl.giphouse.propr.model.task.CompletedTask;
 import nl.giphouse.propr.model.task.TaskDefinition;
 import nl.giphouse.propr.model.user.User;
 import nl.giphouse.propr.repository.TaskDefinitionRepository;
 import nl.giphouse.propr.repository.TaskRepository;
 import nl.giphouse.propr.service.SchedulingResult;
 import nl.giphouse.propr.service.SchedulingServiceImpl;
-
 import org.apache.commons.lang3.time.StopWatch;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,10 +40,6 @@ import static org.junit.Assert.assertTrue;
 @DataJpaTest(showSql = false)
 public class SchedulingServiceImplTest
 {
-	private static final List<TaskRepetitionType> types = Collections.unmodifiableList(Arrays.asList(TaskRepetitionType.values()));
-
-	private static final List<TaskWeight> weights = Collections.unmodifiableList(Arrays.asList(TaskWeight.values()));
-
 	@Inject
 	private TestEntityManager testEntityManager;
 
@@ -57,6 +48,9 @@ public class SchedulingServiceImplTest
 
 	@Inject
 	private TaskDefinitionRepository taskDefinitionRepository;
+
+	@Inject
+	private ProprTestHelper proprTestHelper;
 
 	private SchedulingServiceImpl schedulingService;
 
@@ -87,10 +81,10 @@ public class SchedulingServiceImplTest
 	@Test
 	public void test_task_stack_generation()
 	{
-		final TaskDefinition def1 = testDefinition(null, "name", TaskRepetitionType.WEEK, TaskWeight.LIGHT, 4);
-		final TaskDefinition def2 = testDefinition(null, "name", TaskRepetitionType.WEEK, TaskWeight.LIGHT, 1);
-		final TaskDefinition def3 = testDefinition(null, "name", TaskRepetitionType.MONTH, TaskWeight.LIGHT, 2);
-		final TaskDefinition def4 = testDefinition(null, "name", TaskRepetitionType.MONTH, TaskWeight.LIGHT, 4);
+		final TaskDefinition def1 = proprTestHelper.testDefinition(null, "name", TaskRepetitionType.WEEK, TaskWeight.LIGHT, 4);
+		final TaskDefinition def2 = proprTestHelper.testDefinition(null, "name", TaskRepetitionType.WEEK, TaskWeight.LIGHT, 1);
+		final TaskDefinition def3 = proprTestHelper.testDefinition(null, "name", TaskRepetitionType.MONTH, TaskWeight.LIGHT, 2);
+		final TaskDefinition def4 = proprTestHelper.testDefinition(null, "name", TaskRepetitionType.MONTH, TaskWeight.LIGHT, 4);
 
 		// A task four times a week should generate 4 tasks in a single week.
 		final List<AssignedTask> tasks1 = schedulingService.getTaskStack(Collections.singletonList(def1), LocalDate.now(),
@@ -147,13 +141,13 @@ public class SchedulingServiceImplTest
 	@Test
 	public void scheduling_stress_test()
 	{
-		final List<User> users = generateRandomUsers(100);
+		final List<User> users = proprTestHelper.generateRandomUsers(100);
 		users.forEach(testEntityManager::persist);
 
-		final Group group = testGroup("groupname", users.get(0), users);
+		final Group group = proprTestHelper.testGroup("groupname", users.get(0), users);
 		testEntityManager.persist(group);
 
-		final List<TaskDefinition> definitions = generateRandomTaskDefinitions(100, group);
+		final List<TaskDefinition> definitions = proprTestHelper.generateRandomTaskDefinitions(100, group, 123456123456L);
 		definitions.forEach(testEntityManager::persist);
 
 		final StopWatch sw = new StopWatch();
@@ -175,13 +169,13 @@ public class SchedulingServiceImplTest
 	@Test
 	public void simple_scheduling()
 	{
-		final User user1 = testUser("user1");
-		final Group group = testGroup("group1", user1, Collections.singletonList(user1));
+		final User user1 = proprTestHelper.testUser("user1");
+		final Group group = proprTestHelper.testGroup("group1", user1, Collections.singletonList(user1));
 
 		testEntityManager.persist(user1);
 		testEntityManager.persist(group);
 
-		final TaskDefinition def = testDefinition(group, "def1", TaskRepetitionType.WEEK, TaskWeight.LIGHT, 2);
+		final TaskDefinition def = proprTestHelper.testDefinition(group, "def1", TaskRepetitionType.WEEK, TaskWeight.LIGHT, 2);
 		testEntityManager.persist(def);
 
 		final SchedulingResult result = schedulingService.reschedule(group, LocalDate.now(), LocalDate.now().plusMonths(1));
@@ -193,22 +187,22 @@ public class SchedulingServiceImplTest
 	@Test
 	public void simple_scheduling_multiple_users()
 	{
-		final User user1 = testUser("user1");
-		final User user2 = testUser("user2");
-		final User user3 = testUser("user3");
-		final User user4 = testUser("user4");
+		final User user1 = proprTestHelper.testUser("user1");
+		final User user2 = proprTestHelper.testUser("user2");
+		final User user3 = proprTestHelper.testUser("user3");
+		final User user4 = proprTestHelper.testUser("user4");
 		testEntityManager.persist(user1);
 		testEntityManager.persist(user2);
 		testEntityManager.persist(user3);
 		testEntityManager.persist(user4);
 
-		final Group group = testGroup("groupname", user1, Arrays.asList(user1, user2, user3, user4));
+		final Group group = proprTestHelper.testGroup("groupname", user1, Arrays.asList(user1, user2, user3, user4));
 		testEntityManager.persist(group);
 
-		final TaskDefinition def1 = testDefinition(group, "task1", TaskRepetitionType.WEEK, TaskWeight.LIGHT, 2);
-		final TaskDefinition def2 = testDefinition(group, "task2", TaskRepetitionType.WEEK, TaskWeight.MEDIUM, 1);
-		final TaskDefinition def3 = testDefinition(group, "task3", TaskRepetitionType.MONTH, TaskWeight.HEAVY, 1);
-		final TaskDefinition def4 = testDefinition(group, "task4", TaskRepetitionType.MONTH, TaskWeight.HEAVY, 1);
+		final TaskDefinition def1 = proprTestHelper.testDefinition(group, "task1", TaskRepetitionType.WEEK, TaskWeight.LIGHT, 2);
+		final TaskDefinition def2 = proprTestHelper.testDefinition(group, "task2", TaskRepetitionType.WEEK, TaskWeight.MEDIUM, 1);
+		final TaskDefinition def3 = proprTestHelper.testDefinition(group, "task3", TaskRepetitionType.MONTH, TaskWeight.HEAVY, 1);
+		final TaskDefinition def4 = proprTestHelper.testDefinition(group, "task4", TaskRepetitionType.MONTH, TaskWeight.HEAVY, 1);
 		testEntityManager.persist(def1);
 		testEntityManager.persist(def2);
 		testEntityManager.persist(def3);
@@ -227,31 +221,31 @@ public class SchedulingServiceImplTest
 	@Test
 	public void test_task_already_done_in_schedule()
 	{
-		final User user1 = testUser("user1");
-		final User user2 = testUser("user2");
-		final User user3 = testUser("user3");
-		final User user4 = testUser("user4");
+		final User user1 = proprTestHelper.testUser("user1");
+		final User user2 = proprTestHelper.testUser("user2");
+		final User user3 = proprTestHelper.testUser("user3");
+		final User user4 = proprTestHelper.testUser("user4");
 		testEntityManager.persist(user1);
 		testEntityManager.persist(user2);
 		testEntityManager.persist(user3);
 		testEntityManager.persist(user4);
 
-		final Group group = testGroup("groupname", user1, Arrays.asList(user1, user2, user3, user4));
+		final Group group = proprTestHelper.testGroup("groupname", user1, Arrays.asList(user1, user2, user3, user4));
 		testEntityManager.persist(group);
 
-		final TaskDefinition def1 = testDefinition(group, "task1", TaskRepetitionType.WEEK, TaskWeight.LIGHT, 2);
-		final TaskDefinition def2 = testDefinition(group, "task2", TaskRepetitionType.WEEK, TaskWeight.MEDIUM, 1);
-		final TaskDefinition def3 = testDefinition(group, "task3", TaskRepetitionType.MONTH, TaskWeight.HEAVY, 1);
-		final TaskDefinition def4 = testDefinition(group, "task4", TaskRepetitionType.MONTH, TaskWeight.HEAVY, 1);
+		final TaskDefinition def1 = proprTestHelper.testDefinition(group, "task1", TaskRepetitionType.WEEK, TaskWeight.LIGHT, 2);
+		final TaskDefinition def2 = proprTestHelper.testDefinition(group, "task2", TaskRepetitionType.WEEK, TaskWeight.MEDIUM, 1);
+		final TaskDefinition def3 = proprTestHelper.testDefinition(group, "task3", TaskRepetitionType.MONTH, TaskWeight.HEAVY, 1);
+		final TaskDefinition def4 = proprTestHelper.testDefinition(group, "task4", TaskRepetitionType.MONTH, TaskWeight.HEAVY, 1);
 		testEntityManager.persist(def1);
 		testEntityManager.persist(def2);
 		testEntityManager.persist(def3);
 		testEntityManager.persist(def4);
 
-		final AssignedTask task1 = testTask(def1, user1, LocalDate.now().plusDays(1), TaskStatus.DONE);
-		final AssignedTask task2 = testTask(def2, user1, LocalDate.now().plusWeeks(1), TaskStatus.DONE);
-		final AssignedTask task3 = testTask(def3, user1, LocalDate.now().plusWeeks(2), TaskStatus.DONE);
-		final AssignedTask task4 = testTask(def4, user1, LocalDate.now().plusWeeks(3), TaskStatus.DONE);
+		final AssignedTask task1 = proprTestHelper.testTask(def1, user1, LocalDate.now().plusDays(1),  new CompletedTask());
+		final AssignedTask task2 = proprTestHelper.testTask(def2, user1, LocalDate.now().plusWeeks(1),  new CompletedTask());
+		final AssignedTask task3 = proprTestHelper.testTask(def3, user1, LocalDate.now().plusWeeks(2),  new CompletedTask());
+		final AssignedTask task4 = proprTestHelper.testTask(def4, user1, LocalDate.now().plusWeeks(3),  new CompletedTask());
 
 		testEntityManager.persist(task1);
 		testEntityManager.persist(task2);
@@ -263,83 +257,9 @@ public class SchedulingServiceImplTest
 		final SchedulingResult result = schedulingService.reschedule(group, LocalDate.now(), LocalDate.now().plusMonths(1));
 		sw.stop();
 		log.info("Rescheduling case 1 took {}ms", sw.getTime());
-		final List<AssignedTask> tasks = taskRepository.findAllByDefinitionGroupAndStatusIn(group, Collections.singletonList(TaskStatus.TODO));
+		final List<AssignedTask> tasks = taskRepository.findTodoTasksInGroup(group);
 
 		assertEquals("10 tasks scheduled", 10, tasks.size());
 		assertTrue("All tasks are assigned", result.getTasks().stream().allMatch(t -> t.getAssignee() != null));
-	}
-
-	private List<User> generateRandomUsers(final int n)
-	{
-		return IntStream.range(0, n)
-			.mapToObj(number -> testUser("testUser" + number))
-			.collect(Collectors.toList());
-	}
-
-	private List<TaskDefinition> generateRandomTaskDefinitions(final int n, final Group group)
-	{
-		final Random random = new Random();
-
-		// Set a seed so that we get repeatable tests.
-		random.setSeed(123423453456L);
-		return IntStream.range(0, n)
-			.mapToObj(number -> testDefinition(group, "testUser" + number, randomType(random), randomWeight(random), random.nextInt(10) + 1))
-			.collect(Collectors.toList());
-	}
-
-	private TaskRepetitionType randomType(final Random random)
-	{
-		return types.get(random.nextInt(types.size()));
-	}
-
-	private TaskWeight randomWeight(final Random random)
-	{
-		return weights.get(random.nextInt(weights.size()));
-	}
-
-	private User testUser(final String name)
-	{
-		final User user1 = new User();
-		user1.setEmail("name@test.nl");
-		user1.setFirstname("name");
-		user1.setLastname("van der name");
-		user1.setPassword("namenamename");
-		user1.setUsername(name);
-
-		return user1;
-	}
-
-	private Group testGroup(final String name, final User admin, final List<User> users)
-	{
-		final Group group = new Group();
-		group.setName(name);
-		group.setInviteCode("invitecode");
-		group.setAdmin(admin);
-		group.setUsers(users);
-
-		return group;
-	}
-
-	private TaskDefinition testDefinition(final Group group, final String name, final TaskRepetitionType type, final TaskWeight weight,
-		final int freq)
-	{
-		final TaskDefinition taskDefinition = new TaskDefinition();
-		taskDefinition.setWeight(weight);
-		taskDefinition.setPeriodType(type);
-		taskDefinition.setName(name);
-		taskDefinition.setGroup(group);
-		taskDefinition.setFrequency(freq);
-
-		return taskDefinition;
-	}
-
-	private AssignedTask testTask(final TaskDefinition definition, final User assignee, final LocalDate dueDate, final TaskStatus taskStatus)
-	{
-		final AssignedTask task = new AssignedTask();
-		task.setDefinition(definition);
-		task.setAssignee(assignee);
-		task.setDueDate(dueDate);
-		task.setStatus(taskStatus);
-		return task;
 	}
 }
