@@ -12,14 +12,17 @@ import lombok.extern.slf4j.Slf4j;
 import nl.giphouse.propr.dto.task.TaskCompletionDto;
 import nl.giphouse.propr.dto.task.TaskDefinitionDto;
 import nl.giphouse.propr.dto.task.TaskImagePayload;
+import nl.giphouse.propr.dto.task.TaskRatingDto;
 import nl.giphouse.propr.model.group.Group;
 import nl.giphouse.propr.model.task.AssignedTask;
 import nl.giphouse.propr.model.task.CompletedTask;
 import nl.giphouse.propr.model.task.TaskFactory;
+import nl.giphouse.propr.model.task.TaskRating;
 import nl.giphouse.propr.model.user.User;
 import nl.giphouse.propr.repository.CompletedTaskRepository;
 import nl.giphouse.propr.repository.GroupRepository;
 import nl.giphouse.propr.repository.TaskDefinitionRepository;
+import nl.giphouse.propr.repository.TaskRatingRepository;
 import nl.giphouse.propr.repository.TaskRepository;
 import nl.giphouse.propr.service.UserService;
 
@@ -44,19 +47,22 @@ public class TaskController
 	private TaskRepository taskRepository;
 
 	@Inject
-	private UserService userService;
-
-	@Inject
-	private GroupRepository groupRepository;
-
-	@Inject
-	private TaskFactory taskFactory;
+	private TaskRatingRepository taskRatingRepository;
 
 	@Inject
 	private TaskDefinitionRepository taskDefinitionRepository;
 
 	@Inject
 	private CompletedTaskRepository completedTaskRepository;
+
+	@Inject
+	private GroupRepository groupRepository;
+
+	@Inject
+	private UserService userService;
+
+	@Inject
+	private TaskFactory taskFactory;
 
 	@RequestMapping(method = RequestMethod.GET, value = "/group/user")
 	public ResponseEntity<?> getTasksForUserInGroup(final Principal principal, final @RequestParam String groupname)
@@ -198,22 +204,121 @@ public class TaskController
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 		}
 
+		if (task.getCompletedTask() == null)
+		{
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+		}
+
 		return ResponseEntity.ok(new TaskImagePayload(task.getCompletedTask().getImage()));
+	}
+
+	@RequestMapping(method = RequestMethod.POST, value = "/{taskId}/rate")
+	public ResponseEntity<?> rateTask(final Principal principal, final @PathVariable Long taskId, final @RequestBody TaskRatingDto taskRatingDto)
+	{
+		final AssignedTask task = taskRepository.findOne(taskId);
+
+		log.debug("Handling POST /api/task/{taskId}/rate");
+
+		if (task == null)
+		{
+			log.debug("No task with id {} found", taskId);
+			return ResponseEntity.notFound().build();
+		}
+
+		final User user = (User) userService.loadUserByUsername(principal.getName());
+		final Group group = task.getDefinition().getGroup();
+
+		final ResponseEntity<?> authorizationResponse = checkAuthorized(user, group);
+		if (authorizationResponse != null)
+		{
+			return authorizationResponse;
+		}
+
+		if (task.getCompletedTask() == null)
+		{
+			log.debug("Task {} is not yet completed", task.getId());
+			return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).build();
+		}
+
+		if (!validateRating(taskRatingDto))
+		{
+			log.debug("Input failed validation");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+		}
+
+		final TaskRating taskRating = task.getCompletedTask().getRatings().stream()
+			.filter(t -> t.getAuthor().equals(user))
+			.findFirst().orElseGet(TaskRating::new);
+
+		taskRating.setAuthor(user);
+		taskRating.setComment(taskRatingDto.getComment());
+		taskRating.setScore(taskRatingDto.getScore());
+		taskRating.setCompletedTask(task.getCompletedTask());
+
+		taskRatingRepository.save(taskRating);
+
+		return ResponseEntity.ok().build();
+	}
+
+	@RequestMapping(method = RequestMethod.GET, value = "{taskId}/rate")
+	public ResponseEntity<?> getTaskRatingForUser(final Principal principal, final @PathVariable long taskId)
+	{
+		final AssignedTask task = taskRepository.findOne(taskId);
+
+		log.debug("Handling GET /api/task/{taskId}/rate");
+
+		if (task == null)
+		{
+			log.debug("No task with id {} found", taskId);
+			return ResponseEntity.notFound().build();
+		}
+
+		final User user = (User) userService.loadUserByUsername(principal.getName());
+		final Group group = task.getDefinition().getGroup();
+
+		final ResponseEntity<?> authorizationResponse = checkAuthorized(user, group);
+		if (authorizationResponse != null)
+		{
+			return authorizationResponse;
+		}
+
+		if (task.getCompletedTask() == null)
+		{
+			log.debug("Task {} is not yet completed", task.getId());
+			return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).build();
+		}
+
+		final TaskRating rating = task.getCompletedTask().getRatings().stream()
+			.filter(r -> r.getAuthor().equals(user))
+			.findFirst().orElse(null);
+
+		if (rating == null)
+		{
+			return ResponseEntity.notFound().build();
+		}
+
+		return ResponseEntity.ok(new TaskRatingDto(rating.getScore(), rating.getComment()));
+	}
+
+	private boolean validateRating(final TaskRatingDto dto)
+	{
+		return dto.getScore() > 0 && dto.getScore() <= 10;
 	}
 
 	private ResponseEntity<?> checkAuthorized(final User user, final Group group)
 	{
 		if (group == null)
 		{
+			log.debug("No group found");
 			return ResponseEntity.notFound().build();
 		}
 
 		if (!group.getUsers().contains(user))
 		{
+			log.debug("User {} not authorized for group {}", user.getUsername(), group.getName());
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 		}
 
 		return null;
 	}
-
 }

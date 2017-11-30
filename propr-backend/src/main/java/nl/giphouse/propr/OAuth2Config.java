@@ -77,7 +77,7 @@ public class OAuth2Config extends AuthorizationServerConfigurerAdapter
 		clients.inMemory()
 			.withClient(proprConfiguration.getClientId())
 			.accessTokenValiditySeconds(60 * 60 * 24)
-			.accessTokenValiditySeconds(60 * 60 * 24 * 48)
+			.refreshTokenValiditySeconds(60 * 60 * 24 * 48)
 			.authorities("ROLE_USER")
 			.scopes("read", "write")
 			.resourceIds(resourceId)

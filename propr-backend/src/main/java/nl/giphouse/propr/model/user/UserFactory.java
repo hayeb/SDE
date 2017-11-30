@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserFactory
 {
-
 	public UserInfoDto fromEntity(final User user)
 	{
 		return UserInfoDto.builder()

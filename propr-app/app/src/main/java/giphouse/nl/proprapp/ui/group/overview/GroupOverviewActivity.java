@@ -32,9 +32,10 @@ import retrofit2.Response;
 
 public class GroupOverviewActivity extends AppCompatActivity implements MyTasksInteractionListener, OnGroupTasksFragmentInteractionListener {
 
+	private static final String TAG = "GroupOverviewActivity";
+
 	@Inject
 	GroupService groupService;
-	private static final String TAG = "GroupOverviewActivity";
 
 	private String groupName;
 
@@ -184,6 +185,7 @@ public class GroupOverviewActivity extends AppCompatActivity implements MyTasksI
 		final Bundle bundle = new Bundle();
 		bundle.putLong(ShowCompletedTaskActivity.ARG_TASK_ID, item.getTaskId());
 		bundle.putString(ShowCompletedTaskActivity.ARG_TASK_COMPLETION_NOTES, item.getCompletionNotes());
+		// TODO: Pass isAssignee parameter
 		intent.putExtras(bundle);
 		startActivity(intent);
 	}

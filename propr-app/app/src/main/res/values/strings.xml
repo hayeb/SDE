@@ -102,4 +102,7 @@
 	<string name="title_rate_this_task">Rate this task</string>
 	<string name="no_image_taken">No image was taken for this task</string>
 	<string name="take_picture">Take picture</string>
+	<string name="title_rate_task">Rate task</string>
+	<string name="hint_rating_comments">Comments</string>
+	<string name="button_submit_rating">Submit rating</string>
 </resources>
