@@ -3,6 +3,7 @@ package giphouse.nl.proprapp.service.task;
 import java.util.List;
 
 import nl.giphouse.propr.dto.task.TaskCompletionDto;
+import nl.giphouse.propr.dto.task.TaskDefinitionDto;
 import nl.giphouse.propr.dto.task.TaskDto;
 import nl.giphouse.propr.dto.task.TaskRatingDto;
 import retrofit2.Call;
@@ -25,6 +26,9 @@ public interface TaskService {
 
 	@GET("api/task/group/scheduled")
 	Call<List<TaskDto>> getTodoTasksInGroup(@Query("groupname") String groupname);
+
+	@POST("api/task/group/add")
+	Call<TaskDefinitionDto> createTask(final @Body TaskDefinitionDto taskDefinitionDto);
 
 	@POST("api/task/{taskId}/complete")
 	Call<Void> completeTask(@Path("taskId") Long taskId, @Body TaskCompletionDto taskCompletionDto);

@@ -157,7 +157,6 @@ public class GroupController
 			.collect(Collectors.toList());
 
 		return ResponseEntity.ok(groupDtos);
-	}
 
 	@RequestMapping(value = "/{groupId}/leave", method = RequestMethod.POST)
 	public ResponseEntity<Void> leaveGroup(final Principal principal, final @PathVariable("groupId") long groupId)

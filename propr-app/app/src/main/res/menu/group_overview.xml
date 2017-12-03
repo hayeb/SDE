@@ -12,4 +12,10 @@
 		android:id="@+id/item_leave_group"
 		app:showAsAction="never"/>
 
+	<item
+		android:id="@+id/item_task_definitions"
+		android:icon="@drawable/ic_add_taskdef"
+		android:title="@string/item_title_task_definitions"
+		app:showAsAction="always"/>
+
 </menu>

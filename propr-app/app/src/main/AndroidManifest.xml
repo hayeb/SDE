@@ -51,6 +51,7 @@
 				android:value="giphouse.nl.proprapp.SplashActivity" />
 		</activity>
 
+
 		<activity
 			android:name=".ui.group.GroupAddActivity"
 			android:label="@string/title_activity_group_add"

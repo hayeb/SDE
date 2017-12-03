@@ -20,6 +20,8 @@ import javax.inject.Inject;
 
 import giphouse.nl.proprapp.ProprApplication;
 import giphouse.nl.proprapp.R;
+import giphouse.nl.proprapp.ui.group.AddTaskActivity;
+import giphouse.nl.proprapp.ui.group.GroupMembersActivity;
 import giphouse.nl.proprapp.service.group.GroupService;
 import giphouse.nl.proprapp.ui.group.GroupInfoActivity;
 import giphouse.nl.proprapp.ui.group.GroupListActivity;
@@ -123,22 +125,29 @@ public class GroupOverviewActivity extends AppCompatActivity implements MyTasksI
 
 	@Override
 	public boolean onOptionsItemSelected(final MenuItem item) {
-		if (item.getItemId() == R.id.item_group_info) {
-			final Intent intent = new Intent(this, GroupInfoActivity.class);
-
-			intent.putExtra(GroupInfoActivity.ARG_GROUP_ID, groupId);
-			startActivity(intent);
-		} else if (item.getItemId() == android.R.id.home) {
-			final Intent intent = NavUtils.getParentActivityIntent(this);
-			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
-				| Intent.FLAG_ACTIVITY_SINGLE_TOP);
-			NavUtils.navigateUpTo(this, intent);
-			return true;
-		} else if (item.getItemId() == R.id.item_leave_group) {
-			leaveGroup();
-			return true;
+		final Intent intent;
+		switch (item.getItemId()) {
+			case R.id.item_members:
+				intent = new Intent(this, GroupMembersActivity.class);
+				intent.putExtra(GroupMembersActivity.ARG_PARAM1, groupName);
+				startActivity(intent);
+				break;
+			case R.id.item_task_definitions:
+				intent = new Intent(this, AddTaskActivity.class);
+				intent.putExtra("groupId", groupId);
+				intent.putExtra("groupName", groupName);
+				startActivity(intent);
+				break;
+			case android.R.id.home:
+				intent = NavUtils.getParentActivityIntent(this);
+				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
+						| Intent.FLAG_ACTIVITY_SINGLE_TOP);
+				NavUtils.navigateUpTo(this, intent);
+				return true;
+			case R.id.item_leave_group:
+				leaveGroup();
+				return true;
 		}
-
 		return super.onOptionsItemSelected(item);
 	}
 
@@ -192,6 +201,11 @@ public class GroupOverviewActivity extends AppCompatActivity implements MyTasksI
 
 	@Override
 	public void onGroupScheduleFragmentInteraction(final TaskDto item) {
+
+	}
+
+	@Override
+	public void onPointerCaptureChanged(boolean hasCapture) {
 
 	}
 }

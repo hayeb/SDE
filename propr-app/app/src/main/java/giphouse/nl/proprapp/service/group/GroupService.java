@@ -6,6 +6,7 @@ import giphouse.nl.proprapp.service.group.search.GroupSearchResult;
 import nl.giphouse.propr.dto.group.GroupAddDto;
 import nl.giphouse.propr.dto.group.GroupDto;
 import nl.giphouse.propr.dto.group.GroupJoinDto;
+import nl.giphouse.propr.dto.task.TaskDefinitionDto;
 import nl.giphouse.propr.dto.user.UserInfoDto;
 import retrofit2.Call;
 import retrofit2.http.Body;

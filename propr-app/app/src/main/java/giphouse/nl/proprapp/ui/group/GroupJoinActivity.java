@@ -82,7 +82,7 @@ public class GroupJoinActivity extends AppCompatActivity {
 			public void onResponse(@NonNull final Call<GroupDto> call, @NonNull final Response<GroupDto> response) {
 				if (!response.isSuccessful()) {
 				} else {
-					Log.i(TAG, "Succesfully created a group");
+					Log.i(TAG, "Succesfully joined a group");
 					final Intent intent = new Intent(GroupJoinActivity.this, GroupOverviewActivity.class);
 					final GroupDto dto = response.body();
 					if (dto != null)

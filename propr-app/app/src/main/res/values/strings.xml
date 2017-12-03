@@ -27,6 +27,31 @@
 	<string name="hint_group_code">Group code</string>
 	<string name="join_toolbar">Join a group</string>
 
+	<!-- Strings related to add taskdefinitions -->
+	<string name="add_task_toolbar">Add a task</string>
+	<string name="new_task">New task:</string>
+	<string name="frequency">How often should this task be done?</string>
+	<string name="hint_task_name">Name</string>
+	<string name="hint_task_description">Description</string>
+	<string name="hint_task_weight">Weight</string>
+	<string name="hint_task_number">Number</string>
+	<string name="times">times a</string>
+	<string-array name="frequencytypes">
+		<item>DAY</item>
+		<item>WEEK</item>
+		<item>MONTH</item>
+		<item>YEAR</item>
+	</string-array>
+	<string-array name="weights">
+		<item>LIGHT</item>
+		<item>MEDIUM</item>
+		<item>HEAVY</item>
+	</string-array>
+	<string name="item_title_task_definitions">Task definitions</string>
+	<string name="add_more">Add more</string>
+	<string name="done">Done</string>
+	<string name="input_not_valid">Input is not valid, try again</string>
+
 	<!-- IP-adres van de host-machine, voor emulators -->
 	<string name="backend_url">http://10.0.2.2:8000/propr/</string>
 	<string name="account_type">nl.giphouse.propr</string>

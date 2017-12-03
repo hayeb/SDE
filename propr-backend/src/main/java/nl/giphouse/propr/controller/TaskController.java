@@ -4,6 +4,7 @@ import java.security.Principal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
@@ -140,6 +141,29 @@ public class TaskController
 			.collect(Collectors.toList());
 
 		return ResponseEntity.ok(definitions);
+	}
+
+	@RequestMapping(method = RequestMethod.POST, value = "/group/add")
+	public ResponseEntity<?> addTaskToGroup(@RequestBody final TaskDefinitionDto taskAddDto, final Principal principal)
+	{
+		final User user = (User) userService.loadUserByUsername(principal.getName());
+		final Group group = groupRepository.findGroupById(taskAddDto.getGroupId());
+
+		if (group == null)
+		{
+			return ResponseEntity.notFound().build();
+		}
+		log.debug("Handling /api/task/group/add");
+
+		final TaskDefinition taskDef = new TaskDefinition();
+		taskDef.setName(taskAddDto.getName());
+		taskDef.setDescription(taskAddDto.getDescription());
+		taskDef.setWeight(taskAddDto.getWeight());
+		taskDef.setFrequency(taskAddDto.getFrequency());
+		taskDef.setPeriodType(taskAddDto.getPeriodType());
+		taskDefinitionRepository.save(taskDef);
+
+		return ResponseEntity.ok(taskFactory.fromEntity(taskDef));
 	}
 
 	@RequestMapping(method = RequestMethod.POST, value = "/{taskId}/complete")
