@@ -39,6 +39,7 @@ import javax.inject.Inject;
 
 import giphouse.nl.proprapp.ProprApplication;
 import giphouse.nl.proprapp.R;
+import giphouse.nl.proprapp.service.ImageUtil;
 import giphouse.nl.proprapp.service.task.TaskService;
 import nl.giphouse.propr.dto.task.TaskCompletionDto;
 import retrofit2.Call;
@@ -162,19 +163,27 @@ public class CompleteTaskActivity extends AppCompatActivity {
 
 	private void completeTask() {
 		// TODO: Move out of main thread
-		final ByteArrayOutputStream stream = new ByteArrayOutputStream();
+		final byte[] image = ImageUtil.getImageBytes((BitmapDrawable) imageView.getDrawable(), 1500);
 
-		byte[] image = null;
-		if (imageView.getDrawable() != null)
-		{
-			((BitmapDrawable) imageView.getDrawable()).getBitmap().compress(Bitmap.CompressFormat.JPEG, 85, stream);
-			image = stream.toByteArray();
-		}
+		final TaskCompletionDto dto = TaskCompletionDto.builder()
+			.taskCompletionDescription(notesField.getText().toString())
+			.build();
 
-		taskService.completeTask(taskId, TaskCompletionDto.builder().taskCompletionDescription(notesField.getText().toString()).taskComppletionImage(image).build()).enqueue(new Callback<Void>() {
+		taskService.completeTask(taskId, dto).enqueue(new Callback<Void>() {
 			@Override
 			public void onResponse(@NonNull final Call<Void> call, @NonNull final Response<Void> response) {
 				if (response.isSuccessful()) {
+					taskService.uploadImage(taskId, image).enqueue(new Callback<Void>() {
+						@Override
+						public void onResponse(@NonNull final Call<Void> call, @NonNull final Response<Void> response) {
+
+						}
+
+						@Override
+						public void onFailure(@NonNull final Call<Void> call, @NonNull final Throwable t) {
+
+						}
+					});
 					navigateToParent();
 					Toast.makeText(CompleteTaskActivity.this, "Task completed! Well done!", Toast.LENGTH_LONG).show();
 				} else {

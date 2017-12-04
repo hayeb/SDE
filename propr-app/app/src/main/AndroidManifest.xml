@@ -79,8 +79,8 @@
 		</activity>
 
 		<activity
-			android:name=".ui.group.GroupMembersActivity"
-			android:label="@string/item_title_members"
+			android:name=".ui.group.GroupInfoActivity"
+			android:label="@string/item_title_group_info"
 			android:parentActivityName=".ui.group.overview.GroupOverviewActivity">
 			<meta-data
 				android:name="android.support.PARENT_ACTIVITY"

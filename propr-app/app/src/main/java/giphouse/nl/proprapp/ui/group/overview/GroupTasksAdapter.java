@@ -86,7 +86,6 @@ public class GroupTasksAdapter extends RecyclerView.Adapter<GroupTasksAdapter.Vi
 			assigneeImageView = view.findViewById(R.id.task_assignee_image);
 			taskTitleView = view.findViewById(R.id.task_name_text);
 			dueDateView = view.findViewById(R.id.task_due_date_text);
-
 		}
 	}
 

@@ -21,8 +21,8 @@ import javax.inject.Inject;
 import giphouse.nl.proprapp.ProprApplication;
 import giphouse.nl.proprapp.R;
 import giphouse.nl.proprapp.service.group.GroupService;
+import giphouse.nl.proprapp.ui.group.GroupInfoActivity;
 import giphouse.nl.proprapp.ui.group.GroupListActivity;
-import giphouse.nl.proprapp.ui.group.GroupMembersActivity;
 import giphouse.nl.proprapp.ui.group.overview.GroupMyTasksFragment.MyTasksInteractionListener;
 import giphouse.nl.proprapp.ui.task.ShowCompletedTaskActivity;
 import nl.giphouse.propr.dto.task.TaskDto;
@@ -123,10 +123,10 @@ public class GroupOverviewActivity extends AppCompatActivity implements MyTasksI
 
 	@Override
 	public boolean onOptionsItemSelected(final MenuItem item) {
-		if (item.getItemId() == R.id.item_members) {
-			final Intent intent = new Intent(this, GroupMembersActivity.class);
+		if (item.getItemId() == R.id.item_group_info) {
+			final Intent intent = new Intent(this, GroupInfoActivity.class);
 
-			intent.putExtra(GroupMembersActivity.ARG_PARAM1, groupName);
+			intent.putExtra(GroupInfoActivity.ARG_GROUP_ID, groupId);
 			startActivity(intent);
 		} else if (item.getItemId() == android.R.id.home) {
 			final Intent intent = NavUtils.getParentActivityIntent(this);

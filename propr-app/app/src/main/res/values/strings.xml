@@ -105,4 +105,5 @@
 	<string name="title_rate_task">Rate task</string>
 	<string name="hint_rating_comments">Comments</string>
 	<string name="button_submit_rating">Submit rating</string>
+	<string name="item_title_group_info">Group info</string>
 </resources>

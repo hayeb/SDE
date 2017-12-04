@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import giphouse.nl.proprapp.R;
+import giphouse.nl.proprapp.dagger.PicassoWrapper;
 import giphouse.nl.proprapp.ui.group.overview.GroupOverviewActivity;
 import nl.giphouse.propr.dto.group.GroupDto;
 
@@ -30,9 +31,12 @@ public class GroupListAdapter extends BaseAdapter {
 
 	private final Context context;
 
-	public GroupListAdapter(final LayoutInflater layoutInflater, final Context context) {
+	private final PicassoWrapper picassoWrapper;
+
+	public GroupListAdapter(final LayoutInflater layoutInflater, final Context context, final PicassoWrapper picassoWrapper) {
 		this.mLayoutInflater = layoutInflater;
 		this.context = context;
+		this.picassoWrapper = picassoWrapper;
 	}
 
 	@Override
@@ -73,8 +77,7 @@ public class GroupListAdapter extends BaseAdapter {
 		titleText.setText(title);
 
 		final StringBuilder sb = new StringBuilder(dto.getUsernames().get(0));
-		for (final String userName : dto.getUsernames().subList(1, dto.getUsernames().size()))
-		{
+		for (final String userName : dto.getUsernames().subList(1, dto.getUsernames().size())) {
 			sb.append(", ");
 			sb.append(userName);
 		}
@@ -91,6 +94,8 @@ public class GroupListAdapter extends BaseAdapter {
 				context.startActivity(intent);
 			}
 		});
+
+		picassoWrapper.loadGroupImage(dto.getGroupId(), groupAvatarView);
 
 		return itemView;
 	}

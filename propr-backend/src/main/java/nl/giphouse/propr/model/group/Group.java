@@ -62,6 +62,9 @@ public class Group implements Serializable
 		inverseJoinColumns = { @JoinColumn(name = "user_id") })
 	private List<User> users;
 
+	@Column
+	private byte[] image;
+
 	public Group(final String name, final String inviteCode, final User admin, final List<User> users)
 	{
 		this.name = name;

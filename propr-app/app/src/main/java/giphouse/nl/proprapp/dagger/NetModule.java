@@ -2,10 +2,16 @@ package giphouse.nl.proprapp.dagger;
 
 import android.accounts.AccountManager;
 import android.app.Application;
+import android.support.annotation.NonNull;
+import android.util.Base64;
 
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.jakewharton.picasso.OkHttp3Downloader;
+import com.squareup.picasso.Picasso;
+
+import java.io.IOException;
 
 import javax.inject.Singleton;
 
@@ -16,7 +22,13 @@ import giphouse.nl.proprapp.account.AuthenticatorService;
 import giphouse.nl.proprapp.account.OAuthRequestInterceptor;
 import giphouse.nl.proprapp.account.ProprAuthenticator;
 import okhttp3.Cache;
+import okhttp3.Interceptor;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -40,7 +52,7 @@ public class NetModule {
 	@Provides
 	@Singleton
 	Cache providesOkHttpCache(final Application application) {
-		return new Cache(application.getCacheDir(), 10 * 1024 * 1024);
+		return new Cache(application.getCacheDir(), Integer.MAX_VALUE);
 	}
 
 	@Provides
@@ -60,7 +72,25 @@ public class NetModule {
 		final OkHttpClient client = new OkHttpClient.Builder()
 			.cache(cache)
 			.addInterceptor(interceptor)
-			//.addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+			.addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+			.addInterceptor(new Interceptor() {
+				@Override
+				public Response intercept(@NonNull final Chain chain) throws IOException {
+					final Request request = chain.request();
+					final Response response = chain.proceed(request);
+
+					if (request.url().toString().endsWith("image") && request.method().equals("GET"))
+					{
+						final ResponseBody body = response.body();
+						final MediaType contentType = body.contentType();
+						final byte[] base64Image = Base64.decode(body.string(), Base64.NO_WRAP);
+						ResponseBody newBody = ResponseBody.create(contentType, base64Image);
+						return response.newBuilder().body(newBody).build();
+					} else {
+						return response;
+					}
+				}
+			})
 			.build();
 
 		interceptor.initHttpClient(client);
@@ -90,4 +120,14 @@ public class NetModule {
 		return new ProprAuthenticator(application, authenticatorService);
 	}
 
+	@Provides
+	@Singleton
+	PicassoWrapper providePicasso(final Application application, final OkHttpClient client, final ProprConfiguration proprConfiguration)
+	{
+		final Picasso.Builder builder = new Picasso.Builder(application);
+		builder.downloader(new OkHttp3Downloader(client));
+		builder.loggingEnabled(true);
+
+		return new PicassoWrapperImpl(builder.build(), proprConfiguration);
+	}
 }

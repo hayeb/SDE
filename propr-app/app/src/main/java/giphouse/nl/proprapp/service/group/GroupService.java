@@ -22,19 +22,21 @@ public interface GroupService {
 	@GET("api/group")
 	Call<List<GroupDto>> listGroups();
 
-	@POST("api/group/create")
+	@POST("api/group")
 	Call<GroupDto> createGroup(@Body final GroupAddDto groupAddDto);
-
 
 	@POST("api/group/join")
 	Call<GroupDto> joinGroup(@Body final GroupJoinDto groupJoinDto);
 
-	@GET("api/group/search")
-	Call<List<GroupSearchResult>> searchGroups(@Query("query") final String query);
-
-	@GET("api/group/users")
-	Call<List<UserInfoDto>> getUsersInGroup(@Query("groupName") final String groupName);
+	@GET("api/group/{groupId}/users")
+	Call<List<UserInfoDto>> getUsersInGroup(@Path("groupId") final long groupId);
 
 	@POST("api/group/{groupId}/leave")
 	Call<Void> leaveGroup(@Path("groupId") long groupId);
+
+	@GET("api/group/{groupId}/image")
+	Call<byte[]> getGroupImage(@Path("groupId") long groupId);
+
+	@POST("api/group/{groupId}/image")
+	Call<Void> updateGroupImage(@Path("groupId") long groupId, @Body byte[] image);
 }

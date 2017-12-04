@@ -44,6 +44,7 @@ public class ProprConfig extends ResourceServerConfigurerAdapter
 		http
 			.requestMatcher(new OAuthRequestedMatcher())
 			.csrf().disable()
+			.headers().cacheControl().disable().and()
 			.anonymous().disable()
 			.authorizeRequests()
 			.antMatchers(HttpMethod.OPTIONS).permitAll()

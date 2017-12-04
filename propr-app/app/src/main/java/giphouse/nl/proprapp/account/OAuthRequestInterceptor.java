@@ -53,6 +53,8 @@ public class OAuthRequestInterceptor implements Interceptor {
 	public Response intercept(@NonNull final Chain chain) throws IOException {
 		Request request = chain.request();
 
+		Log.i(TAG, "Request: " + request.url());
+
 		if (!isInterceptable(request)) {
 			return chain.proceed(request);
 		}

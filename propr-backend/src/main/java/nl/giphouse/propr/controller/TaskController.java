@@ -11,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import nl.giphouse.propr.dto.task.TaskCompletionDto;
 import nl.giphouse.propr.dto.task.TaskDefinitionDto;
-import nl.giphouse.propr.dto.task.TaskImagePayload;
 import nl.giphouse.propr.dto.task.TaskRatingDto;
 import nl.giphouse.propr.model.group.Group;
 import nl.giphouse.propr.model.task.AssignedTask;
@@ -175,7 +174,6 @@ public class TaskController
 		final CompletedTask completedTask = new CompletedTask();
 		completedTask.setDate(LocalDate.now());
 		completedTask.setDescription(taskCompletionDto.getTaskCompletionDescription());
-		completedTask.setImage(taskCompletionDto.getTaskComppletionImage());
 
 		completedTaskRepository.save(completedTask);
 
@@ -185,31 +183,63 @@ public class TaskController
 		return ResponseEntity.ok(null);
 	}
 
-	@RequestMapping(method = RequestMethod.GET, value = "/{taskId}/image")
-	public ResponseEntity<?> getImageForTask(final Principal principal, final @PathVariable long taskId)
+	@RequestMapping(method = RequestMethod.POST, value = "/{taskId}/image")
+	public ResponseEntity<Void> uploadImageForTask(final Principal principal, final @PathVariable long taskId, final @RequestBody byte[] image)
 	{
 		final AssignedTask task = taskRepository.findOne(taskId);
 
-		log.debug("Handling /api/task/{taskId}/image");
+		log.debug("Handling POST /api/task/{taskId}/image");
 
 		if (task == null)
 		{
-			return ResponseEntity.notFound().build();
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 		}
 
 		final User user = (User) userService.loadUserByUsername(principal.getName());
 
 		if (!task.getDefinition().getGroup().getUsers().contains(user))
 		{
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
 		}
 
 		if (task.getCompletedTask() == null)
 		{
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+			return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(null);
 		}
 
-		return ResponseEntity.ok(new TaskImagePayload(task.getCompletedTask().getImage()));
+		final CompletedTask completedTask = task.getCompletedTask();
+
+		completedTask.setImage(image);
+		completedTaskRepository.save(task.getCompletedTask());
+
+		return ResponseEntity.ok(null);
+	}
+
+	@RequestMapping(method = RequestMethod.GET, value = "/{taskId}/image")
+	public ResponseEntity<byte[]> getImageForTask(final Principal principal, final @PathVariable long taskId)
+	{
+		final AssignedTask task = taskRepository.findOne(taskId);
+
+		log.debug("Handling GET /api/task/{taskId}/image");
+
+		if (task == null)
+		{
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+		}
+
+		final User user = (User) userService.loadUserByUsername(principal.getName());
+
+		if (!task.getDefinition().getGroup().getUsers().contains(user))
+		{
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+		}
+
+		if (task.getCompletedTask() == null || task.getCompletedTask().getImage() == null)
+		{
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+		}
+
+		return ResponseEntity.ok(task.getCompletedTask().getImage());
 	}
 
 	@RequestMapping(method = RequestMethod.POST, value = "/{taskId}/rate")

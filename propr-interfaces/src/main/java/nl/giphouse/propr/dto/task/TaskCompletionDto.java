@@ -15,6 +15,4 @@ import lombok.Setter;
 public class TaskCompletionDto {
 
 	final String taskCompletionDescription;
-
-	final byte[] taskComppletionImage;
 }

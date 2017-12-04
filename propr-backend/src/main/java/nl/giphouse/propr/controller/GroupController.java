@@ -3,6 +3,7 @@ package nl.giphouse.propr.controller;
 import java.security.Principal;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -12,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import nl.giphouse.propr.dto.group.GroupAddDto;
 import nl.giphouse.propr.dto.group.GroupDto;
 import nl.giphouse.propr.dto.group.GroupJoinDto;
+import nl.giphouse.propr.dto.user.UserInfoDto;
 import nl.giphouse.propr.model.group.Group;
 import nl.giphouse.propr.model.group.GroupFactory;
 import nl.giphouse.propr.model.user.User;
@@ -21,6 +23,7 @@ import nl.giphouse.propr.repository.TaskRepository;
 import nl.giphouse.propr.service.UserService;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -69,7 +72,7 @@ public class GroupController
 		return ResponseEntity.ok(dtos);
 	}
 
-	@RequestMapping(value = "/create", method = RequestMethod.POST)
+	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<?> createGroup(@RequestBody final GroupAddDto groupAddDto, final Principal principal)
 	{
 		final User user = (User) userService.loadUserByUsername(principal.getName());
@@ -92,23 +95,23 @@ public class GroupController
 		return ResponseEntity.ok(groupFactory.fromEntity(group));
 	}
 
-	@RequestMapping(value = "/users", method = RequestMethod.GET)
-	public ResponseEntity<?> listUsersInGroup(final Principal principal, final String groupName)
+	@RequestMapping(value = "/{groupId}/users", method = RequestMethod.GET)
+	public ResponseEntity<List<UserInfoDto>> listUsersInGroup(final Principal principal, final @PathVariable long groupId)
 	{
-		final User user = (User) userService.loadUserByUsername(principal.getName());
-		final Group group = groupRepository.findGroupByName(groupName);
+		final Group group = groupRepository.findOne(groupId);
+
+		log.debug("Handling /api/group/users");
 
 		if (group == null)
 		{
-			return ResponseEntity.notFound().build();
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 		}
 
+		final User user = (User) userService.loadUserByUsername(principal.getName());
 		if (!group.getUsers().contains(user))
 		{
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
 		}
-
-		log.debug("Handling /api/group/users");
 
 		return ResponseEntity.ok(group.getUsers().stream().map(userFactory::fromEntity).collect(Collectors.toList()));
 	}
@@ -177,5 +180,45 @@ public class GroupController
 		taskRepository.delete(taskRepository.findAllByAssigneeAndDefinitionGroup(user, group));
 
 		return ResponseEntity.ok(null);
+	}
+
+	@RequestMapping(method = RequestMethod.POST, value = "/{groupId}/image")
+	public ResponseEntity<Void> updateGroupImage(final Principal principal, final @PathVariable long groupId, final @RequestBody byte[] image)
+	{
+		log.debug("Handling POST /api/group/{}/image", groupId);
+		final Group group = groupRepository.findOne(groupId);
+		if (group == null)
+		{
+			return ResponseEntity.notFound().build();
+		}
+		final User user = (User) userService.loadUserByUsername(principal.getName());
+		if (!group.getUsers().contains(user))
+		{
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+		}
+
+		group.setImage(image);
+
+		groupRepository.save(group);
+
+		return ResponseEntity.ok().cacheControl(CacheControl.maxAge(1, TimeUnit.DAYS))	.body(null);
+	}
+
+	@RequestMapping(method = RequestMethod.GET, value = "/{groupId}/image")
+	public ResponseEntity<byte[]> getGroupImage(final Principal principal, final @PathVariable long groupId)
+	{
+		log.debug("Handling GET /api/group/{}/image", groupId);
+		final Group group = groupRepository.findOne(groupId);
+		if (group == null)
+		{
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+		}
+		final User user = (User) userService.loadUserByUsername(principal.getName());
+		if (!group.getUsers().contains(user))
+		{
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+		}
+
+		return ResponseEntity.ok(group.getImage());
 	}
 }

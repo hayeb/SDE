@@ -1,7 +1,6 @@
 package giphouse.nl.proprapp.ui.task;
 
 import android.content.Intent;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -22,8 +21,8 @@ import javax.inject.Inject;
 
 import giphouse.nl.proprapp.ProprApplication;
 import giphouse.nl.proprapp.R;
+import giphouse.nl.proprapp.dagger.PicassoWrapper;
 import giphouse.nl.proprapp.service.task.TaskService;
-import nl.giphouse.propr.dto.task.TaskImagePayload;
 import nl.giphouse.propr.dto.task.TaskRatingDto;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -46,6 +45,9 @@ public class ShowCompletedTaskActivity extends AppCompatActivity {
 
 	@Inject
 	TaskService taskService;
+
+	@Inject
+	PicassoWrapper picassoWrapper;
 
 	private long taskId;
 	private String completionDescription;
@@ -148,30 +150,7 @@ public class ShowCompletedTaskActivity extends AppCompatActivity {
 	protected void onResume() {
 		super.onResume();
 
-		taskService.getTaskImage(taskId).enqueue(new Callback<TaskImagePayload>() {
-			@Override
-			public void onResponse(@NonNull final Call<TaskImagePayload> call, @NonNull final Response<TaskImagePayload> response) {
-				if(response.isSuccessful()) {
-					final byte[] image = response.body().getImage();
-					if (image != null){
-						taskImage.setImageBitmap(BitmapFactory.decodeByteArray(image, 0, image.length));
-					} else {
-						taskImage.setVisibility(INVISIBLE);
-						noImageMessageView.setVisibility(View.VISIBLE);
-					}
-				}
-				else {
-					taskImage.setVisibility(INVISIBLE);
-					noImageMessageView.setVisibility(View.VISIBLE);
-				}
-			}
-
-			@Override
-			public void onFailure(@NonNull final Call<TaskImagePayload> call, @NonNull final Throwable t) {
-				Log.e("tag", "there was a failure");
-				t.printStackTrace();
-			}
-		});
+		picassoWrapper.loadTaskImage(taskId, taskImage);
 	}
 
 	private void submitRating() {

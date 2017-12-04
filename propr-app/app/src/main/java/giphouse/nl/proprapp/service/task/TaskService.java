@@ -4,7 +4,6 @@ import java.util.List;
 
 import nl.giphouse.propr.dto.task.TaskCompletionDto;
 import nl.giphouse.propr.dto.task.TaskDto;
-import nl.giphouse.propr.dto.task.TaskImagePayload;
 import nl.giphouse.propr.dto.task.TaskRatingDto;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -30,8 +29,8 @@ public interface TaskService {
 	@POST("api/task/{taskId}/complete")
 	Call<Void> completeTask(@Path("taskId") Long taskId, @Body TaskCompletionDto taskCompletionDto);
 
-	@GET("api/task/{taskId}/image")
-	Call<TaskImagePayload> getTaskImage(@Path("taskId") long taskId);
+	@POST("api/task/{taskId}/image")
+	Call<Void> uploadImage(@Path("taskId") long taskId, @Body byte[] image);
 
 	@POST("api/task/{taskId}/rate")
 	Call<Void> rateTask(@Path("taskId") long taskId, @Body TaskRatingDto taskRatingDto);
