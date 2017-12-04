@@ -161,6 +161,7 @@ public class TaskController
 		taskDef.setWeight(taskAddDto.getWeight());
 		taskDef.setFrequency(taskAddDto.getFrequency());
 		taskDef.setPeriodType(taskAddDto.getPeriodType());
+		taskDef.setGroup(group);
 		taskDefinitionRepository.save(taskDef);
 
 		return ResponseEntity.ok(taskFactory.fromEntity(taskDef));
