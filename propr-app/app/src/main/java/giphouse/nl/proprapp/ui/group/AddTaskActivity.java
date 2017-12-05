@@ -39,9 +39,9 @@ public class AddTaskActivity extends AppCompatActivity {
     TaskService taskService;
 
     private Spinner spinner;
+    private Spinner spinnerWeight;
     private TextInputEditText enterName;
     private TextInputEditText enterDescription;
-    private TextInputEditText enterWeight;
     private TextInputEditText enterNumber;
     private Button doneButton;
     private Button nextButton;
@@ -72,7 +72,6 @@ public class AddTaskActivity extends AppCompatActivity {
 
         enterName = findViewById(R.id.enterTaskName);
         enterDescription = findViewById(R.id.enterDescription);
-        enterWeight = findViewById(R.id.enterWeight);
         enterNumber = findViewById(R.id.enterNumber);
         doneButton = findViewById(R.id.buttonDone);
         nextButton = findViewById(R.id.buttonNext);
@@ -83,6 +82,13 @@ public class AddTaskActivity extends AppCompatActivity {
                         android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
+
+        spinnerWeight = (Spinner)findViewById(R.id.spinnerWeight);
+        ArrayAdapter<CharSequence> adapter2 = ArrayAdapter
+                .createFromResource(this, R.array.weights,
+                        android.R.layout.simple_spinner_item);
+        adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerWeight.setAdapter(adapter2);
 
         doneButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -112,19 +118,18 @@ public class AddTaskActivity extends AppCompatActivity {
 
         enterName.setError(null);
         enterDescription.setError(null);
-        enterWeight.setError(null);
         enterNumber.setError(null);
 
         final String name = enterName.getText().toString();
         final String description = enterDescription.getText().toString();
-        final String taskWeight = enterWeight.getText().toString();
+        final String taskWeight = String.valueOf(spinnerWeight.getSelectedItem());
         final int frequency = Integer.parseInt(enterNumber.getText().toString());
         final String periodType = String.valueOf(spinner.getSelectedItem());
 
         final TaskRepetitionType taskRepType = TaskRepetitionType.valueOf(periodType);
         final TaskWeight tWeight = TaskWeight.valueOf(taskWeight);
 
-        if (validateInputShowError(name, description, taskWeight, frequency)) {
+        if (validateInputShowError(name, description, frequency)) {
             Log.e(TAG, "There was an error..?");
             return;
         }
@@ -154,10 +159,10 @@ public class AddTaskActivity extends AppCompatActivity {
 
     }
 
-    private boolean validateInputShowError(final String name, final String description, final String taskWeight,
+    private boolean validateInputShowError(final String name, final String description,
                                            final int frequency) {
-        return (checkEmpty(name, enterName) || checkEmpty(description, enterDescription) ||
-                checkEmpty(taskWeight, enterWeight) || checkEmpty(Integer.toString(frequency), enterNumber));
+        return (checkEmpty(name, enterName) || checkEmpty(description, enterDescription)
+                || checkEmpty(Integer.toString(frequency), enterNumber));
         // TODO check if more validation required
     }
 

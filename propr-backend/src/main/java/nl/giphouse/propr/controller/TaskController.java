@@ -147,6 +147,9 @@ public class TaskController
 	public ResponseEntity<?> addTaskToGroup(@RequestBody final TaskDefinitionDto taskAddDto, final Principal principal)
 	{
 		final User user = (User) userService.loadUserByUsername(principal.getName());
+
+
+
 		final Group group = groupRepository.findGroupById(taskAddDto.getGroupId());
 
 		if (group == null)
