@@ -142,10 +142,8 @@ public class GroupController
 	}
 
 	@RequestMapping(value = "/search", method = RequestMethod.GET)
-	public ResponseEntity<List<GroupDto>> searchGroups(@RequestParam final String query)
-	{
-		if (StringUtils.isEmpty(query))
-		{
+	public ResponseEntity<List<GroupDto>> searchGroups(@RequestParam final String query) {
+		if (StringUtils.isEmpty(query)) {
 			return ResponseEntity.badRequest().body(null);
 		}
 
@@ -153,10 +151,11 @@ public class GroupController
 
 		final List<Group> foundGroups = groupRepository.findGroupsByNameIsContaining(query);
 		final List<GroupDto> groupDtos = foundGroups.stream()
-			.map(groupFactory::fromEntity)
-			.collect(Collectors.toList());
+				.map(groupFactory::fromEntity)
+				.collect(Collectors.toList());
 
 		return ResponseEntity.ok(groupDtos);
+	}
 
 	@RequestMapping(value = "/{groupId}/leave", method = RequestMethod.POST)
 	public ResponseEntity<Void> leaveGroup(final Principal principal, final @PathVariable("groupId") long groupId)

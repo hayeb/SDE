@@ -22,7 +22,5 @@ public class AssignedTaskDto
 
 	private String dueDate;
 
-	private TaskStatus status;
-
 	private TaskWeight weight;
 }

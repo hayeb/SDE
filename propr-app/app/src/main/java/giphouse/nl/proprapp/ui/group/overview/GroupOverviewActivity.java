@@ -21,7 +21,6 @@ import javax.inject.Inject;
 import giphouse.nl.proprapp.ProprApplication;
 import giphouse.nl.proprapp.R;
 import giphouse.nl.proprapp.ui.group.AddTaskActivity;
-import giphouse.nl.proprapp.ui.group.GroupMembersActivity;
 import giphouse.nl.proprapp.service.group.GroupService;
 import giphouse.nl.proprapp.ui.group.GroupInfoActivity;
 import giphouse.nl.proprapp.ui.group.GroupListActivity;
@@ -127,9 +126,9 @@ public class GroupOverviewActivity extends AppCompatActivity implements MyTasksI
 	public boolean onOptionsItemSelected(final MenuItem item) {
 		final Intent intent;
 		switch (item.getItemId()) {
-			case R.id.item_members:
-				intent = new Intent(this, GroupMembersActivity.class);
-				intent.putExtra(GroupMembersActivity.ARG_PARAM1, groupName);
+			case R.id.item_group_info:
+				intent = new Intent(this, GroupInfoActivity.class);
+				intent.putExtra(GroupInfoActivity.ARG_GROUP_ID, groupId);
 				startActivity(intent);
 				break;
 			case R.id.item_task_definitions:

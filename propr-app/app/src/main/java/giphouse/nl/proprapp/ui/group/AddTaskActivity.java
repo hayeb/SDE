@@ -29,8 +29,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static nl.giphouse.propr.dto.task.TaskStatus.TODO;
-
 public class AddTaskActivity extends AppCompatActivity {
 
     private static final String TAG = "AddTaskActivity";

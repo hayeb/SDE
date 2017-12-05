@@ -88,6 +88,7 @@ public class GroupJoinActivity extends AppCompatActivity {
 					if (dto != null)
 					{
 						intent.putExtra("groupname", dto.getGroupName());
+						intent.putExtra("groupId", dto.getGroupId());
 					}
 
 					startActivity(intent);

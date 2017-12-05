@@ -53,7 +53,7 @@
 	<string name="input_not_valid">Input is not valid, try again</string>
 
 	<!-- IP-adres van de host-machine, voor emulators -->
-	<string name="backend_url">http://artificiallunacy.com:7080/propr/</string>
+	<string name="backend_url">http://10.0.2.2:8000/propr/</string>
 	<string name="account_type">nl.giphouse.propr</string>
 	<string name="loading_placeholder">Loading…</string>
 	<string name="connection_failed">Connection failed</string>

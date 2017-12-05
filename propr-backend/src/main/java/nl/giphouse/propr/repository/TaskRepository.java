@@ -2,8 +2,6 @@ package nl.giphouse.propr.repository;
 
 import java.time.LocalDate;
 import java.util.List;
-
-import nl.giphouse.propr.dto.task.TaskStatus;
 import nl.giphouse.propr.model.group.Group;
 import nl.giphouse.propr.model.task.AssignedTask;
 import nl.giphouse.propr.model.user.User;
