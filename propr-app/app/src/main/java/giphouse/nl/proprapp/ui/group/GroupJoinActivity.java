@@ -1,6 +1,5 @@
 package giphouse.nl.proprapp.ui.group;
 
-import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -11,22 +10,14 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.SearchView;
-
-import java.util.List;
-import java.util.Optional;
+import android.widget.Toast;
 
 import javax.inject.Inject;
 
 import giphouse.nl.proprapp.ProprApplication;
 import giphouse.nl.proprapp.R;
 import giphouse.nl.proprapp.service.group.GroupService;
-import giphouse.nl.proprapp.service.group.search.GroupSearchAdapter;
-import giphouse.nl.proprapp.service.group.search.GroupSearchResult;
 import giphouse.nl.proprapp.ui.group.overview.GroupOverviewActivity;
-import nl.giphouse.propr.dto.group.GroupAddDto;
 import nl.giphouse.propr.dto.group.GroupDto;
 import nl.giphouse.propr.dto.group.GroupJoinDto;
 import retrofit2.Call;
@@ -51,15 +42,14 @@ public class GroupJoinActivity extends AppCompatActivity {
 		final Toolbar toolbar = findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
 		final ActionBar bar = getSupportActionBar();
-		if (bar != null)
-		{
+		if (bar != null) {
 			bar.setDisplayHomeAsUpEnabled(true);
 		}
 
 		enterGroupcode = findViewById(R.id.enterGroupcode);
 
 		findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
-			public void onClick(View v) {
+			public void onClick(final View v) {
 				submit();
 			}
 		});
@@ -69,7 +59,6 @@ public class GroupJoinActivity extends AppCompatActivity {
 		enterGroupcode.setError(null);
 
 		final String groupCode = enterGroupcode.getText().toString();
-		//final String groupname = new String("name");
 
 		if (validateInputShowError(groupCode)) {
 			Log.e(TAG, "There was an error..?");
@@ -81,18 +70,27 @@ public class GroupJoinActivity extends AppCompatActivity {
 			@Override
 			public void onResponse(@NonNull final Call<GroupDto> call, @NonNull final Response<GroupDto> response) {
 				if (!response.isSuccessful()) {
-				} else {
-					Log.i(TAG, "Succesfully joined a group");
-					final Intent intent = new Intent(GroupJoinActivity.this, GroupOverviewActivity.class);
-					final GroupDto dto = response.body();
-					if (dto != null)
-					{
-						intent.putExtra("groupname", dto.getGroupName());
-						intent.putExtra("groupId", dto.getGroupId());
+					switch (response.code()) {
+						case 422:
+							// Group not found
+							Toast.makeText(GroupJoinActivity.this, "No group found with this code!", Toast.LENGTH_LONG).show();
+							break;
+						case 400:
+							// Already part of the group
+							Toast.makeText(GroupJoinActivity.this, "You are already in this group!", Toast.LENGTH_LONG).show();
+						default:
+							Toast.makeText(GroupJoinActivity.this, "Unknown error joining group!", Toast.LENGTH_LONG).show();
 					}
-
-					startActivity(intent);
+					return;
 				}
+				final Intent intent = new Intent(GroupJoinActivity.this, GroupOverviewActivity.class);
+				final GroupDto dto = response.body();
+				if (dto != null) {
+					intent.putExtra(GroupOverviewActivity.ARG_GROUP_NAME, dto.getGroupName());
+					intent.putExtra(GroupOverviewActivity.ARG_GROUP_ID, dto.getGroupId());
+				}
+
+				startActivity(intent);
 			}
 
 			@Override
@@ -100,12 +98,7 @@ public class GroupJoinActivity extends AppCompatActivity {
 				Log.e(TAG, "Calling backend failed! OMG!");
 				t.printStackTrace();
 			}
-
 		});
-
-
-
-		// 3. Open the group
 	}
 
 	private boolean validateInputShowError(final String groupCode) {
@@ -119,5 +112,4 @@ public class GroupJoinActivity extends AppCompatActivity {
 		}
 		return isError;
 	}
-
 }

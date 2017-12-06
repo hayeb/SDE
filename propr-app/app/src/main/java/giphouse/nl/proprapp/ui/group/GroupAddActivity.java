@@ -1,11 +1,11 @@
 package giphouse.nl.proprapp.ui.group;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputEditText;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -15,12 +15,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageButton;
 
-import java.io.ByteArrayOutputStream;
-
 import javax.inject.Inject;
 
 import giphouse.nl.proprapp.ProprApplication;
 import giphouse.nl.proprapp.R;
+import giphouse.nl.proprapp.service.ImageUtil;
 import giphouse.nl.proprapp.service.group.GroupService;
 import giphouse.nl.proprapp.ui.group.overview.GroupOverviewActivity;
 import nl.giphouse.propr.dto.group.GroupAddDto;
@@ -50,8 +49,7 @@ public class GroupAddActivity extends AppCompatActivity {
 		final Toolbar toolbar = findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
 		final ActionBar bar = getSupportActionBar();
-		if (bar != null)
-		{
+		if (bar != null) {
 			bar.setDisplayHomeAsUpEnabled(true);
 		}
 
@@ -68,11 +66,12 @@ public class GroupAddActivity extends AppCompatActivity {
 
 	@Override
 	public boolean onOptionsItemSelected(final MenuItem item) {
-		final int i = item.getItemId();
-		switch(i) {
+		switch (item.getItemId()) {
 			case R.id.submit_add_group:
 				submit();
 				return true;
+			case android.R.id.home:
+				navigateToParent();
 			default:
 				return super.onOptionsItemSelected(item);
 		}
@@ -83,14 +82,14 @@ public class GroupAddActivity extends AppCompatActivity {
 		groupCodeEdit.setError(null);
 		final String groupname = groupNameEdit.getText().toString();
 		final String groupCode = groupCodeEdit.getText().toString();
-		final byte[] image = getImageStream();
+		final byte[] image = ImageUtil.getImageBytes((BitmapDrawable) groupImageButton.getDrawable(), 1500);
 
 		if (validateInputShowError(groupname, groupCode)) {
 			Log.e(TAG, "There was an error..?");
 			return;
 		}
 
-		groupService.createGroup(new GroupAddDto(groupname, groupCode, null)).enqueue(new Callback<GroupDto>() {
+		groupService.createGroup(new GroupAddDto(groupname, groupCode, image)).enqueue(new Callback<GroupDto>() {
 			@Override
 			public void onResponse(@NonNull final Call<GroupDto> call, @NonNull final Response<GroupDto> response) {
 				if (!response.isSuccessful()) {
@@ -101,12 +100,11 @@ public class GroupAddActivity extends AppCompatActivity {
 						Log.e(TAG, String.format(getString(R.string.error_unknown_request_error), responseCode, response.message()));
 					}
 				} else {
-					Log.i(TAG, "Succesfully created a group");
 					final Intent intent = new Intent(GroupAddActivity.this, GroupOverviewActivity.class);
 					final GroupDto dto = response.body();
-					if (dto != null)
-					{
-						intent.putExtra("groupname", dto.getGroupName());
+					if (dto != null) {
+						intent.putExtra(GroupOverviewActivity.ARG_GROUP_NAME, dto.getGroupName());
+						intent.putExtra(GroupOverviewActivity.ARG_GROUP_ID, dto.getGroupId());
 					}
 
 					startActivity(intent);
@@ -119,21 +117,16 @@ public class GroupAddActivity extends AppCompatActivity {
 				t.printStackTrace();
 			}
 		});
-
-
-		// 3. Open the group
 	}
 
 	private boolean validateInputShowError(final String groupName, final String groupCode) {
 		boolean isError = false;
-		if (TextUtils.isEmpty(groupName))
-		{
+		if (TextUtils.isEmpty(groupName)) {
 			groupNameEdit.setError(getString(R.string.error_enter_groupname));
 			isError = true;
 		}
 
-		if (TextUtils.isEmpty(groupCode))
-		{
+		if (TextUtils.isEmpty(groupCode)) {
 			groupCodeEdit.setError(getString(R.string.error_enter_groupcode));
 			isError = true;
 		} else if (groupCode.length() < 5) {
@@ -144,11 +137,10 @@ public class GroupAddActivity extends AppCompatActivity {
 		return isError;
 	}
 
-	private byte[] getImageStream() {
-		final BitmapDrawable bitmapDrawable = (BitmapDrawable) groupImageButton.getDrawable();
-		final Bitmap bitmap = bitmapDrawable.getBitmap();
-		final ByteArrayOutputStream ops = new ByteArrayOutputStream();
-		bitmap.compress(Bitmap.CompressFormat.JPEG, 100, ops);
-		return ops.toByteArray();
+	private void navigateToParent() {
+		final Intent intent = NavUtils.getParentActivityIntent(this);
+		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
+			| Intent.FLAG_ACTIVITY_SINGLE_TOP);
+		NavUtils.navigateUpTo(this, intent);
 	}
 }

@@ -85,8 +85,8 @@ public class GroupListAdapter extends BaseAdapter {
 		descriptionText.setText(sb.toString());
 
 		final Intent intent = new Intent(context, GroupOverviewActivity.class);
-		intent.putExtra("groupname", dto.getGroupName());
-		intent.putExtra("groupId", dto.getGroupId());
+		intent.putExtra(GroupOverviewActivity.ARG_GROUP_NAME, dto.getGroupName());
+		intent.putExtra(GroupOverviewActivity.ARG_GROUP_ID, dto.getGroupId());
 
 		itemView.setOnClickListener(new View.OnClickListener() {
 			@Override

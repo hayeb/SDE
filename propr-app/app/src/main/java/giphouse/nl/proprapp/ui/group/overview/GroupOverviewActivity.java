@@ -35,6 +35,10 @@ public class GroupOverviewActivity extends AppCompatActivity implements MyTasksI
 
 	private static final String TAG = "GroupOverviewActivity";
 
+	public static final String ARG_GROUP_NAME = "groupname";
+
+	public static final String ARG_GROUP_ID = "groupId";
+
 	@Inject
 	GroupService groupService;
 
@@ -51,11 +55,11 @@ public class GroupOverviewActivity extends AppCompatActivity implements MyTasksI
 		setContentView(R.layout.activity_group_overview);
 
 		if (savedInstanceState != null) {
-			groupName = savedInstanceState.getString("groupname");
-			groupId = savedInstanceState.getLong("groupId");
+			groupName = savedInstanceState.getString(ARG_GROUP_NAME);
+			groupId = savedInstanceState.getLong(ARG_GROUP_ID);
 		} else if (getIntent() != null && getIntent().getExtras() != null) {
-			groupName = getIntent().getExtras().getString("groupname");
-			groupId = getIntent().getExtras().getLong("groupId");
+			groupName = getIntent().getExtras().getString(ARG_GROUP_NAME);
+			groupId = getIntent().getExtras().getLong(ARG_GROUP_ID);
 		}
 
 		setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
