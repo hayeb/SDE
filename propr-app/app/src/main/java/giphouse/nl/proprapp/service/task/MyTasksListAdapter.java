@@ -2,6 +2,7 @@ package giphouse.nl.proprapp.service.task;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
@@ -50,7 +51,7 @@ public class MyTasksListAdapter extends BaseAdapter {
 
 	@Override
 	public long getItemId(final int i) {
-		return i;
+		return taskDtos.get(i).getTaskId();
 	}
 
 	@Override
@@ -79,6 +80,9 @@ public class MyTasksListAdapter extends BaseAdapter {
 		{
 			dueDateTextView.setTextColor(ContextCompat.getColor(context, R.color.colorRed));
 			dueDateTextView.setTypeface(null, Typeface.BOLD);
+		} else {
+			dueDateTextView.setTextColor(ContextCompat.getColor(context, android.R.color.secondary_text_light));
+			dueDateTextView.setTypeface(null, Typeface.NORMAL);
 		}
 
 		taskCompleteButtun.setOnClickListener(new View.OnClickListener() {

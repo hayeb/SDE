@@ -14,7 +14,7 @@
 		android:enabled="true"
 		android:icon="@drawable/ic_event_available_black_24dp"/>
 
-	<item android:title="@string/item_title_schedule"
+	<item android:title="@string/item_title_scheduled"
 		android:id="@+id/item_schedule"
 		app:showAsAction="ifRoom"
 		android:enabled="true"

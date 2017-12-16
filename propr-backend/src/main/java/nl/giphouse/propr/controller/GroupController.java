@@ -1,6 +1,7 @@
 package nl.giphouse.propr.controller;
 
 import java.security.Principal;
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -12,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import nl.giphouse.propr.dto.group.GroupAddDto;
 import nl.giphouse.propr.dto.group.GroupDto;
 import nl.giphouse.propr.dto.group.GroupJoinDto;
+import nl.giphouse.propr.dto.group.GenerateScheduleDto;
 import nl.giphouse.propr.dto.user.UserInfoDto;
 import nl.giphouse.propr.model.group.Group;
 import nl.giphouse.propr.model.group.GroupFactory;
@@ -19,6 +21,8 @@ import nl.giphouse.propr.model.user.User;
 import nl.giphouse.propr.model.user.UserFactory;
 import nl.giphouse.propr.repository.GroupRepository;
 import nl.giphouse.propr.repository.TaskRepository;
+import nl.giphouse.propr.service.ScheduleService;
+import nl.giphouse.propr.service.SchedulingResult;
 import nl.giphouse.propr.service.UserService;
 import nl.giphouse.propr.utils.ValidationUtils;
 
@@ -41,6 +45,9 @@ public class GroupController
 {
 	@Inject
 	private UserService userService;
+
+	@Inject
+	private ScheduleService scheduleService;
 
 	@Inject
 	private GroupRepository groupRepository;
@@ -210,5 +217,31 @@ public class GroupController
 		}
 
 		return ResponseEntity.ok(group.getImage());
+	}
+
+	@RequestMapping(method = RequestMethod.POST, value = "/{groupId}/schedule")
+	public ResponseEntity<String> generateSchedule(final Principal principal, final @PathVariable long groupId,
+		final @RequestBody GenerateScheduleDto generateScheduleDto)
+	{
+		final Group group = groupRepository.findGroupById(groupId);
+		if (group == null)
+		{
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+		}
+		final User user = (User) userService.loadUserByUsername(principal.getName());
+		if (!group.getUsers().contains(user))
+		{
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+		}
+
+		final SchedulingResult result = scheduleService.reschedule(group, LocalDate.now(),
+			LocalDate.now().plusDays(generateScheduleDto.getNumberOfDays()));
+
+		if (!result.isSuccesfull())
+		{
+			return ResponseEntity.ok(result.getMessage());
+		}
+
+		return ResponseEntity.ok(null);
 	}
 }

@@ -5,6 +5,7 @@
 	<color name="colorPrimaryDark">#055263</color>
 	<color name="colorAccent">#E4634D</color>
 	<color name="colorRed">#d90000</color>
+	<color name="textColor">#000000</color>
 
 	<color name="colorPrimaryDarkOpague">#88055263</color>
 

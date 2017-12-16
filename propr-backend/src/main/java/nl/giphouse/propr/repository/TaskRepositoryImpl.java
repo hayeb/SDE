@@ -38,7 +38,7 @@ public class TaskRepositoryImpl implements AssignedTaskRepository
 	private EntityManager entityManager;
 
 	@Override
-	public List<AssignedTask> findTasksForUserInGroup(Group group, User user)
+	public List<AssignedTask> findTasksForUserInGroup(final Group group, final User user)
 	{
 		final TypedQuery<AssignedTask> query = entityManager.createQuery(USER_TASKS_QUERY, AssignedTask.class);
 		query.setParameter("group", group);
@@ -47,7 +47,7 @@ public class TaskRepositoryImpl implements AssignedTaskRepository
 	}
 
 	@Override
-	public List<AssignedTask> findTodoTasksInGroup(Group group)
+	public List<AssignedTask> findTodoTasksInGroup(final Group group)
 	{
 		final TypedQuery<AssignedTask> query = entityManager.createQuery(GROUP_TASKS_TODO_QUERY, AssignedTask.class);
 		query.setParameter("group", group);
@@ -56,7 +56,7 @@ public class TaskRepositoryImpl implements AssignedTaskRepository
 	}
 
 	@Override
-	public List<AssignedTask> findActivityInGroup(Group group)
+	public List<AssignedTask> findActivityInGroup(final Group group)
 	{
 		final TypedQuery<AssignedTask> query = entityManager.createQuery(GROUP_ACTIVITY_QUERY, AssignedTask.class);
 		query.setParameter("group", group);

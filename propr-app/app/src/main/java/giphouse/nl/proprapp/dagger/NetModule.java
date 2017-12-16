@@ -66,7 +66,7 @@ public class NetModule {
 			.cache(cache)
 			.addInterceptor(interceptor)
 			.addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
-			.connectTimeout(25, TimeUnit.MINUTES)
+			//.connectTimeout(25, TimeUnit.MINUTES)
 			.build();
 
 		interceptor.initHttpClient(client);

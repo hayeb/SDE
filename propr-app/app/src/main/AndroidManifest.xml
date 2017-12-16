@@ -99,9 +99,17 @@
 				android:name="android.support.PARENT_ACTIVITY"
 				android:value="giphouse.nl.proprapp.ui.group.overview.GroupOverviewActivity" />
 		</activity>
-        <activity android:name=".ui.group.AddTaskActivity" />
 
-        <provider
+		<activity android:name=".ui.group.AddTaskActivity">
+			<meta-data
+				android:name="android.support.PARENT_ACTIVITY"
+				android:value="giphouse.nl.proprapp.ui.group.overview.GroupOverviewActivity" />
+		</activity>
+
+		<meta-data
+			android:name="android.support.PARENT_ACTIVITY"
+			android:value="giphouse.nl.proprapp.ui.group.overview.GroupOverviewActivity" />
+		<provider
 			android:name="android.support.v4.content.FileProvider"
 			android:authorities="nl.giphouse.propr.fileprovider"
 			android:exported="false"

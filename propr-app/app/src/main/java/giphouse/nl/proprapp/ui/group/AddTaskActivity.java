@@ -3,12 +3,14 @@ package giphouse.nl.proprapp.ui.group;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputEditText;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -47,7 +49,7 @@ public class AddTaskActivity extends AppCompatActivity {
     private String groupName;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ((ProprApplication) getApplication()).getComponent().inject(this);
         setContentView(R.layout.activity_add_task);
@@ -63,8 +65,7 @@ public class AddTaskActivity extends AppCompatActivity {
         final Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         final ActionBar bar = getSupportActionBar();
-        if (bar != null)
-        {
+        if (bar != null) {
             bar.setDisplayHomeAsUpEnabled(true);
         }
 
@@ -74,42 +75,56 @@ public class AddTaskActivity extends AppCompatActivity {
         doneButton = findViewById(R.id.buttonDone);
         nextButton = findViewById(R.id.buttonNext);
 
-        spinner = (Spinner)findViewById(R.id.spinner);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter
-                .createFromResource(this, R.array.frequencytypes,
-                        android.R.layout.simple_spinner_item);
+        spinner = findViewById(R.id.spinner);
+        final ArrayAdapter<CharSequence> adapter = ArrayAdapter
+            .createFromResource(this, R.array.frequencytypes,
+                android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
 
-        spinnerWeight = (Spinner)findViewById(R.id.spinnerWeight);
-        ArrayAdapter<CharSequence> adapter2 = ArrayAdapter
-                .createFromResource(this, R.array.weights,
-                        android.R.layout.simple_spinner_item);
+        spinnerWeight = findViewById(R.id.spinnerWeight);
+        final ArrayAdapter<CharSequence> adapter2 = ArrayAdapter
+            .createFromResource(this, R.array.weights,
+                android.R.layout.simple_spinner_item);
         adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerWeight.setAdapter(adapter2);
 
         doneButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                submit();
-                Intent intent = new Intent(v.getContext(), GroupOverviewActivity.class);
-                intent.putExtra("groupId", groupId);
-                intent.putExtra("groupName", groupName);
-                startActivity(intent);
+            public void onClick(final View v) {
+                //submit();
+                final RescheduleDialog dialog = RescheduleDialog.newInstance(groupId);
+                dialog.show(getSupportFragmentManager(), "reschedule");
+//                final Intent intent = new Intent(v.getContext(), GroupOverviewActivity.class);
+//                intent.putExtra("groupId", groupId);
+//                intent.putExtra("groupName", groupName);
+//                startActivity(intent);
             }
         });
 
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(final View v) {
                 submit();
-                Intent intent = new Intent(v.getContext(), AddTaskActivity.class);
+                final Intent intent = new Intent(v.getContext(), AddTaskActivity.class);
                 intent.putExtra("groupId", groupId);
                 intent.putExtra("groupName", groupName);
                 startActivity(intent);
             }
         });
+    }
 
+    @Override
+    public boolean onOptionsItemSelected(final MenuItem item) {
+        final int id = item.getItemId();
+        if (id == android.R.id.home) {
+            final Intent intent = NavUtils.getParentActivityIntent(this);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
+                | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            NavUtils.navigateUpTo(this, intent);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void submit() {
@@ -164,7 +179,7 @@ public class AddTaskActivity extends AppCompatActivity {
         // TODO check if more validation required
     }
 
-    private boolean checkEmpty(String text, TextInputEditText editText) {
+    private boolean checkEmpty(final String text, final TextInputEditText editText) {
         if (TextUtils.isEmpty(text)) {
             editText.setError(getString(R.string.input_not_valid));
             return true;

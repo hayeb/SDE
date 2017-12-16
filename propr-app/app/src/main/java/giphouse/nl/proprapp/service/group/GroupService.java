@@ -3,6 +3,7 @@ package giphouse.nl.proprapp.service.group;
 import java.util.List;
 
 import giphouse.nl.proprapp.service.group.search.GroupSearchResult;
+import nl.giphouse.propr.dto.group.GenerateScheduleDto;
 import nl.giphouse.propr.dto.group.GroupAddDto;
 import nl.giphouse.propr.dto.group.GroupDto;
 import nl.giphouse.propr.dto.group.GroupJoinDto;
@@ -44,4 +45,7 @@ public interface GroupService {
 	@POST("api/group/{groupId}/image")
 	@Headers("Content-Type: image/jpeg")
 	Call<Void> updateGroupImage(@Path("groupId") long groupId, @Body RequestBody image);
+
+	@POST("api/group/{groupId}/schedule")
+	Call<Void> rescheduleGroup(@Path("groupId") long groupId, @Body GenerateScheduleDto dto);
 }

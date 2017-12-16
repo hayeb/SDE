@@ -155,7 +155,7 @@ public class SchedulingServiceImpl implements ScheduleService
 	 *            The start date of the period, inclusive.
 	 * @param endDate
 	 *            The end date of the period, inclusive.
-	 * @return A sorted list of tasks
+	 * @return A sorted list of tasks without assignees
 	 */
 	public List<AssignedTask> getTaskStack(final @NonNull List<TaskDefinition> definitions,
 		final @NonNull LocalDate startDate, final @NonNull LocalDate endDate)
@@ -167,7 +167,7 @@ public class SchedulingServiceImpl implements ScheduleService
 
 			for (final LocalDate date : blockEndDates)
 			{
-				final int taskDays = (int) Math.floor(repetitionTypeToDuration(def.getPeriodType()).getDays() / def.getFrequency());
+				final int taskDays = (int) Math.floor(periodDays(def.getPeriodType()) / def.getFrequency());
 				for (int i = 0; i < def.getFrequency(); i++)
 				{
 					final AssignedTask task = new AssignedTask();
@@ -204,21 +204,7 @@ public class SchedulingServiceImpl implements ScheduleService
 		while (!currentDate.isAfter(endDate))
 		{
 			periodEndDates.add(currentDate);
-			switch (type)
-			{
-			case DAY:
-				currentDate = currentDate.plusDays(1);
-				break;
-			case WEEK:
-				currentDate = currentDate.plusWeeks(1);
-				break;
-			case MONTH:
-				currentDate = currentDate.plusMonths(1);
-				break;
-			case YEAR:
-				currentDate = currentDate.plusYears(1);
-				break;
-			}
+			currentDate = currentDate.plus(periodTypeDuration);
 		}
 
 		return periodEndDates;
@@ -238,6 +224,22 @@ public class SchedulingServiceImpl implements ScheduleService
 			return Period.ofYears(1);
 		default:
 			throw new IllegalArgumentException("Unkown TaskRepetitionType " + type);
+		}
+	}
+
+	private int periodDays(final TaskRepetitionType type) {
+		switch(type)
+		{
+			case DAY:
+				return 1;
+			case WEEK:
+				return 7;
+			case MONTH:
+				return 30;
+			case YEAR:
+				return 365;
+			default:
+				throw new IllegalArgumentException("Unkown TaskRepetitionType " + type);
 		}
 	}
 }
