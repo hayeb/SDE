@@ -7,11 +7,14 @@ import android.support.annotation.NonNull;
 
 import java.io.ByteArrayOutputStream;
 
+import okhttp3.MediaType;
+
 /**
  * @author haye
  */
 public class ImageUtil {
 
+	public static MediaType JPEG_TYPE = MediaType.parse("image/jpeg");
 
 	private static Bitmap resizeBitmap(final Bitmap bitmap, final int newWidth) {
 		final int width = bitmap.getWidth();

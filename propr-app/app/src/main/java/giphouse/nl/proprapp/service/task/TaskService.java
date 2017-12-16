@@ -6,9 +6,11 @@ import nl.giphouse.propr.dto.task.TaskCompletionDto;
 import nl.giphouse.propr.dto.task.TaskDefinitionDto;
 import nl.giphouse.propr.dto.task.TaskDto;
 import nl.giphouse.propr.dto.task.TaskRatingDto;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
@@ -34,7 +36,8 @@ public interface TaskService {
 	Call<Void> completeTask(@Path("taskId") Long taskId, @Body TaskCompletionDto taskCompletionDto);
 
 	@POST("api/task/{taskId}/image")
-	Call<Void> uploadImage(@Path("taskId") long taskId, @Body byte[] image);
+	@Headers("Content-Type: image/jpeg")
+	Call<Void> uploadImage(@Path("taskId") long taskId, @Body RequestBody image);
 
 	@POST("api/task/{taskId}/rate")
 	Call<Void> rateTask(@Path("taskId") long taskId, @Body TaskRatingDto taskRatingDto);

@@ -17,11 +17,13 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.squareup.picasso.NetworkPolicy;
+
 import javax.inject.Inject;
 
 import giphouse.nl.proprapp.ProprApplication;
 import giphouse.nl.proprapp.R;
-import giphouse.nl.proprapp.dagger.PicassoWrapper;
+import giphouse.nl.proprapp.dagger.ImageService;
 import giphouse.nl.proprapp.service.task.TaskService;
 import nl.giphouse.propr.dto.task.TaskRatingDto;
 import retrofit2.Call;
@@ -47,14 +49,13 @@ public class ShowCompletedTaskActivity extends AppCompatActivity {
 	TaskService taskService;
 
 	@Inject
-	PicassoWrapper picassoWrapper;
+	ImageService imageService;
 
 	private long taskId;
 	private String completionDescription;
 	private boolean isAssignee;
 
 	private ImageView taskImage;
-	private TextView noImageMessageView;
 	private RatingBar ratingBar;
 	private TextInputEditText ratingText;
 
@@ -88,7 +89,6 @@ public class ShowCompletedTaskActivity extends AppCompatActivity {
 		descriptionView.setText(completionDescription);
 
 		taskImage = findViewById(R.id.completed_task_image);
-		noImageMessageView = findViewById(R.id.no_image_available);
 		ratingBar = findViewById(R.id.ratingBar);
 		ratingText = findViewById(R.id.rating_comments);
 
@@ -121,8 +121,11 @@ public class ShowCompletedTaskActivity extends AppCompatActivity {
 			public void onResponse(@NonNull final Call<TaskRatingDto> call, @NonNull final Response<TaskRatingDto> response) {
 				if (response.isSuccessful()) {
 					final TaskRatingDto dto = response.body();
-					ratingBar.setRating(dto.getScore()/2.0f);
-					ratingText.setText(dto.getComment());
+					if (dto != null)
+					{
+						ratingBar.setRating(dto.getScore() / 2.0f);
+						ratingText.setText(dto.getComment());
+					}
 				}
 			}
 
@@ -150,7 +153,9 @@ public class ShowCompletedTaskActivity extends AppCompatActivity {
 	protected void onResume() {
 		super.onResume();
 
-		picassoWrapper.loadTaskImage(taskId, taskImage);
+		imageService.loadTaskImage(taskId)
+			.placeholder(R.drawable.placeholder)
+			.into(taskImage);
 	}
 
 	private void submitRating() {

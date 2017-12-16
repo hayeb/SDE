@@ -29,7 +29,6 @@ public class UserService implements UserDetailsService
 	@Override
 	public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException
 	{
-		log.debug("Trying to load user " + username);
 		if (StringUtils.isEmpty(username))
 		{
 			throw new UsernameNotFoundException("Empty username");

@@ -3,7 +3,6 @@ package nl.giphouse.propr.controller;
 import java.security.Principal;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -22,15 +21,13 @@ import nl.giphouse.propr.repository.GroupRepository;
 import nl.giphouse.propr.repository.TaskRepository;
 import nl.giphouse.propr.service.UserService;
 
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -141,22 +138,6 @@ public class GroupController
 		return ResponseEntity.ok(groupFactory.fromEntity(group));
 	}
 
-	@RequestMapping(value = "/search", method = RequestMethod.GET)
-	public ResponseEntity<List<GroupDto>> searchGroups(@RequestParam final String query) {
-		if (StringUtils.isEmpty(query)) {
-			return ResponseEntity.badRequest().body(null);
-		}
-
-		log.debug("Handling /api/group/search");
-
-		final List<Group> foundGroups = groupRepository.findGroupsByNameIsContaining(query);
-		final List<GroupDto> groupDtos = foundGroups.stream()
-				.map(groupFactory::fromEntity)
-				.collect(Collectors.toList());
-
-		return ResponseEntity.ok(groupDtos);
-	}
-
 	@RequestMapping(value = "/{groupId}/leave", method = RequestMethod.POST)
 	public ResponseEntity<Void> leaveGroup(final Principal principal, final @PathVariable("groupId") long groupId)
 	{
@@ -199,10 +180,10 @@ public class GroupController
 
 		groupRepository.save(group);
 
-		return ResponseEntity.ok().cacheControl(CacheControl.maxAge(1, TimeUnit.DAYS))	.body(null);
+		return ResponseEntity.ok().body(null);
 	}
 
-	@RequestMapping(method = RequestMethod.GET, value = "/{groupId}/image")
+	@RequestMapping(method = RequestMethod.GET, value = "/{groupId}/image", produces = MediaType.IMAGE_JPEG_VALUE)
 	public ResponseEntity<byte[]> getGroupImage(final Principal principal, final @PathVariable long groupId)
 	{
 		log.debug("Handling GET /api/group/{}/image", groupId);
@@ -215,6 +196,11 @@ public class GroupController
 		if (!group.getUsers().contains(user))
 		{
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+		}
+
+		if (group.getImage() == null)
+		{
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 		}
 
 		return ResponseEntity.ok(group.getImage());

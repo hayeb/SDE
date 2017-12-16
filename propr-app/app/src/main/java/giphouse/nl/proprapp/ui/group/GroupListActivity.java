@@ -23,7 +23,7 @@ import javax.inject.Inject;
 import giphouse.nl.proprapp.ProprApplication;
 import giphouse.nl.proprapp.R;
 import giphouse.nl.proprapp.account.AccountUtils;
-import giphouse.nl.proprapp.dagger.PicassoWrapper;
+import giphouse.nl.proprapp.dagger.ImageService;
 import giphouse.nl.proprapp.service.group.GroupListAdapter;
 import giphouse.nl.proprapp.service.group.GroupService;
 import giphouse.nl.proprapp.service.group.LoadGroupData;
@@ -50,7 +50,7 @@ public class GroupListActivity extends ListActivity
 	UserService userService;
 
 	@Inject
-	PicassoWrapper picassoWrapper;
+	ImageService imageService;
 
 	private UserInfoDto userInfoDto;
 
@@ -95,7 +95,7 @@ public class GroupListActivity extends ListActivity
 		accountNameTextView = navigationView.getHeaderView(0).findViewById(R.id.account_name);
 		accountEmailTextView = navigationView.getHeaderView(0).findViewById(R.id.account_email);
 
-		setListAdapter(new GroupListAdapter(this.getLayoutInflater(), this, picassoWrapper));
+		setListAdapter(new GroupListAdapter(this.getLayoutInflater(), this, imageService));
 	}
 
 	@Override

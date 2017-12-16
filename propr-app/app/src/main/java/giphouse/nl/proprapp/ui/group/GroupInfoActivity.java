@@ -11,7 +11,6 @@ import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,9 +21,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.squareup.picasso.Picasso;
-
-import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -35,10 +31,11 @@ import javax.inject.Inject;
 import giphouse.nl.proprapp.ProprApplication;
 import giphouse.nl.proprapp.ProprConfiguration;
 import giphouse.nl.proprapp.R;
-import giphouse.nl.proprapp.dagger.PicassoWrapper;
+import giphouse.nl.proprapp.dagger.ImageService;
 import giphouse.nl.proprapp.service.ImageUtil;
 import giphouse.nl.proprapp.service.group.GroupService;
 import nl.giphouse.propr.dto.user.UserInfoDto;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -47,7 +44,6 @@ import retrofit2.Response;
  * @author haye
  */
 public class GroupInfoActivity extends AppCompatActivity {
-	private static final String TAG = "GroupInfoActivity";
 
 	private static final int REQUEST_CODE_SELECT_IMAGE = 111;
 
@@ -60,14 +56,13 @@ public class GroupInfoActivity extends AppCompatActivity {
 	ProprConfiguration proprConfiguration;
 
 	@Inject
-	PicassoWrapper picassoWrapper;
+	ImageService imageService;
 
 	private long groupId;
 
 	private GroupUserAdapter adapter;
 
 	private ImageView groupImageView;
-	private GridView gridView;
 
 	@Override
 	public void onCreate(final Bundle savedInstanceState) {
@@ -82,7 +77,7 @@ public class GroupInfoActivity extends AppCompatActivity {
 		setContentView(R.layout.activity_group_info);
 
 		groupImageView = findViewById(R.id.group_image_view);
-		gridView = findViewById(R.id.users_grid);
+		final GridView gridView = findViewById(R.id.users_grid);
 
 		setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
 		final ActionBar bar = getSupportActionBar();
@@ -120,7 +115,7 @@ public class GroupInfoActivity extends AppCompatActivity {
 			}
 		});
 
-		picassoWrapper.loadGroupImage(groupId, groupImageView);
+		imageService.loadGroupImage(groupId).placeholder(R.drawable.placeholder_group).into(groupImageView);
 	}
 
 	@Override
@@ -169,11 +164,12 @@ public class GroupInfoActivity extends AppCompatActivity {
 		final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
 		final byte[] bytes = ImageUtil.getImageBytes(selectedImage, 1500);
 
-		groupService.updateGroupImage(groupId, bytes).enqueue(new Callback<Void>() {
+		final RequestBody body = RequestBody.create(ImageUtil.JPEG_TYPE, bytes);
+		groupService.updateGroupImage(groupId, body).enqueue(new Callback<Void>() {
 			@Override
 			public void onResponse(@NonNull final Call<Void> call, @NonNull final Response<Void> response) {
 				if (response.isSuccessful()) {
-					picassoWrapper.invalidateGroupImage(groupId);
+					imageService.invalidateGroupImage(groupId);
 					groupImageView.setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
 
 					Toast.makeText(GroupInfoActivity.this, "Group image updated!", Toast.LENGTH_LONG).show();

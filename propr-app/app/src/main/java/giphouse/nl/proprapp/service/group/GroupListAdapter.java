@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import giphouse.nl.proprapp.R;
-import giphouse.nl.proprapp.dagger.PicassoWrapper;
+import giphouse.nl.proprapp.dagger.ImageService;
 import giphouse.nl.proprapp.ui.group.overview.GroupOverviewActivity;
 import nl.giphouse.propr.dto.group.GroupDto;
 
@@ -31,12 +31,12 @@ public class GroupListAdapter extends BaseAdapter {
 
 	private final Context context;
 
-	private final PicassoWrapper picassoWrapper;
+	private final ImageService imageService;
 
-	public GroupListAdapter(final LayoutInflater layoutInflater, final Context context, final PicassoWrapper picassoWrapper) {
+	public GroupListAdapter(final LayoutInflater layoutInflater, final Context context, final ImageService imageService) {
 		this.mLayoutInflater = layoutInflater;
 		this.context = context;
-		this.picassoWrapper = picassoWrapper;
+		this.imageService = imageService;
 	}
 
 	@Override
@@ -69,8 +69,6 @@ public class GroupListAdapter extends BaseAdapter {
 		final TextView descriptionText = itemView.findViewById(R.id.listDescription);
 		final ImageView groupAvatarView = itemView.findViewById(R.id.group_avatar_image);
 
-		groupAvatarView.setImageResource(R.drawable.placeholder_group);
-
 		final GroupDto dto = groupListItemDtos.get(position);
 
 		final String title = StringUtils.capitalize(dto.getGroupName());
@@ -95,7 +93,9 @@ public class GroupListAdapter extends BaseAdapter {
 			}
 		});
 
-		picassoWrapper.loadGroupImage(dto.getGroupId(), groupAvatarView);
+		imageService.loadGroupImage(dto.getGroupId())
+			.placeholder(R.drawable.placeholder_group)
+			.into(groupAvatarView);
 
 		return itemView;
 	}

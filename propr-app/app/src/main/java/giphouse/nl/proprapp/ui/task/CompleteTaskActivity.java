@@ -41,6 +41,8 @@ import giphouse.nl.proprapp.R;
 import giphouse.nl.proprapp.service.ImageUtil;
 import giphouse.nl.proprapp.service.task.TaskService;
 import nl.giphouse.propr.dto.task.TaskCompletionDto;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -172,7 +174,8 @@ public class CompleteTaskActivity extends AppCompatActivity {
 			@Override
 			public void onResponse(@NonNull final Call<Void> call, @NonNull final Response<Void> response) {
 				if (response.isSuccessful()) {
-					taskService.uploadImage(taskId, image).enqueue(new Callback<Void>() {
+					final RequestBody body = RequestBody.create(ImageUtil.JPEG_TYPE, image);
+					taskService.uploadImage(taskId, body).enqueue(new Callback<Void>() {
 						@Override
 						public void onResponse(@NonNull final Call<Void> call, @NonNull final Response<Void> response) {
 
@@ -188,7 +191,6 @@ public class CompleteTaskActivity extends AppCompatActivity {
 				} else {
 					Toast.makeText(CompleteTaskActivity.this, "Unable to complete task", Toast.LENGTH_LONG).show();
 				}
-
 			}
 
 			@Override
