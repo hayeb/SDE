@@ -2,7 +2,6 @@ package nl.giphouse.propr.controller;
 
 import java.security.Principal;
 import java.time.LocalDate;
-import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,6 +25,7 @@ import nl.giphouse.propr.repository.TaskDefinitionRepository;
 import nl.giphouse.propr.repository.TaskRatingRepository;
 import nl.giphouse.propr.repository.TaskRepository;
 import nl.giphouse.propr.service.UserService;
+import nl.giphouse.propr.utils.ValidationUtils;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -219,6 +219,11 @@ public class TaskController
 	@RequestMapping(method = RequestMethod.POST, value = "/{taskId}/image")
 	public ResponseEntity<Void> uploadImageForTask(final Principal principal, final @PathVariable long taskId, final @RequestBody byte[] image)
 	{
+		if (!ValidationUtils.isValidJPEG(image))
+		{
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+		}
+
 		final AssignedTask task = taskRepository.findOne(taskId);
 
 		log.debug("Handling POST /api/task/{taskId}/image");

@@ -20,6 +20,7 @@ import nl.giphouse.propr.model.user.UserFactory;
 import nl.giphouse.propr.repository.GroupRepository;
 import nl.giphouse.propr.repository.TaskRepository;
 import nl.giphouse.propr.service.UserService;
+import nl.giphouse.propr.utils.ValidationUtils;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -165,6 +166,12 @@ public class GroupController
 	public ResponseEntity<Void> updateGroupImage(final Principal principal, final @PathVariable long groupId, final @RequestBody byte[] image)
 	{
 		log.debug("Handling POST /api/group/{}/image", groupId);
+
+		if (!ValidationUtils.isValidJPEG(image))
+		{
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+		}
+
 		final Group group = groupRepository.findOne(groupId);
 		if (group == null)
 		{
@@ -177,7 +184,6 @@ public class GroupController
 		}
 
 		group.setImage(image);
-
 		groupRepository.save(group);
 
 		return ResponseEntity.ok().body(null);
