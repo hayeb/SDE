@@ -2,6 +2,7 @@ package giphouse.nl.proprapp.dagger;
 
 import android.support.annotation.NonNull;
 
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.RequestCreator;
 

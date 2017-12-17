@@ -10,8 +10,7 @@ import giphouse.nl.proprapp.ui.group.GroupAddActivity;
 import giphouse.nl.proprapp.ui.group.GroupInfoActivity;
 import giphouse.nl.proprapp.ui.group.GroupJoinActivity;
 import giphouse.nl.proprapp.ui.group.GroupListActivity;
-import giphouse.nl.proprapp.ui.group.AddTaskActivity;
-import giphouse.nl.proprapp.ui.group.RescheduleDialog;
+import giphouse.nl.proprapp.ui.group.TaskDefinitionActivity;
 import giphouse.nl.proprapp.ui.group.overview.GroupActivityFragment;
 import giphouse.nl.proprapp.ui.group.overview.GroupMyTasksFragment;
 import giphouse.nl.proprapp.ui.group.overview.GroupOverviewActivity;
@@ -39,7 +38,7 @@ public interface ProprApplicationComponent {
 
 	void inject(GroupJoinActivity groupJoinActivity);
 
-	void inject(AddTaskActivity addTaskActivity);
+	void inject(TaskDefinitionActivity taskDefinitionActivity);
 
 	void inject(GroupMyTasksFragment myTasksFragment);
 
@@ -54,8 +53,6 @@ public interface ProprApplicationComponent {
 	void inject(GroupOverviewActivity groupOverviewActivity);
 
 	void inject(ShowCompletedTaskActivity showCompletedTaskActivity);
-
-	void inject(RescheduleDialog dialog);
 
 	void inject(GroupScheduleActivity groupScheduleActivity);
 }

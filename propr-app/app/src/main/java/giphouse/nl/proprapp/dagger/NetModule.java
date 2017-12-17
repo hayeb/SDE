@@ -101,7 +101,7 @@ public class NetModule {
 	ImageService providePicasso(final Application application, final OkHttpClient client, final ProprConfiguration proprConfiguration) {
 		final Picasso.Builder builder = new Picasso.Builder(application);
 		builder.downloader(new OkHttp3Downloader(client));
-		builder.loggingEnabled(false);
+		builder.loggingEnabled(true);
 
 		return new ImageServiceImpl(builder.build(), proprConfiguration);
 	}

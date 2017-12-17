@@ -41,7 +41,6 @@ import giphouse.nl.proprapp.R;
 import giphouse.nl.proprapp.service.ImageUtil;
 import giphouse.nl.proprapp.service.task.TaskService;
 import nl.giphouse.propr.dto.task.TaskCompletionDto;
-import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -163,9 +162,6 @@ public class CompleteTaskActivity extends AppCompatActivity {
 	}
 
 	private void completeTask() {
-		// TODO: Move out of main thread
-		final byte[] image = ImageUtil.getImageBytes((BitmapDrawable) imageView.getDrawable(), 1500);
-
 		final TaskCompletionDto dto = TaskCompletionDto.builder()
 			.taskCompletionDescription(notesField.getText().toString())
 			.build();
@@ -174,18 +170,7 @@ public class CompleteTaskActivity extends AppCompatActivity {
 			@Override
 			public void onResponse(@NonNull final Call<Void> call, @NonNull final Response<Void> response) {
 				if (response.isSuccessful()) {
-					final RequestBody body = RequestBody.create(ImageUtil.JPEG_TYPE, image);
-					taskService.uploadImage(taskId, body).enqueue(new Callback<Void>() {
-						@Override
-						public void onResponse(@NonNull final Call<Void> call, @NonNull final Response<Void> response) {
-
-						}
-
-						@Override
-						public void onFailure(@NonNull final Call<Void> call, @NonNull final Throwable t) {
-
-						}
-					});
+					uploadImage();
 					navigateToParent();
 					Toast.makeText(CompleteTaskActivity.this, "Task completed! Well done!", Toast.LENGTH_LONG).show();
 				} else {
@@ -196,6 +181,25 @@ public class CompleteTaskActivity extends AppCompatActivity {
 			@Override
 			public void onFailure(@NonNull final Call<Void> call, @NonNull final Throwable t) {
 				Toast.makeText(CompleteTaskActivity.this, "Error connecting to server", Toast.LENGTH_LONG).show();
+			}
+		});
+	}
+
+	private void uploadImage() {
+		if (imageView.getDrawable() == null) {
+			return;
+		}
+		final byte[] image = ImageUtil.getImageBytes((BitmapDrawable) imageView.getDrawable(), 1500);
+		final RequestBody body = RequestBody.create(ImageUtil.JPEG_TYPE, image);
+		taskService.uploadImage(taskId, body).enqueue(new Callback<Void>() {
+			@Override
+			public void onResponse(@NonNull final Call<Void> call, @NonNull final Response<Void> response) {
+
+			}
+
+			@Override
+			public void onFailure(@NonNull final Call<Void> call, @NonNull final Throwable t) {
+
 			}
 		});
 	}

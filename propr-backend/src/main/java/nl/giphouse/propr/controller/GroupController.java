@@ -32,6 +32,7 @@ import nl.giphouse.propr.service.SchedulingResult;
 import nl.giphouse.propr.service.UserService;
 import nl.giphouse.propr.utils.ValidationUtils;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -228,7 +229,10 @@ public class GroupController
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 		}
 
-		return ResponseEntity.ok(group.getImage());
+		final HttpHeaders headers = new HttpHeaders();
+		headers.setCacheControl("max-age=3600");
+
+		return new ResponseEntity<>(group.getImage(), headers, HttpStatus.OK);
 	}
 
 	@RequestMapping(method = RequestMethod.POST, value = "/{groupId}/schedule")

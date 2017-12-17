@@ -133,4 +133,8 @@
 	<string name="item_title_group_info">Group info</string>
 	<string name="reschedule">Reschedule</string>
 	<string name="title_schedule_dialog">For how long would you like to generate a schedule?</string>
+	<string name="message_reschedule_group">The group schedule will be updated</string>
+	<string name="item_title_update_schedule">Update schedule</string>
+	<string name="button_cancel">Cancel</string>
+	<string name="button_save">Save</string>
 </resources>

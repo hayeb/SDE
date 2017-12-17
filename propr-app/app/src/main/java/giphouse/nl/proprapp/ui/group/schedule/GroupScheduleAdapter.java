@@ -110,6 +110,13 @@ public class GroupScheduleAdapter extends BaseExpandableListAdapter {
 		final TextView frequencyView = view.findViewById(R.id.frequency_text);
 		frequencyView.setText(String.format(Locale.ENGLISH, "%d", dto.getFrequency()));
 
+		view.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(final View v) {
+				activity.editTask(dto);
+			}
+		});
+
 		return view;
 	}
 

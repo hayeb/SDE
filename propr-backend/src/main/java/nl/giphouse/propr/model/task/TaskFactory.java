@@ -7,7 +7,11 @@ import java.util.Optional;
 import nl.giphouse.propr.dto.task.TaskDefinitionDto;
 import nl.giphouse.propr.dto.task.TaskDto;
 
+import nl.giphouse.propr.repository.GroupRepository;
+import nl.giphouse.propr.repository.TaskDefinitionRepository;
 import org.springframework.stereotype.Component;
+
+import javax.inject.Inject;
 
 /**
  * @author haye.
@@ -15,6 +19,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class TaskFactory
 {
+
+	@Inject
+	private TaskDefinitionRepository taskDefinitionRepository;
+
+	@Inject
+	private GroupRepository groupRepository;
+
 	public TaskDto toTaskDto(final AssignedTask task)
 	{
 		return TaskDto.builder()
@@ -39,12 +50,29 @@ public class TaskFactory
 	public TaskDefinitionDto toTaskDefinitionDto(final TaskDefinition definition)
 	{
 		return TaskDefinitionDto.builder()
+			.definitionId(definition.getId())
+			.groupId(definition.getGroup().getId())
 			.name(definition.getName())
 			.description(definition.getDescription())
 			.weight(definition.getWeight())
 			.periodType(definition.getPeriodType())
 			.frequency(definition.getFrequency())
 			.build();
+	}
+
+	public TaskDefinition fromTaskDefitionDto(final TaskDefinitionDto dto)
+	{
+		final TaskDefinition taskDefinition = Optional.ofNullable(dto.getDefinitionId())
+			.map(taskDefinitionRepository::findOne)
+			.orElseGet(TaskDefinition::new);
+
+		taskDefinition.setName(dto.getName());
+		taskDefinition.setDescription(dto.getDescription());
+		taskDefinition.setWeight(dto.getWeight());
+		taskDefinition.setFrequency(dto.getFrequency());
+		taskDefinition.setPeriodType(dto.getPeriodType());
+		taskDefinition.setGroup(groupRepository.findOne(dto.getGroupId()));
+		return taskDefinition;
 	}
 
 	private static String formatDate(final LocalDate date)

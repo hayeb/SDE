@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="giphouse.nl.proprapp.ui.group.AddTaskActivity">
+    tools:context="giphouse.nl.proprapp.ui.group.TaskDefinitionActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appBarLayout4"
@@ -107,18 +107,26 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-        <Button
-            android:id="@+id/buttonNext"
+	    <Button
+		    android:id="@+id/button_cancel"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_weight="1"
+		    style="?android:attr/buttonBarButtonStyle"
+		    android:text="@string/button_cancel" />
+
+	    <Button
+            android:id="@+id/button_next"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/add_more"
-            style="?android:attr/buttonBarStyle"
+            style="?android:attr/buttonBarButtonStyle"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
         <Button
-            android:id="@+id/buttonDone"
+            android:id="@+id/button_done"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -127,6 +135,14 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
+
+	    <Button
+		    android:id="@+id/button_save"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_weight="1"
+		    style="?android:attr/buttonBarButtonStyle"
+		    android:text="@string/button_save"/>
     </LinearLayout>
 
 	<android.support.design.widget.TextInputLayout

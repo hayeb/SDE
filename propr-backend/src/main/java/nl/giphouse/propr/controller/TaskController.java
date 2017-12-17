@@ -147,11 +147,11 @@ public class TaskController
 	}
 
 	@RequestMapping(method = RequestMethod.POST, value = "/group/add")
-	public ResponseEntity<TaskDefinitionDto> addTaskToGroup(@RequestBody final TaskDefinitionDto taskAddDto, final Principal principal)
+	public ResponseEntity<TaskDefinitionDto> addTaskToGroup(@RequestBody final TaskDefinitionDto taskDefinitionDto, final Principal principal)
 	{
 		final User user = (User) userService.loadUserByUsername(principal.getName());
 
-		final Group group = groupRepository.findGroupById(taskAddDto.getGroupId());
+		final Group group = groupRepository.findGroupById(taskDefinitionDto.getGroupId());
 
 		if (group == null)
 		{
@@ -163,13 +163,7 @@ public class TaskController
 		}
 		log.debug("Handling /api/task/group/add");
 
-		final TaskDefinition taskDef = new TaskDefinition();
-		taskDef.setName(taskAddDto.getName());
-		taskDef.setDescription(taskAddDto.getDescription());
-		taskDef.setWeight(taskAddDto.getWeight());
-		taskDef.setFrequency(taskAddDto.getFrequency());
-		taskDef.setPeriodType(taskAddDto.getPeriodType());
-		taskDef.setGroup(group);
+		final TaskDefinition taskDef = taskFactory.fromTaskDefitionDto(taskDefinitionDto);
 		taskDefinitionRepository.save(taskDef);
 
 		return ResponseEntity.ok(taskFactory.toTaskDefinitionDto(taskDef));
