@@ -13,6 +13,7 @@ public class UserFactory
 	public UserInfoDto fromEntity(final User user)
 	{
 		return UserInfoDto.builder()
+			.id(user.getId())
 			.username(user.getUsername())
 			.firstname(user.getFirstname())
 			.lastname(user.getLastname())

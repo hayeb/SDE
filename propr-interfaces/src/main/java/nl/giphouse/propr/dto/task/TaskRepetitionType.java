@@ -7,5 +7,5 @@ public enum TaskRepetitionType {
 	DAY,
 	WEEK,
 	MONTH,
-	YEAR;
+	YEAR
 }

@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import giphouse.nl.proprapp.R;
+import giphouse.nl.proprapp.dagger.ImageService;
 import nl.giphouse.propr.dto.task.TaskDto;
 
 /**
@@ -20,9 +21,11 @@ public class GroupTasksAdapter extends RecyclerView.Adapter<GroupTasksAdapter.Vi
 
 	private List<TaskDto> mValues = new ArrayList<>();
 	private final OnGroupTasksFragmentInteractionListener mListener;
+	private ImageService mImageService;
 
-	GroupTasksAdapter(final OnGroupTasksFragmentInteractionListener listener) {
-		mListener = listener;
+	GroupTasksAdapter(final OnGroupTasksFragmentInteractionListener listener, final ImageService imageService) {
+		this.mListener = listener;
+		this.mImageService = imageService;
 	}
 
 	@Override
@@ -36,11 +39,11 @@ public class GroupTasksAdapter extends RecyclerView.Adapter<GroupTasksAdapter.Vi
 	public void onBindViewHolder(final ViewHolder holder, final int position) {
 		final TaskDto task = mValues.get(position);
 		holder.mItem = task;
-		// TODO: Set image
-		// holder.assigneeImageView
 		holder.statusImageView.setImageResource(getImageResourceForStatus(task));
 		holder.taskTitleView.setText(task.getName());
 		holder.dueDateView.setText(task.getCompletionDate() != null ? task.getCompletionDate() : task.getDueDate());
+
+		mImageService.loadAccountAvatar(task.getAssigneeId()).placeholder(R.drawable.placeholder_avatar).into(holder.assigneeImageView);
 
 		holder.mView.setOnClickListener(new View.OnClickListener() {
 			@Override

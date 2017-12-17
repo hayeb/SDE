@@ -167,7 +167,7 @@ public class AuthenticatorService {
 		}
 
 		return new Request.Builder()
-			.url(proprConfiguration.getBackendUrl() + "api/users/register")
+			.url(proprConfiguration.getBackendUrl() + "api/user/register")
 			.header("Authorization", "Bearer " + clientToken)
 			.post(RequestBody.create(JSON, jsonObject.toString()))
 			.build();

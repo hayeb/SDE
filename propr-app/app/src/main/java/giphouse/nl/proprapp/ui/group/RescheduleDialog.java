@@ -2,6 +2,7 @@ package giphouse.nl.proprapp.ui.group;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -12,7 +13,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import javax.inject.Inject;
 
@@ -34,6 +34,7 @@ public class RescheduleDialog extends DialogFragment {
 	@Inject
 	GroupService groupService;
 
+	private RescheduleDialogListener listener;
 	private Long groupId;
 
 	private TextInputEditText aantalText;
@@ -73,7 +74,6 @@ public class RescheduleDialog extends DialogFragment {
 		final ArrayAdapter<CharSequence> adapter = ArrayAdapter
 			.createFromResource(this.getActivity(), R.array.frequencytypes,
 				android.R.layout.simple_spinner_item);
-		//adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		spinner.setAdapter(adapter);
 
 		dialogBuilder.setPositiveButton(R.string.reschedule, new DialogInterface.OnClickListener() {
@@ -85,9 +85,8 @@ public class RescheduleDialog extends DialogFragment {
 					.enqueue(new Callback<Void>() {
 						@Override
 						public void onResponse(@NonNull final Call<Void> call, @NonNull final Response<Void> response) {
-							if (response.isSuccessful())
-							{
-								Toast.makeText(RescheduleDialog.this.getActivity(), "Rescheduled this group!", Toast.LENGTH_LONG).show();
+							if (response.isSuccessful()) {
+								listener.onReschedule();
 							}
 						}
 
@@ -101,11 +100,24 @@ public class RescheduleDialog extends DialogFragment {
 			@Override
 			public void onClick(final DialogInterface dialog, final int which) {
 				RescheduleDialog.this.getDialog().cancel();
+				listener.onCancel();
 			}
 		});
 
-
 		return dialogBuilder.create();
+	}
+
+	@Override
+	public void onAttach(final Context context) {
+		super.onAttach(context);
+
+		try {
+			// Instantiate the NoticeDialogListener so we can send events to the host
+			listener = (RescheduleDialogListener) context;
+		} catch (final ClassCastException e) {
+			// The activity doesn't implement the interface, throw exception
+			throw new ClassCastException(context.toString() + " must implement NoticeDialogListener");
+		}
 	}
 
 	private int numberOfDays(final int amount, final TaskRepetitionType type) {
@@ -120,5 +132,10 @@ public class RescheduleDialog extends DialogFragment {
 				return amount * 365;
 		}
 		return 0;
+	}
+
+	public interface RescheduleDialogListener {
+		void onReschedule();
+		void onCancel();
 	}
 }

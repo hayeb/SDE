@@ -3,7 +3,6 @@ package giphouse.nl.proprapp.dagger;
 import javax.inject.Singleton;
 
 import dagger.Component;
-import giphouse.nl.proprapp.SplashActivity;
 import giphouse.nl.proprapp.account.service.AuthenticatorService;
 import giphouse.nl.proprapp.account.ui.LoginActivity;
 import giphouse.nl.proprapp.account.ui.RegisterAccountActivity;
@@ -17,6 +16,7 @@ import giphouse.nl.proprapp.ui.group.overview.GroupActivityFragment;
 import giphouse.nl.proprapp.ui.group.overview.GroupMyTasksFragment;
 import giphouse.nl.proprapp.ui.group.overview.GroupOverviewActivity;
 import giphouse.nl.proprapp.ui.group.overview.GroupScheduleFragment;
+import giphouse.nl.proprapp.ui.group.schedule.GroupScheduleActivity;
 import giphouse.nl.proprapp.ui.task.CompleteTaskActivity;
 import giphouse.nl.proprapp.ui.task.ShowCompletedTaskActivity;
 
@@ -43,8 +43,6 @@ public interface ProprApplicationComponent {
 
 	void inject(GroupMyTasksFragment myTasksFragment);
 
-	void inject(SplashActivity splashActivity);
-
 	void inject(GroupInfoActivity groupInfoActivity);
 
 	void inject(GroupActivityFragment groupActivityFragment);
@@ -58,4 +56,6 @@ public interface ProprApplicationComponent {
 	void inject(ShowCompletedTaskActivity showCompletedTaskActivity);
 
 	void inject(RescheduleDialog dialog);
+
+	void inject(GroupScheduleActivity groupScheduleActivity);
 }

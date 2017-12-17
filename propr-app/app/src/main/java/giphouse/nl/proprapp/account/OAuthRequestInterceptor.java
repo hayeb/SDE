@@ -130,7 +130,7 @@ public class OAuthRequestInterceptor implements Interceptor {
 	private boolean isInterceptable(final Request request) {
 		// Ensures that requests to token endpoints are ignored by this interceptor
 		final String url = request.url().toString();
-		if (url.contains("/api/users/register")) {
+		if (url.contains("/api/user/register")) {
 			Log.d(TAG, "Requests to user register endpoint not intercepted");
 			return false;
 		}

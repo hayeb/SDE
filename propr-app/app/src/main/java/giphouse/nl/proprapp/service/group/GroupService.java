@@ -1,23 +1,22 @@
 package giphouse.nl.proprapp.service.group;
 
 import java.util.List;
+import java.util.Map;
 
-import giphouse.nl.proprapp.service.group.search.GroupSearchResult;
 import nl.giphouse.propr.dto.group.GenerateScheduleDto;
 import nl.giphouse.propr.dto.group.GroupAddDto;
 import nl.giphouse.propr.dto.group.GroupDto;
 import nl.giphouse.propr.dto.group.GroupJoinDto;
 import nl.giphouse.propr.dto.task.TaskDefinitionDto;
+import nl.giphouse.propr.dto.task.TaskRepetitionType;
 import nl.giphouse.propr.dto.user.UserInfoDto;
 import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
-import retrofit2.http.Query;
 
 /**
  * @author haye
@@ -28,24 +27,24 @@ public interface GroupService {
 	Call<List<GroupDto>> listGroups();
 
 	@POST("api/group")
-	Call<GroupDto> createGroup(@Body final GroupAddDto groupAddDto);
+	Call<GroupDto> createGroup(@Body GroupAddDto groupAddDto);
 
 	@POST("api/group/join")
-	Call<GroupDto> joinGroup(@Body final GroupJoinDto groupJoinDto);
+	Call<GroupDto> joinGroup(@Body GroupJoinDto groupJoinDto);
 
 	@GET("api/group/{groupId}/users")
-	Call<List<UserInfoDto>> getUsersInGroup(@Path("groupId") final long groupId);
+	Call<List<UserInfoDto>> getUsersInGroup(@Path("groupId") Long groupId);
 
 	@POST("api/group/{groupId}/leave")
-	Call<Void> leaveGroup(@Path("groupId") long groupId);
-
-	@GET("api/group/{groupId}/image")
-	Call<byte[]> getGroupImage(@Path("groupId") long groupId);
+	Call<Void> leaveGroup(@Path("groupId") Long groupId);
 
 	@POST("api/group/{groupId}/image")
 	@Headers("Content-Type: image/jpeg")
-	Call<Void> updateGroupImage(@Path("groupId") long groupId, @Body RequestBody image);
+	Call<Void> updateGroupImage(@Path("groupId") Long groupId, @Body RequestBody image);
 
 	@POST("api/group/{groupId}/schedule")
-	Call<Void> rescheduleGroup(@Path("groupId") long groupId, @Body GenerateScheduleDto dto);
+	Call<Void> rescheduleGroup(@Path("groupId") Long groupId, @Body GenerateScheduleDto dto);
+
+	@GET("api/group/{groupId}/schedule")
+	Call<Map<TaskRepetitionType, List<TaskDefinitionDto>>> getGroupSchedule(@Path("groupId") Long groupId);
 }

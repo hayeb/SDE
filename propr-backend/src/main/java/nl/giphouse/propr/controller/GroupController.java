@@ -4,6 +4,7 @@ import java.security.Principal;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -14,12 +15,17 @@ import nl.giphouse.propr.dto.group.GroupAddDto;
 import nl.giphouse.propr.dto.group.GroupDto;
 import nl.giphouse.propr.dto.group.GroupJoinDto;
 import nl.giphouse.propr.dto.group.GenerateScheduleDto;
+import nl.giphouse.propr.dto.task.TaskDefinitionDto;
+import nl.giphouse.propr.dto.task.TaskRepetitionType;
 import nl.giphouse.propr.dto.user.UserInfoDto;
 import nl.giphouse.propr.model.group.Group;
 import nl.giphouse.propr.model.group.GroupFactory;
+import nl.giphouse.propr.model.task.TaskDefinition;
+import nl.giphouse.propr.model.task.TaskFactory;
 import nl.giphouse.propr.model.user.User;
 import nl.giphouse.propr.model.user.UserFactory;
 import nl.giphouse.propr.repository.GroupRepository;
+import nl.giphouse.propr.repository.TaskDefinitionRepository;
 import nl.giphouse.propr.repository.TaskRepository;
 import nl.giphouse.propr.service.ScheduleService;
 import nl.giphouse.propr.service.SchedulingResult;
@@ -56,10 +62,16 @@ public class GroupController
 	private TaskRepository taskRepository;
 
 	@Inject
+	private TaskDefinitionRepository taskDefinitionRepository;
+
+	@Inject
 	private GroupFactory groupFactory;
 
 	@Inject
 	private UserFactory userFactory;
+
+	@Inject
+	private TaskFactory tasksFactory;
 
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<List<GroupDto>> listGroups(final Principal principal)
@@ -243,5 +255,25 @@ public class GroupController
 		}
 
 		return ResponseEntity.ok(null);
+	}
+
+	@RequestMapping(method = RequestMethod.GET, value = "/{groupId}/schedule")
+	public ResponseEntity<Map<TaskRepetitionType, List<TaskDefinitionDto>>> getGroupSchedule(final Principal principal, final @PathVariable long groupId)
+	{
+		final Group group = groupRepository.findGroupById(groupId);
+		if (group == null)
+		{
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+		}
+		final User user = (User) userService.loadUserByUsername(principal.getName());
+		if (!group.getUsers().contains(user))
+		{
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+		}
+
+		final Map<TaskRepetitionType, List<TaskDefinitionDto>> result = taskDefinitionRepository.findAllByGroup(group).stream()
+			.collect(Collectors.groupingBy(TaskDefinition::getPeriodType, Collectors.mapping(tasksFactory::toTaskDefinitionDto, Collectors.toList())));
+
+		return ResponseEntity.ok(result);
 	}
 }

@@ -33,7 +33,7 @@
 	<string name="frequency">How often should this task be done?</string>
 	<string name="hint_task_name">Name</string>
 	<string name="hint_task_description">Description</string>
-	<string name="hint_task_weight">Weight</string>
+	<string name="hint_task_weight">Please select a weight for this task</string>
 	<string name="hint_task_number">Number</string>
 	<string name="times">times a</string>
 	<string-array name="frequencytypes">

@@ -59,6 +59,9 @@ public class User implements UserDetails, Serializable
 	@Column(name = "enabled", nullable = false)
 	private boolean enabled;
 
+	@Column
+	private byte[] avatar;
+
 	public User(final String username, final String password, final String email, final String firstname, final String lastname)
 	{
 		this.username = username;

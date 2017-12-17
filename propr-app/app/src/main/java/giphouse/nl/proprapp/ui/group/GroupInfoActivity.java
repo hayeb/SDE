@@ -197,7 +197,6 @@ public class GroupInfoActivity extends AppCompatActivity {
 		startActivityForResult(Intent.createChooser(chooserIntent, "Select Picture"), REQUEST_CODE_SELECT_IMAGE);
 	}
 
-
 	private class GroupUserAdapter extends BaseAdapter {
 		private List<UserInfoDto> users = new ArrayList<>();
 
@@ -239,7 +238,7 @@ public class GroupInfoActivity extends AppCompatActivity {
 			usernameText.setText(dto.getUsername());
 
 			final ImageView avatarImage = itemView.findViewById(R.id.account_avatar);
-			avatarImage.setImageResource(R.drawable.placeholder_avatar);
+			imageService.loadAccountAvatar(dto.getId()).placeholder(R.drawable.placeholder_avatar).into(avatarImage);
 
 			return itemView;
 		}
@@ -248,6 +247,5 @@ public class GroupInfoActivity extends AppCompatActivity {
 			users = dtos;
 			notifyDataSetChanged();
 		}
-
 	}
 }

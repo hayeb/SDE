@@ -174,7 +174,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 
 	private void returnResult(final Intent intent) {
 		setAccountAuthenticatorResult(intent.getExtras());
-		setResult(CODE_LOGGED_IN, intent);
+		setResult(RESULT_OK, intent);
 		finish();
 	}
 
@@ -196,7 +196,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 	protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
 		if (resultCode == RegisterAccountActivity.CODE_ACCOUNT_REGISTERED) {
 			setAccountAuthenticatorResult(data.getExtras());
-			setResult(CODE_LOGGED_IN, data);
+			setResult(RESULT_OK, data);
 			finish();
 		}
 	}

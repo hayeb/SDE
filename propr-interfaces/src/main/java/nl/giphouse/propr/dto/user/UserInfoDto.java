@@ -12,6 +12,8 @@ import lombok.Getter;
 @Builder
 public class UserInfoDto {
 
+	private Long id;
+
 	private final String username;
 
 	private final String firstname;

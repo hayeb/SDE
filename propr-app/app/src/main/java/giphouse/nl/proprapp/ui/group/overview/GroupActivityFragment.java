@@ -18,6 +18,7 @@ import javax.inject.Inject;
 
 import giphouse.nl.proprapp.ProprApplication;
 import giphouse.nl.proprapp.R;
+import giphouse.nl.proprapp.dagger.ImageService;
 import giphouse.nl.proprapp.service.task.TaskService;
 import nl.giphouse.propr.dto.task.TaskDto;
 import retrofit2.Call;
@@ -35,6 +36,9 @@ public class GroupActivityFragment extends Fragment {
 
 	@Inject
 	TaskService taskService;
+
+	@Inject
+	ImageService imageService;
 
 	private OnGroupTasksFragmentInteractionListener mListener;
 
@@ -69,7 +73,7 @@ public class GroupActivityFragment extends Fragment {
 		view.addItemDecoration(dividerItemDecoration);
 		view.setLayoutManager(new LinearLayoutManager(view.getContext()));
 
-		adapter = new GroupTasksAdapter(mListener);
+		adapter = new GroupTasksAdapter(mListener, imageService);
 		view.setAdapter(adapter);
 
 		return view;

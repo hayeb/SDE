@@ -20,11 +20,12 @@ import javax.inject.Inject;
 
 import giphouse.nl.proprapp.ProprApplication;
 import giphouse.nl.proprapp.R;
-import giphouse.nl.proprapp.ui.group.AddTaskActivity;
+import giphouse.nl.proprapp.dagger.ImageService;
 import giphouse.nl.proprapp.service.group.GroupService;
 import giphouse.nl.proprapp.ui.group.GroupInfoActivity;
 import giphouse.nl.proprapp.ui.group.GroupListActivity;
 import giphouse.nl.proprapp.ui.group.overview.GroupMyTasksFragment.MyTasksInteractionListener;
+import giphouse.nl.proprapp.ui.group.schedule.GroupScheduleActivity;
 import giphouse.nl.proprapp.ui.task.ShowCompletedTaskActivity;
 import nl.giphouse.propr.dto.task.TaskDto;
 import retrofit2.Call;
@@ -41,6 +42,9 @@ public class GroupOverviewActivity extends AppCompatActivity implements MyTasksI
 
 	@Inject
 	GroupService groupService;
+
+	@Inject
+	ImageService imageService;
 
 	private String groupName;
 
@@ -135,16 +139,16 @@ public class GroupOverviewActivity extends AppCompatActivity implements MyTasksI
 				intent.putExtra(GroupInfoActivity.ARG_GROUP_ID, groupId);
 				startActivity(intent);
 				break;
-			case R.id.item_task_definitions:
-				intent = new Intent(this, AddTaskActivity.class);
-				intent.putExtra("groupId", groupId);
-				intent.putExtra("groupName", groupName);
+			case R.id.item_schedule:
+				intent = new Intent(this, GroupScheduleActivity.class);
+				intent.putExtra(GroupScheduleActivity.ARG_GROUP_ID, groupId);
+				intent.putExtra(GroupScheduleActivity.ARG_GROUP_NAME, groupName);
 				startActivity(intent);
 				break;
 			case android.R.id.home:
 				intent = NavUtils.getParentActivityIntent(this);
 				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
-						| Intent.FLAG_ACTIVITY_SINGLE_TOP);
+					| Intent.FLAG_ACTIVITY_SINGLE_TOP);
 				NavUtils.navigateUpTo(this, intent);
 				return true;
 			case R.id.item_leave_group:
@@ -208,7 +212,7 @@ public class GroupOverviewActivity extends AppCompatActivity implements MyTasksI
 	}
 
 	@Override
-	public void onPointerCaptureChanged(boolean hasCapture) {
+	public void onPointerCaptureChanged(final boolean hasCapture) {
 
 	}
 }

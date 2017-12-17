@@ -22,4 +22,8 @@
 		<item name="android:textColor">@color/white</item>
 	</style>
 
+	<style name="SplashTheme" parent="ProprTheme">
+		<item name="android:windowBackground">@drawable/splash</item>
+	</style>
+
 </resources>

@@ -15,4 +15,9 @@ public interface ImageService {
 	void invalidateGroupImage(@NonNull Long groupId);
 
 	RequestCreator loadTaskImage(@NonNull Long taskId);
+
+	RequestCreator loadAccountAvatar(@NonNull Long userId);
+
+	void invalidateAccountAvatar(@NonNull Long userId);
+
 }

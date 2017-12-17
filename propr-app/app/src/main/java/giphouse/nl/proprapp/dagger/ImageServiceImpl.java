@@ -1,10 +1,11 @@
 package giphouse.nl.proprapp.dagger;
 
-import android.annotation.SuppressLint;
 import android.support.annotation.NonNull;
 
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.RequestCreator;
+
+import java.util.Locale;
 
 import giphouse.nl.proprapp.ProprConfiguration;
 
@@ -15,6 +16,8 @@ public class ImageServiceImpl implements ImageService {
 
 	private static final String URL_GROUP_IMAGE_FORMAT = "api/group/%d/image";
 
+	private static final String URL_USER_AVATAR = "api/user/%d/avatar";
+
 	private final Picasso picasso;
 
 	private final ProprConfiguration proprConfiguration;
@@ -24,21 +27,29 @@ public class ImageServiceImpl implements ImageService {
 		this.proprConfiguration = proprConfiguration;
 	}
 
-	@SuppressLint("DefaultLocale")
 	@Override
 	public RequestCreator loadGroupImage(final @NonNull Long groupId) {
 
-		return picasso.load(proprConfiguration.getBackendUrl() + String.format(URL_GROUP_IMAGE_FORMAT, groupId));
+		return picasso.load(proprConfiguration.getBackendUrl() + String.format(Locale.ENGLISH, URL_GROUP_IMAGE_FORMAT, groupId));
 	}
 
-	@SuppressLint("DefaultLocale")
 	@Override
 	public void invalidateGroupImage(final @NonNull Long groupId) {
-		picasso.invalidate(proprConfiguration.getBackendUrl() + String.format(URL_GROUP_IMAGE_FORMAT, groupId));
+		picasso.invalidate(proprConfiguration.getBackendUrl() + String.format(Locale.ENGLISH, URL_GROUP_IMAGE_FORMAT, groupId));
 	}
 
 	@Override
 	public RequestCreator loadTaskImage(final @NonNull Long taskId) {
 		return picasso.load(proprConfiguration.getBackendUrl() + "api/task/" + taskId + "/image");
+	}
+
+	@Override
+	public RequestCreator loadAccountAvatar(final @NonNull Long userId) {
+		return picasso.load(proprConfiguration.getBackendUrl() + String.format(Locale.ENGLISH, URL_USER_AVATAR, userId));
+	}
+
+	@Override
+	public void invalidateAccountAvatar(final @NonNull Long userId) {
+		picasso.invalidate(proprConfiguration.getBackendUrl() + String.format(Locale.ENGLISH, URL_USER_AVATAR, userId));
 	}
 }
