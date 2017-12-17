@@ -230,6 +230,8 @@ public class GroupController
 		}
 
 		final HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.IMAGE_JPEG);
+		headers.setContentLength(group.getImage().length);
 		headers.setCacheControl("max-age=3600");
 
 		return new ResponseEntity<>(group.getImage(), headers, HttpStatus.OK);

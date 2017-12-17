@@ -86,6 +86,7 @@ public class UserController
 		final HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.IMAGE_JPEG);
 		headers.setContentLength(avatar.length);
+		headers.setCacheControl("max-age=3600");
 		return new ResponseEntity<>(avatar, headers, HttpStatus.OK);
 	}
 
