@@ -45,4 +45,10 @@ public interface TaskService {
 	@GET("api/task/{taskId}/rate")
 	Call<TaskRatingDto> getTaskRating(@Path("taskId") long taskId);
 
+	@GET("api/task/{taskId}/ratings")
+	Call<List<TaskRatingDto>> getRatingsForTask(@Path("taskId") long taskId);
+
+	@GET("api/task/{taskId}/average")
+	Call<Double> getAverageRatingForTask(@Path("taskId") long taskId);
+
 }

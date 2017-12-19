@@ -12,6 +12,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -56,8 +57,6 @@ public class ShowCompletedTaskActivity extends AppCompatActivity {
 	private boolean isAssignee;
 
 	private ImageView taskImage;
-	private RatingBar ratingBar;
-	private TextInputEditText ratingText;
 
 	@Override
 	public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -89,51 +88,18 @@ public class ShowCompletedTaskActivity extends AppCompatActivity {
 		descriptionView.setText(completionDescription);
 
 		taskImage = findViewById(R.id.completed_task_image);
-		ratingBar = findViewById(R.id.ratingBar);
-		ratingText = findViewById(R.id.rating_comments);
 
-		ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
-			@Override
-			public void onRatingChanged(final RatingBar ratingBar, final float rating, final boolean fromUser) {
-				if (rating < 0.5f) {
-					ratingBar.setRating(0.5f);
-				}
-			}
-		});
-
-		// If the current user is the assignee of the task, we do not show the rating interface
 		if (isAssignee) {
-			ratingBar.setVisibility(INVISIBLE);
-			ratingText.setVisibility(INVISIBLE);
-			return;
+			getSupportFragmentManager().beginTransaction()
+				.replace(R.id.task_complete_fragment, ViewTaskRatingsFragment.newInstance(taskId), "viewTaskRatingFragment")
+				.disallowAddToBackStack()
+				.commit();
+		} else {
+			getSupportFragmentManager().beginTransaction()
+				.replace(R.id.task_complete_fragment, RateTaskFragment.newInstance(taskId), "rateTaskFragment")
+				.disallowAddToBackStack()
+				.commit();
 		}
-
-		findViewById(R.id.rating_button).setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(final View v) {
-				submitRating();
-			}
-		});
-
-
-		taskService.getTaskRating(taskId).enqueue(new Callback<TaskRatingDto>() {
-			@Override
-			public void onResponse(@NonNull final Call<TaskRatingDto> call, @NonNull final Response<TaskRatingDto> response) {
-				if (response.isSuccessful()) {
-					final TaskRatingDto dto = response.body();
-					if (dto != null)
-					{
-						ratingBar.setRating(dto.getScore() / 2.0f);
-						ratingText.setText(dto.getComment());
-					}
-				}
-			}
-
-			@Override
-			public void onFailure(@NonNull final Call<TaskRatingDto> call, @NonNull final Throwable t) {
-
-			}
-		});
 	}
 
 	@Override
@@ -156,27 +122,5 @@ public class ShowCompletedTaskActivity extends AppCompatActivity {
 		imageService.loadTaskImage(taskId)
 			.placeholder(R.drawable.placeholder)
 			.into(taskImage);
-	}
-
-	private void submitRating() {
-		final int score = (int) (ratingBar.getRating() * 2.0) + 1;
-		final String comment = ratingText.getText().toString();
-
-		taskService.rateTask(taskId, new TaskRatingDto(score, comment)).enqueue(new Callback<Void>() {
-			@Override
-			public void onResponse(@NonNull final Call<Void> call, @NonNull final Response<Void> response) {
-				if (response.isSuccessful()) {
-					Toast.makeText(ShowCompletedTaskActivity.this, "Rating has been saved succesfully!", Toast.LENGTH_LONG).show();
-				} else {
-					Log.d(TAG, String.format("[%d]: %s", response.code(), response.message()));
-					Toast.makeText(ShowCompletedTaskActivity.this, "Rating has not been saved", Toast.LENGTH_LONG).show();
-				}
-			}
-
-			@Override
-			public void onFailure(@NonNull final Call<Void> call, @NonNull final Throwable t) {
-				Toast.makeText(ShowCompletedTaskActivity.this, "Unable to connect to server", Toast.LENGTH_LONG).show();
-			}
-		});
 	}
 }

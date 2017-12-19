@@ -7,6 +7,7 @@ import java.util.Optional;
 import nl.giphouse.propr.dto.task.TaskDefinitionDto;
 import nl.giphouse.propr.dto.task.TaskDto;
 
+import nl.giphouse.propr.dto.task.TaskRatingDto;
 import nl.giphouse.propr.repository.GroupRepository;
 import nl.giphouse.propr.repository.TaskDefinitionRepository;
 import org.springframework.stereotype.Component;
@@ -73,6 +74,15 @@ public class TaskFactory
 		taskDefinition.setPeriodType(dto.getPeriodType());
 		taskDefinition.setGroup(groupRepository.findOne(dto.getGroupId()));
 		return taskDefinition;
+	}
+
+	public TaskRatingDto toTaskRatingDto(final TaskRating rating)
+	{
+		return TaskRatingDto.builder()
+			.userId(rating.getAuthor().getId())
+			.score(rating.getScore())
+			.comment(rating.getComment())
+			.build();
 	}
 
 	private static String formatDate(final LocalDate date)

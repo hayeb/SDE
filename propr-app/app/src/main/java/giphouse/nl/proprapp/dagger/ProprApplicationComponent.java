@@ -17,7 +17,9 @@ import giphouse.nl.proprapp.ui.group.overview.GroupOverviewActivity;
 import giphouse.nl.proprapp.ui.group.overview.GroupScheduleFragment;
 import giphouse.nl.proprapp.ui.group.schedule.GroupScheduleActivity;
 import giphouse.nl.proprapp.ui.task.CompleteTaskActivity;
+import giphouse.nl.proprapp.ui.task.RateTaskFragment;
 import giphouse.nl.proprapp.ui.task.ShowCompletedTaskActivity;
+import giphouse.nl.proprapp.ui.task.ViewTaskRatingsFragment;
 
 /**
  * @author haye
@@ -55,4 +57,8 @@ public interface ProprApplicationComponent {
 	void inject(ShowCompletedTaskActivity showCompletedTaskActivity);
 
 	void inject(GroupScheduleActivity groupScheduleActivity);
+
+	void inject(RateTaskFragment rateTaskFragment);
+
+	void inject(ViewTaskRatingsFragment viewTaskRatingsFragment);
 }

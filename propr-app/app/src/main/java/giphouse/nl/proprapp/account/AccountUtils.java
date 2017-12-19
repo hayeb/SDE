@@ -3,6 +3,7 @@ package giphouse.nl.proprapp.account;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -44,5 +45,4 @@ public class AccountUtils {
 
 		return accounts[0].name;
 	}
-
 }

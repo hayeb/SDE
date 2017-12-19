@@ -3,6 +3,7 @@ package nl.giphouse.propr.dto.task;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 /**
  * @author haye
@@ -31,4 +32,7 @@ public class TaskDto
 	private String completionDate;
 
 	private boolean overdue;
+
+	@Setter
+	private boolean owned;
 }

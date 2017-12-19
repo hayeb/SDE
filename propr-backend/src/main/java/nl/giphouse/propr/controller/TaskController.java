@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import nl.giphouse.propr.dto.task.TaskCompletionDto;
 import nl.giphouse.propr.dto.task.TaskDefinitionDto;
+import nl.giphouse.propr.dto.task.TaskDto;
 import nl.giphouse.propr.dto.task.TaskRatingDto;
 import nl.giphouse.propr.model.group.Group;
 import nl.giphouse.propr.model.task.AssignedTask;
@@ -83,25 +84,7 @@ public class TaskController
 
 		return ResponseEntity.ok(taskRepository.findTasksForUserInGroup(group, user).stream()
 			.map(taskFactory::toTaskDto)
-			.collect(Collectors.toList()));
-	}
-
-	@RequestMapping(method = RequestMethod.GET, value = "/group/activity")
-	public ResponseEntity<?> getDoneTasksInGroup(final Principal principal, final @RequestParam String groupname)
-	{
-		final User user = (User) userService.loadUserByUsername(principal.getName());
-		final Group group = groupRepository.findGroupByName(groupname);
-
-		final ResponseEntity authorizationResponse = checkAuthorized(user, group);
-		if (authorizationResponse != null)
-		{
-			return authorizationResponse;
-		}
-
-		log.debug("Handling /api/task/group/done");
-
-		return ResponseEntity.ok(taskRepository.findActivityInGroup(group).stream()
-			.map(taskFactory::toTaskDto)
+			.peek(dto -> dto.setOwned(true))
 			.collect(Collectors.toList()));
 	}
 
@@ -121,6 +104,27 @@ public class TaskController
 
 		return ResponseEntity.ok(taskRepository.findTodoTasksInGroup(group).stream()
 			.map(taskFactory::toTaskDto)
+			.map(dto -> setOwnedTask(dto, user))
+			.collect(Collectors.toList()));
+	}
+
+	@RequestMapping(method = RequestMethod.GET, value = "/group/activity")
+	public ResponseEntity<?> getDoneTasksInGroup(final Principal principal, final @RequestParam String groupname)
+	{
+		final User user = (User) userService.loadUserByUsername(principal.getName());
+		final Group group = groupRepository.findGroupByName(groupname);
+
+		final ResponseEntity authorizationResponse = checkAuthorized(user, group);
+		if (authorizationResponse != null)
+		{
+			return authorizationResponse;
+		}
+
+		log.debug("Handling /api/task/group/done");
+
+		return ResponseEntity.ok(taskRepository.findActivityInGroup(group).stream()
+			.map(taskFactory::toTaskDto)
+			.map(dto -> setOwnedTask(dto, user))
 			.collect(Collectors.toList()));
 	}
 
@@ -364,12 +368,63 @@ public class TaskController
 			return ResponseEntity.notFound().build();
 		}
 
-		return ResponseEntity.ok(new TaskRatingDto(rating.getScore(), rating.getComment()));
+		final TaskRatingDto dto = TaskRatingDto.builder()
+			.userId(rating.getAuthor().getId())
+			.score(rating.getScore())
+			.comment(rating.getComment())
+			.build();
+
+		return ResponseEntity.ok(dto);
+	}
+
+	@RequestMapping(method = RequestMethod.GET, value = "{taskId}/ratings")
+	public ResponseEntity<List<TaskRatingDto>> getRatingsForTask(final Principal principal, final @PathVariable long taskId)
+	{
+		final User user = (User) userService.loadUserByUsername(principal.getName());
+		final AssignedTask task = taskRepository.findOne(taskId);
+
+		if (task == null)
+		{
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+		}
+
+		final ResponseEntity authResponse = checkAuthorized(user, task.getDefinition().getGroup());
+		if (authResponse != null)
+		{
+			return authResponse;
+		}
+
+		final List<TaskRatingDto> ratings = task.getCompletedTask().getRatings().stream()
+			.map(taskFactory::toTaskRatingDto)
+			.collect(Collectors.toList());
+
+		return ResponseEntity.ok(ratings);
+	}
+
+	@RequestMapping(method = RequestMethod.GET, value = "{taskId}/average")
+	public ResponseEntity<Double> getTaskRatingsAverage(final Principal principal, final @PathVariable long taskId)
+	{
+		final User user = (User) userService.loadUserByUsername(principal.getName());
+		final AssignedTask task = taskRepository.findOne(taskId);
+
+		if (task == null)
+		{
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+		}
+
+		final ResponseEntity authResponse = checkAuthorized(user, task.getDefinition().getGroup());
+		if (authResponse != null)
+		{
+			return authResponse;
+		}
+
+		return ResponseEntity.ok(task.getCompletedTask().getRatings().stream()
+			.collect(Collectors.averagingDouble(TaskRating::getScore)));
 	}
 
 	private boolean validateRating(final TaskRatingDto dto)
 	{
-		return dto.getScore() > 0 && dto.getScore() <= 10;
+		return dto.getScore() > 0 && dto.getScore() <= 5;
 	}
 
 	private ResponseEntity<?> checkAuthorized(final User user, final Group group)
@@ -387,5 +442,14 @@ public class TaskController
 		}
 
 		return null;
+	}
+
+	private TaskDto setOwnedTask(final TaskDto taskDto, final User user)
+	{
+		if (user.getId().equals(taskDto.getAssigneeId()))
+		{
+			taskDto.setOwned(true);
+		}
+		return taskDto;
 	}
 }

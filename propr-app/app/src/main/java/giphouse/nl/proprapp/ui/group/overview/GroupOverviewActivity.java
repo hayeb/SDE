@@ -201,7 +201,7 @@ public class GroupOverviewActivity extends AppCompatActivity implements MyTasksI
 		final Bundle bundle = new Bundle();
 		bundle.putLong(ShowCompletedTaskActivity.ARG_TASK_ID, item.getTaskId());
 		bundle.putString(ShowCompletedTaskActivity.ARG_TASK_COMPLETION_NOTES, item.getCompletionNotes());
-		// TODO: Pass isAssignee parameter
+		bundle.putBoolean(ShowCompletedTaskActivity.ARG_IS_ASSIGNEE, item.isOwned());
 		intent.putExtras(bundle);
 		startActivity(intent);
 	}
