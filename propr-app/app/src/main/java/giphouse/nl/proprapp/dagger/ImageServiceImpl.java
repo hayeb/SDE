@@ -2,7 +2,6 @@ package giphouse.nl.proprapp.dagger;
 
 import android.support.annotation.NonNull;
 
-import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.RequestCreator;
 
@@ -18,6 +17,8 @@ public class ImageServiceImpl implements ImageService {
 	private static final String URL_GROUP_IMAGE_FORMAT = "api/group/%d/image";
 
 	private static final String URL_USER_AVATAR = "api/user/%d/avatar";
+
+	private static final String URL_TASK_IMAGE = "api/task/%d/image";
 
 	private final Picasso picasso;
 
@@ -41,7 +42,7 @@ public class ImageServiceImpl implements ImageService {
 
 	@Override
 	public RequestCreator loadTaskImage(final @NonNull Long taskId) {
-		return picasso.load(proprConfiguration.getBackendUrl() + "api/task/" + taskId + "/image");
+		return picasso.load(proprConfiguration.getBackendUrl() + String.format(Locale.ENGLISH, URL_TASK_IMAGE, taskId));
 	}
 
 	@Override

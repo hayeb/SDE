@@ -43,7 +43,7 @@ public class TaskRepositoryImpl implements AssignedTaskRepository
 		final TypedQuery<AssignedTask> query = entityManager.createQuery(USER_TASKS_QUERY, AssignedTask.class);
 		query.setParameter("group", group);
 		query.setParameter("assignee", user);
-		query.setMaxResults(25);
+		query.setMaxResults(50);
 		return query.getResultList();
 	}
 
@@ -53,7 +53,7 @@ public class TaskRepositoryImpl implements AssignedTaskRepository
 		final TypedQuery<AssignedTask> query = entityManager.createQuery(GROUP_TASKS_TODO_QUERY, AssignedTask.class);
 		query.setParameter("group", group);
 		query.setParameter("date", LocalDate.now());
-		query.setMaxResults(25);
+		query.setMaxResults(50);
 		return query.getResultList();
 	}
 
@@ -63,7 +63,7 @@ public class TaskRepositoryImpl implements AssignedTaskRepository
 		final TypedQuery<AssignedTask> query = entityManager.createQuery(GROUP_ACTIVITY_QUERY, AssignedTask.class);
 		query.setParameter("group", group);
 		query.setParameter("date", LocalDate.now());
-		query.setMaxResults(50);
+		query.setMaxResults(100);
 
 		final List<AssignedTask> tasks = query.getResultList();
 		tasks.sort(Comparator.comparing(t -> Optional.ofNullable(t.getCompletedTask()).map(CompletedTask::getDate).orElse(t.getDueDate()),
