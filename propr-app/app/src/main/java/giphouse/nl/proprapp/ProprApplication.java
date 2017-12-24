@@ -21,7 +21,7 @@ public class ProprApplication extends Application {
 
 		component = DaggerProprApplicationComponent.builder()
 			.appModule(new AppModule(this))
-			.netModule(new NetModule(getString(R.string.backend_url), "app", "secret"))
+			.netModule(new NetModule(BuildConfig.BASE_URL, "app", "secret"))
 			.apiServiceModule(new ApiServiceModule())
 			.build();
 	}

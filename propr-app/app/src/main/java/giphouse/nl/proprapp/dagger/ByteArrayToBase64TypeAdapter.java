@@ -19,6 +19,7 @@ import java.lang.reflect.Type;
 public class ByteArrayToBase64TypeAdapter implements JsonSerializer<byte[]>, JsonDeserializer<byte[]> {
 
 	public byte[] deserialize(final JsonElement json, final Type typeOfT, final JsonDeserializationContext context) throws JsonParseException {
+
 		return Base64.decode(json.getAsString(), Base64.NO_WRAP);
 	}
 

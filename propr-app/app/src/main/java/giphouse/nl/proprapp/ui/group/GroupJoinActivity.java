@@ -61,7 +61,6 @@ public class GroupJoinActivity extends AppCompatActivity {
 		final String groupCode = enterGroupcode.getText().toString();
 
 		if (validateInputShowError(groupCode)) {
-			Log.e(TAG, "There was an error..?");
 			return;
 		}
 
