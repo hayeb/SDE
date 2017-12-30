@@ -82,7 +82,6 @@ public class RegisterAccountActivity extends AccountAuthenticatorActivity {
 		});
 	}
 
-	@SuppressLint("StaticFieldLeak")
 	private void registerAccount() {
 
 		mUsernameField.setError(null);
