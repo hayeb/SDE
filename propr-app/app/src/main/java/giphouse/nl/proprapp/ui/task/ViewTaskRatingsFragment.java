@@ -96,9 +96,11 @@ public class ViewTaskRatingsFragment extends ListFragment {
 				if (response.isSuccessful())
 				{
 					final Double score = response.body();
-					if (score != null)
+					if (score != null && score > 0.0)
 					{
 						averageRatingBar.setRating(score.floatValue() / 2.0f);
+					} else {
+						averageRatingBar.setVisibility(View.GONE);
 					}
 				}
 			}

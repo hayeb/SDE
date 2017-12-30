@@ -36,14 +36,13 @@
 		android:id="@+id/users_grid"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:layout_alignParentStart="true"
 		android:layout_below="@+id/group_image_view"
-		android:columnWidth="135dp"
+		android:columnWidth="65dp"
 		android:gravity="center"
-		android:horizontalSpacing="10dp"
-		android:numColumns="2"
+		android:horizontalSpacing="8dp"
+		android:numColumns="3"
 		android:stretchMode="columnWidth"
-		android:verticalSpacing="10dp"
+		android:verticalSpacing="8dp"
 		android:background="@color/colorBackground"/>
 
 </RelativeLayout>

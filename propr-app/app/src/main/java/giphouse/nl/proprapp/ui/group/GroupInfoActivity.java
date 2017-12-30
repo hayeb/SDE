@@ -100,7 +100,6 @@ public class GroupInfoActivity extends AppCompatActivity {
 	protected void onResume() {
 		super.onResume();
 
-		// Get the users in the group
 		groupService.getUsersInGroup(groupId).enqueue(new Callback<List<UserInfoDto>>() {
 			@Override
 			public void onResponse(@NonNull final Call<List<UserInfoDto>> call, @NonNull final Response<List<UserInfoDto>> response) {
@@ -129,10 +128,6 @@ public class GroupInfoActivity extends AppCompatActivity {
 		}
 	}
 
-	/**
-	 * The default implementation of the back button ALWAYS creates a new activity. In this case, we
-	 * want to return to the existing group overview activity, so we override this default functionality.
-	 */
 	@Override
 	public boolean onOptionsItemSelected(final MenuItem item) {
 		final int id = item.getItemId();

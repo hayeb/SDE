@@ -48,7 +48,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/group")
 @Slf4j
-public class GroupController
+public class GroupController extends AbstractProprController
 {
 	@Inject
 	private UserService userService;
@@ -79,7 +79,7 @@ public class GroupController
 	{
 		final User user = (User) userService.loadUserByUsername(principal.getName());
 
-		log.debug("Handling /api/group");
+		log.debug("GET /api/group");
 
 		final List<Group> groups = groupRepository.findGroupsByUsers(user);
 
@@ -100,7 +100,7 @@ public class GroupController
 			return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("Group with this name already exists.");
 		}
 
-		log.debug("Handling /api/group/create");
+		log.debug("POST /api/group/create");
 
 		final Group group = new Group();
 		group.setAdmin(user);
@@ -116,22 +116,16 @@ public class GroupController
 	@RequestMapping(value = "/{groupId}/users", method = RequestMethod.GET)
 	public ResponseEntity<List<UserInfoDto>> listUsersInGroup(final Principal principal, final @PathVariable long groupId)
 	{
+		final User user = (User) userService.loadUserByUsername(principal.getName());
 		final Group group = groupRepository.findOne(groupId);
 
-		log.debug("Handling /api/group/users");
+		checkAuthorized(group, user);
 
-		if (group == null)
-		{
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-		}
+		log.debug("GET /api/group/users");
 
-		final User user = (User) userService.loadUserByUsername(principal.getName());
-		if (!group.getUsers().contains(user))
-		{
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
-		}
-
-		return ResponseEntity.ok(group.getUsers().stream().map(userFactory::fromEntity).collect(Collectors.toList()));
+		return ResponseEntity.ok(group.getUsers().stream()
+			.map(userFactory::fromEntity)
+			.collect(Collectors.toList()));
 	}
 
 	@RequestMapping(value = "/join", method = RequestMethod.POST)
@@ -146,7 +140,7 @@ public class GroupController
 		// group exists
 		final Group group = groupRepository.findGroupByInviteCode(groupJoinDto.getEnteredCode());
 		final User user = (User) userService.loadUserByUsername(principal.getName());
-		log.debug("Handling /api/group/join");
+		log.debug("POST /api/group/join");
 
 		if (group.getUsers().contains(user))
 		{
@@ -164,10 +158,8 @@ public class GroupController
 	{
 		final User user = (User) userService.loadUserByUsername(principal.getName());
 		final Group group = groupRepository.findOne(groupId);
-		if (group == null)
-		{
-			return ResponseEntity.notFound().build();
-		}
+
+		checkAuthorized(group, user);
 
 		// TODO: Handle admin leaving group. Is disallowing enough?
 		if (group.getAdmin().equals(user))
@@ -175,8 +167,9 @@ public class GroupController
 			return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).build();
 		}
 
-		group.getUsers().remove(user);
+		log.debug("POST /api/group/{groupId}/leave");
 
+		group.getUsers().remove(user);
 		taskRepository.delete(taskRepository.findAllByAssigneeAndDefinitionGroup(user, group));
 
 		return ResponseEntity.ok(null);
@@ -185,22 +178,15 @@ public class GroupController
 	@RequestMapping(method = RequestMethod.POST, value = "/{groupId}/image")
 	public ResponseEntity<Void> updateGroupImage(final Principal principal, final @PathVariable long groupId, final @RequestBody byte[] image)
 	{
-		log.debug("Handling POST /api/group/{}/image", groupId);
+		final Group group = groupRepository.findOne(groupId);
+		final User user = (User) userService.loadUserByUsername(principal.getName());
+
+		checkAuthorized(group, user);
+		log.debug("POST /api/group/{groupId}/image", groupId);
 
 		if (!ValidationUtils.isValidJPEG(image))
 		{
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-		}
-
-		final Group group = groupRepository.findOne(groupId);
-		if (group == null)
-		{
-			return ResponseEntity.notFound().build();
-		}
-		final User user = (User) userService.loadUserByUsername(principal.getName());
-		if (!group.getUsers().contains(user))
-		{
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
 		}
 
 		group.setImage(image);
@@ -212,22 +198,16 @@ public class GroupController
 	@RequestMapping(method = RequestMethod.GET, value = "/{groupId}/image", produces = MediaType.IMAGE_JPEG_VALUE)
 	public ResponseEntity<byte[]> getGroupImage(final Principal principal, final @PathVariable long groupId)
 	{
-		log.debug("Handling GET /api/group/{}/image", groupId);
 		final Group group = groupRepository.findOne(groupId);
-		if (group == null)
-		{
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-		}
 		final User user = (User) userService.loadUserByUsername(principal.getName());
-		if (!group.getUsers().contains(user))
-		{
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
-		}
+		checkAuthorized(group, user);
 
 		if (group.getImage() == null)
 		{
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 		}
+
+		log.debug("GET /api/group/{groupId}/image", groupId);
 
 		final HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.IMAGE_JPEG);
@@ -242,15 +222,10 @@ public class GroupController
 		final @RequestBody GenerateScheduleDto generateScheduleDto)
 	{
 		final Group group = groupRepository.findGroupById(groupId);
-		if (group == null)
-		{
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-		}
 		final User user = (User) userService.loadUserByUsername(principal.getName());
-		if (!group.getUsers().contains(user))
-		{
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
-		}
+		checkAuthorized(group, user);
+
+		log.debug("POST /api/group/{groupId}/schedule", groupId);
 
 		final SchedulingResult result = scheduleService.reschedule(group, LocalDate.now(),
 			LocalDate.now().plusDays(generateScheduleDto.getNumberOfDays()));
@@ -267,15 +242,10 @@ public class GroupController
 	public ResponseEntity<Map<TaskRepetitionType, List<TaskDefinitionDto>>> getGroupSchedule(final Principal principal, final @PathVariable long groupId)
 	{
 		final Group group = groupRepository.findGroupById(groupId);
-		if (group == null)
-		{
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-		}
 		final User user = (User) userService.loadUserByUsername(principal.getName());
-		if (!group.getUsers().contains(user))
-		{
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
-		}
+		checkAuthorized(group, user);
+
+		log.debug("GET /api/group/{groupId}/schedule", groupId);
 
 		final Map<TaskRepetitionType, List<TaskDefinitionDto>> result = taskDefinitionRepository.findAllByGroup(group).stream()
 			.collect(Collectors.groupingBy(TaskDefinition::getPeriodType, Collectors.mapping(tasksFactory::toTaskDefinitionDto, Collectors.toList())));

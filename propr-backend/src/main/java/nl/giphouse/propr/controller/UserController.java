@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/api/user")
-public class UserController
+public class UserController  extends AbstractProprController
 {
 	@Inject
 	private UserRepository userRepository;
@@ -99,5 +99,4 @@ public class UserController
 		userRepository.save(user);
 		return ResponseEntity.ok(null);
 	}
-
 }

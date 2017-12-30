@@ -45,7 +45,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/task")
 @Slf4j
-public class TaskController
+public class TaskController extends AbstractProprController
 {
 	@Inject
 	private TaskRepository taskRepository;
@@ -73,14 +73,9 @@ public class TaskController
 	{
 		final User user = (User) userService.loadUserByUsername(principal.getName());
 		final Group group = groupRepository.findGroupByName(groupname);
+		checkAuthorized(group, user);
 
-		final ResponseEntity authorizationResponse = checkAuthorized(user, group);
-		if (authorizationResponse != null)
-		{
-			return authorizationResponse;
-		}
-
-		log.debug("Handling /api/task/group/user");
+		log.debug("GET /api/task/group/user");
 
 		return ResponseEntity.ok(taskRepository.findTasksForUserInGroup(group, user).stream()
 			.map(taskFactory::toTaskDto)
@@ -93,14 +88,9 @@ public class TaskController
 	{
 		final User user = (User) userService.loadUserByUsername(principal.getName());
 		final Group group = groupRepository.findGroupByName(groupname);
+		checkAuthorized(group, user);
 
-		final ResponseEntity authorizationResponse = checkAuthorized(user, group);
-		if (authorizationResponse != null)
-		{
-			return authorizationResponse;
-		}
-
-		log.debug("Handling /api/task/group/todo");
+		log.debug("GET /api/task/group/todo");
 
 		return ResponseEntity.ok(taskRepository.findTodoTasksInGroup(group).stream()
 			.map(taskFactory::toTaskDto)
@@ -113,14 +103,9 @@ public class TaskController
 	{
 		final User user = (User) userService.loadUserByUsername(principal.getName());
 		final Group group = groupRepository.findGroupByName(groupname);
+		checkAuthorized(group, user);
 
-		final ResponseEntity authorizationResponse = checkAuthorized(user, group);
-		if (authorizationResponse != null)
-		{
-			return authorizationResponse;
-		}
-
-		log.debug("Handling /api/task/group/done");
+		log.debug("GET /api/task/group/done");
 
 		return ResponseEntity.ok(taskRepository.findActivityInGroup(group).stream()
 			.map(taskFactory::toTaskDto)
@@ -133,14 +118,9 @@ public class TaskController
 	{
 		final User user = (User) userService.loadUserByUsername(principal.getName());
 		final Group group = groupRepository.findGroupByName(groupname);
+		checkAuthorized(group, user);
 
-		final ResponseEntity authorizationResponse = checkAuthorized(user, group);
-		if (authorizationResponse != null)
-		{
-			return authorizationResponse;
-		}
-
-		log.debug("Handling /api/task/group/schedule");
+		log.debug("GET /api/task/group/schedule");
 
 		final List<TaskDefinitionDto> definitions = taskDefinitionRepository.findAllByGroup(group)
 			.stream()
@@ -154,18 +134,10 @@ public class TaskController
 	public ResponseEntity<TaskDefinitionDto> addTaskToGroup(@RequestBody final TaskDefinitionDto taskDefinitionDto, final Principal principal)
 	{
 		final User user = (User) userService.loadUserByUsername(principal.getName());
-
 		final Group group = groupRepository.findGroupById(taskDefinitionDto.getGroupId());
+		checkAuthorized(group, user);
 
-		if (group == null)
-		{
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-		}
-		if (!group.getUsers().contains(user))
-		{
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
-		}
-		log.debug("Handling /api/task/group/add");
+		log.debug("POST /api/task/group/add");
 
 		final TaskDefinition taskDef = taskFactory.fromTaskDefitionDto(taskDefinitionDto);
 		taskDefinitionRepository.save(taskDef);
@@ -185,12 +157,7 @@ public class TaskController
 		}
 
 		final User user = (User) userService.loadUserByUsername(principal.getName());
-
-		final ResponseEntity authorizationResponse = checkAuthorized(user, task.getDefinition().getGroup());
-		if (authorizationResponse != null)
-		{
-			return authorizationResponse;
-		}
+		checkAuthorized(task.getDefinition().getGroup(), user);
 
 		if (!task.getAssignee().equals(user))
 		{
@@ -201,6 +168,8 @@ public class TaskController
 		{
 			return ResponseEntity.badRequest().build();
 		}
+
+		log.debug("POST /api/task/{taskId}/complete");
 
 		final CompletedTask completedTask = new CompletedTask();
 		completedTask.setDate(LocalDate.now());
@@ -224,24 +193,20 @@ public class TaskController
 
 		final AssignedTask task = taskRepository.findOne(taskId);
 
-		log.debug("Handling POST /api/task/{taskId}/image");
-
 		if (task == null)
 		{
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 		}
 
 		final User user = (User) userService.loadUserByUsername(principal.getName());
-
-		if (!task.getDefinition().getGroup().getUsers().contains(user))
-		{
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
-		}
+		checkAuthorized(task.getDefinition().getGroup(), user);
 
 		if (task.getCompletedTask() == null)
 		{
 			return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(null);
 		}
+
+		log.debug("POST /api/task/{taskId}/image");
 
 		final CompletedTask completedTask = task.getCompletedTask();
 
@@ -256,24 +221,20 @@ public class TaskController
 	{
 		final AssignedTask task = taskRepository.findOne(taskId);
 
-		log.debug("Handling GET /api/task/{taskId}/image");
-
 		if (task == null)
 		{
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 		}
 
 		final User user = (User) userService.loadUserByUsername(principal.getName());
-
-		if (!task.getDefinition().getGroup().getUsers().contains(user))
-		{
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
-		}
+		checkAuthorized(task.getDefinition().getGroup(), user);
 
 		if (task.getCompletedTask() == null || task.getCompletedTask().getImage() == null)
 		{
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 		}
+
+		log.debug("GET /api/task/{taskId}/image");
 
 		final byte[] image = task.getCompletedTask().getImage();
 		final HttpHeaders headers = new HttpHeaders();
@@ -288,34 +249,26 @@ public class TaskController
 	{
 		final AssignedTask task = taskRepository.findOne(taskId);
 
-		log.debug("Handling POST /api/task/{taskId}/rate");
-
 		if (task == null)
 		{
-			log.debug("No task with id {} found", taskId);
 			return ResponseEntity.notFound().build();
 		}
 
 		final User user = (User) userService.loadUserByUsername(principal.getName());
 		final Group group = task.getDefinition().getGroup();
 
-		final ResponseEntity<?> authorizationResponse = checkAuthorized(user, group);
-		if (authorizationResponse != null)
-		{
-			return authorizationResponse;
-		}
-
+		checkAuthorized(group, user);
 		if (task.getCompletedTask() == null)
 		{
-			log.debug("Task {} is not yet completed", task.getId());
 			return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).build();
 		}
 
 		if (!validateRating(taskRatingDto))
 		{
-			log.debug("Input failed validation");
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 		}
+
+		log.debug("POST /api/task/{taskId}/rate");
 
 		final TaskRating taskRating = task.getCompletedTask().getRatings().stream()
 			.filter(t -> t.getAuthor().equals(user))
@@ -336,28 +289,22 @@ public class TaskController
 	{
 		final AssignedTask task = taskRepository.findOne(taskId);
 
-		log.debug("Handling GET /api/task/{taskId}/rate");
-
 		if (task == null)
 		{
-			log.debug("No task with id {} found", taskId);
 			return ResponseEntity.notFound().build();
 		}
 
 		final User user = (User) userService.loadUserByUsername(principal.getName());
 		final Group group = task.getDefinition().getGroup();
 
-		final ResponseEntity<?> authorizationResponse = checkAuthorized(user, group);
-		if (authorizationResponse != null)
-		{
-			return authorizationResponse;
-		}
+		checkAuthorized(group, user);
 
 		if (task.getCompletedTask() == null)
 		{
-			log.debug("Task {} is not yet completed", task.getId());
 			return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).build();
 		}
+
+		log.debug("GET /api/task/{taskId}/rate");
 
 		final TaskRating rating = task.getCompletedTask().getRatings().stream()
 			.filter(r -> r.getAuthor().equals(user))
@@ -380,7 +327,6 @@ public class TaskController
 	@RequestMapping(method = RequestMethod.GET, value = "{taskId}/ratings")
 	public ResponseEntity<List<TaskRatingDto>> getRatingsForTask(final Principal principal, final @PathVariable long taskId)
 	{
-		final User user = (User) userService.loadUserByUsername(principal.getName());
 		final AssignedTask task = taskRepository.findOne(taskId);
 
 		if (task == null)
@@ -388,11 +334,10 @@ public class TaskController
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 		}
 
-		final ResponseEntity authResponse = checkAuthorized(user, task.getDefinition().getGroup());
-		if (authResponse != null)
-		{
-			return authResponse;
-		}
+		log.debug("GET /api/task/{taskId}/ratings");
+
+		final User user = (User) userService.loadUserByUsername(principal.getName());
+		checkAuthorized(task.getDefinition().getGroup(), user);
 
 		final List<TaskRatingDto> ratings = task.getCompletedTask().getRatings().stream()
 			.map(taskFactory::toTaskRatingDto)
@@ -412,12 +357,9 @@ public class TaskController
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 		}
 
-		final ResponseEntity authResponse = checkAuthorized(user, task.getDefinition().getGroup());
-		if (authResponse != null)
-		{
-			return authResponse;
-		}
+		checkAuthorized(task.getDefinition().getGroup(), user);
 
+		log.debug("GET /api/task/{taskId}/average");
 		return ResponseEntity.ok(task.getCompletedTask().getRatings().stream()
 			.collect(Collectors.averagingDouble(TaskRating::getScore)));
 	}
@@ -425,23 +367,6 @@ public class TaskController
 	private boolean validateRating(final TaskRatingDto dto)
 	{
 		return dto.getScore() > 0 && dto.getScore() <= 5;
-	}
-
-	private ResponseEntity<?> checkAuthorized(final User user, final Group group)
-	{
-		if (group == null)
-		{
-			log.debug("No group found");
-			return ResponseEntity.notFound().build();
-		}
-
-		if (!group.getUsers().contains(user))
-		{
-			log.debug("User {} not authorized for group {}", user.getUsername(), group.getName());
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-		}
-
-		return null;
 	}
 
 	private TaskDto setOwnedTask(final TaskDto taskDto, final User user)

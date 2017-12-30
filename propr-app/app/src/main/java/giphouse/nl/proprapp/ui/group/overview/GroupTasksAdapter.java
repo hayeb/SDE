@@ -48,9 +48,7 @@ public class GroupTasksAdapter extends RecyclerView.Adapter<GroupTasksAdapter.Vi
 		holder.mView.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(final View v) {
-				if (null != mListener) {
-					// Notify the active callbacks interface (the activity, if the
-					// fragment is attached to one) that an item has been selected.
+				if (null != mListener && !task.isOverdue()) {
 					mListener.onGroupActivityFragmentInteraction(holder.mItem);
 				}
 			}
