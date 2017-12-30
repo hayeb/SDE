@@ -80,7 +80,10 @@ public class GroupOverviewActivity extends AppCompatActivity implements MyTasksI
 
 		final BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
 		bottomNavigationView.getMenu().getItem(0).setChecked(true);
+		setListeners(bottomNavigationView);
+	}
 
+	private void setListeners(final BottomNavigationView bottomNavigationView) {
 		bottomNavigationView.setOnNavigationItemSelectedListener(
 			new BottomNavigationView.OnNavigationItemSelectedListener() {
 				@Override

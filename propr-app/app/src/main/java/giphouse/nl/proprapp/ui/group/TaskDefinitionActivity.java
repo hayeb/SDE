@@ -51,10 +51,17 @@ public class TaskDefinitionActivity extends AppCompatActivity {
 	GroupService groupService;
 
 	private Spinner frequencyTypeSpinner;
+	private ArrayAdapter<CharSequence> frequencyTypeAdapter;
 	private Spinner taskWeightSpinner;
+	private ArrayAdapter<CharSequence> weightAdapter;
 	private TextInputEditText enterName;
 	private TextInputEditText enterDescription;
 	private TextInputEditText enterNumber;
+	private Button doneButton;
+	private Button nextButton;
+	private Button cancelButton;
+	private Button saveButton;
+
 	private long groupId;
 	private String groupName;
 	private Long definitionId;
@@ -77,35 +84,30 @@ public class TaskDefinitionActivity extends AppCompatActivity {
 			bar.setDisplayHomeAsUpEnabled(true);
 		}
 
-		enterName = findViewById(R.id.enterTaskName);
-		enterDescription = findViewById(R.id.enterDescription);
-		enterNumber = findViewById(R.id.enterNumber);
+		setViewReferences();
 
-		final Button doneButton = findViewById(R.id.button_done);
-		final Button nextButton = findViewById(R.id.button_next);
-		final Button cancelButton = findViewById(R.id.button_cancel);
-		final Button saveButton = findViewById(R.id.button_save);
-
-		saveButton.setVisibility(View.GONE);
-
-		frequencyTypeSpinner = findViewById(R.id.spinner);
-		final ArrayAdapter<CharSequence> frequencyTypeAdapter = ArrayAdapter
+		frequencyTypeAdapter = ArrayAdapter
 			.createFromResource(this, R.array.frequencytypes,
 				android.R.layout.simple_spinner_item);
 		frequencyTypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		frequencyTypeSpinner.setAdapter(frequencyTypeAdapter);
 
-		taskWeightSpinner = findViewById(R.id.spinnerWeight);
-		final ArrayAdapter<CharSequence> weightAdapter = ArrayAdapter
+
+		weightAdapter = ArrayAdapter
 			.createFromResource(this, R.array.weights,
 				android.R.layout.simple_spinner_item);
 		weightAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		taskWeightSpinner.setAdapter(weightAdapter);
 
+		setListeners();
+		fillEditData();
+	}
+
+	private void setListeners() {
 		doneButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(final View v) {
-				submit();
+				beforeSubmit();
 				reschedule();
 			}
 		});
@@ -113,7 +115,7 @@ public class TaskDefinitionActivity extends AppCompatActivity {
 		nextButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(final View v) {
-				submit();
+				beforeSubmit();
 				final Intent intent = new Intent(v.getContext(), TaskDefinitionActivity.class);
 				intent.putExtra(TaskDefinitionActivity.ARG_GROUP_ID, groupId);
 				intent.putExtra(TaskDefinitionActivity.ARG_GROUP_NAME, groupName);
@@ -131,40 +133,54 @@ public class TaskDefinitionActivity extends AppCompatActivity {
 		saveButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(final View v) {
-				submit();
-				if (needsRescheduling())
-				{
+				beforeSubmit();
+				if (needsRescheduling()) {
 					reschedule();
-				}
-				else {
+				} else {
 					navigateToParent();
 				}
 			}
 		});
+	}
 
+	private void setViewReferences() {
+		enterName = findViewById(R.id.enterTaskName);
+		enterDescription = findViewById(R.id.enterDescription);
+		enterNumber = findViewById(R.id.enterNumber);
+
+		doneButton = findViewById(R.id.button_done);
+		nextButton = findViewById(R.id.button_next);
+		cancelButton = findViewById(R.id.button_cancel);
+		saveButton = findViewById(R.id.button_save);
+
+		saveButton.setVisibility(View.GONE);
+
+		frequencyTypeSpinner = findViewById(R.id.spinner);
+		taskWeightSpinner = findViewById(R.id.spinnerWeight);
+	}
+
+	private void fillEditData() {
 		final Intent intent = getIntent();
-		if (intent != null && intent.getExtras() != null && intent.getExtras().containsKey(ARG_DEFINITION_ID))
-		{
-			// We are edition a existing definition
-			final Bundle extras = intent.getExtras();
-			enterName.setText(extras.getString(ARG_DEFINITION_NAME));
-			enterDescription.setText(extras.getString(ARG_DEFINITION_DESCRIPTION));
-			frequencyTypeSpinner.setSelection(frequencyTypeAdapter.getPosition(extras.getString(ARG_DEFINITION_FREQUENCY_TYPE)));
-			taskWeightSpinner.setSelection(weightAdapter.getPosition(extras.getString(ARG_DEFINITION_WEIGHT)));
-			enterNumber.setText(String.valueOf(extras.getInt(ARG_DEFINITION_FREQUENCY)));
-
-			definitionId = extras.getLong(ARG_DEFINITION_ID);
-
-			nextButton.setVisibility(View.GONE);
-			doneButton.setVisibility(View.GONE);
-			saveButton.setVisibility(View.VISIBLE);
+		if (intent == null || !intent.hasExtra(ARG_DEFINITION_ID)) {
+			return;
 		}
+		final Bundle extras = intent.getExtras();
+		enterName.setText(extras.getString(ARG_DEFINITION_NAME));
+		enterDescription.setText(extras.getString(ARG_DEFINITION_DESCRIPTION));
+		frequencyTypeSpinner.setSelection(frequencyTypeAdapter.getPosition(extras.getString(ARG_DEFINITION_FREQUENCY_TYPE)));
+		taskWeightSpinner.setSelection(weightAdapter.getPosition(extras.getString(ARG_DEFINITION_WEIGHT)));
+		enterNumber.setText(String.valueOf(extras.getInt(ARG_DEFINITION_FREQUENCY)));
+
+		definitionId = extras.getLong(ARG_DEFINITION_ID);
+
+		nextButton.setVisibility(View.GONE);
+		doneButton.setVisibility(View.GONE);
+		saveButton.setVisibility(View.VISIBLE);
 	}
 
 	private boolean needsRescheduling() {
 		final Bundle extras = getIntent().getExtras();
-		if (extras == null)
-		{
+		if (extras == null) {
 			return false;
 		}
 		final boolean frequencyChanged = extras.getInt(ARG_DEFINITION_FREQUENCY) != Integer.parseInt(enterNumber.getText().toString());
@@ -191,7 +207,7 @@ public class TaskDefinitionActivity extends AppCompatActivity {
 		NavUtils.navigateUpTo(this, intent);
 	}
 
-	private void submit() {
+	private void beforeSubmit() {
 
 		enterName.setError(null);
 		enterDescription.setError(null);
@@ -220,6 +236,10 @@ public class TaskDefinitionActivity extends AppCompatActivity {
 			.frequency(frequency)
 			.build();
 
+		doSubmit(definitionDto);
+	}
+
+	private void doSubmit(final TaskDefinitionDto definitionDto) {
 		taskService.createTask(definitionDto).enqueue(new Callback<TaskDefinitionDto>() {
 			@Override
 			public void onResponse(@NonNull final Call<TaskDefinitionDto> call, @NonNull final Response<TaskDefinitionDto> response) {
@@ -237,11 +257,10 @@ public class TaskDefinitionActivity extends AppCompatActivity {
 				t.printStackTrace();
 			}
 		});
-
 	}
 
-	private void reschedule()
-	{
+
+	private void reschedule() {
 		groupService.rescheduleGroup(groupId, new GenerateScheduleDto(365)).enqueue(new Callback<Void>() {
 			@Override
 			public void onResponse(@NonNull final Call<Void> call, @NonNull final Response<Void> response) {
@@ -263,7 +282,6 @@ public class TaskDefinitionActivity extends AppCompatActivity {
 	                                       final int frequency) {
 		return (checkEmpty(name, enterName) || checkEmpty(description, enterDescription)
 			|| checkEmpty(Integer.toString(frequency), enterNumber));
-		// TODO check if more validation required
 	}
 
 	private boolean checkEmpty(final String text, final TextInputEditText editText) {
@@ -274,4 +292,3 @@ public class TaskDefinitionActivity extends AppCompatActivity {
 		return false;
 	}
 }
-

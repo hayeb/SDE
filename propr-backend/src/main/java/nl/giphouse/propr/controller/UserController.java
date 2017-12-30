@@ -49,7 +49,6 @@ public class UserController  extends AbstractProprController
 
 		final User user = new User(userDto.getUsername(), passwordEncoder.encode(userDto.getPassword()), userDto.getEmail(), userDto.getFirstname(),
 			userDto.getLastname());
-		// user.setRoles(Collections.singletonList("ROLE_USER"));
 
 		userRepository.save(user);
 
