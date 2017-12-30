@@ -1,0 +1,6 @@
+exclude:
+- /propr-app/app/src/main/java/giphouse/nl/proprapp/ui/.*
+component_depth: 1
+languages:
+- java
+- script

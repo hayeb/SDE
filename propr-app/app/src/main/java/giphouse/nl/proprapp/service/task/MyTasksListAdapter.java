@@ -2,7 +2,6 @@ package giphouse.nl.proprapp.service.task;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
@@ -38,7 +37,6 @@ public class MyTasksListAdapter extends BaseAdapter {
 		this.context = context;
 	}
 
-
 	@Override
 	public int getCount() {
 		return taskDtos.size();
@@ -68,7 +66,7 @@ public class MyTasksListAdapter extends BaseAdapter {
 		final TextView taskNameTextView = itemView.findViewById(R.id.task_name);
 		final TextView descriptionTextView = itemView.findViewById(R.id.task_description);
 		final TextView dueDateTextView = itemView.findViewById(R.id.task_due_date);
-		final ImageButton taskCompleteButtun = itemView.findViewById(R.id.task_complete_button);
+		final ImageButton taskCompleteButton = itemView.findViewById(R.id.task_complete_button);
 
 		final TaskDto dto = taskDtos.get(position);
 
@@ -76,8 +74,7 @@ public class MyTasksListAdapter extends BaseAdapter {
 		descriptionTextView.setText(dto.getDescription());
 		dueDateTextView.setText(dto.getDueDate());
 
-		if (dto.isOverdue())
-		{
+		if (dto.isOverdue()) {
 			dueDateTextView.setTextColor(ContextCompat.getColor(context, R.color.colorRed));
 			dueDateTextView.setTypeface(null, Typeface.BOLD);
 		} else {
@@ -85,7 +82,7 @@ public class MyTasksListAdapter extends BaseAdapter {
 			dueDateTextView.setTypeface(null, Typeface.NORMAL);
 		}
 
-		taskCompleteButtun.setOnClickListener(new View.OnClickListener() {
+		taskCompleteButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(final View v) {
 				Log.i("hue", "huehue");
@@ -102,8 +99,7 @@ public class MyTasksListAdapter extends BaseAdapter {
 		return itemView;
 	}
 
-	public void updateData(final List<TaskDto> tasks)
-	{
+	public void updateData(final List<TaskDto> tasks) {
 		this.taskDtos = tasks;
 		notifyDataSetChanged();
 	}
