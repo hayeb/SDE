@@ -47,8 +47,12 @@ public class UserController  extends AbstractProprController
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username already exists");
 		}
 
-		final User user = new User(userDto.getUsername(), passwordEncoder.encode(userDto.getPassword()), userDto.getEmail(), userDto.getFirstname(),
-			userDto.getLastname());
+		final User user = new User();
+		user.setUsername(userDto.getUsername());
+		user.setPassword(passwordEncoder.encode(userDto.getPassword()));
+		user.setEmail(userDto.getEmail());
+		user.setFirstname(userDto.getFirstname());
+		user.setLastname(userDto.getLastname());
 
 		userRepository.save(user);
 

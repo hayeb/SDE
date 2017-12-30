@@ -14,6 +14,7 @@ import javax.inject.Inject;
 
 import giphouse.nl.proprapp.ProprConfiguration;
 import lombok.NonNull;
+import nl.giphouse.propr.dto.user.UserDTO;
 import okhttp3.FormBody;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -43,7 +44,7 @@ public class AuthenticatorService {
 		this.client = client;
 	}
 
-	public Token signUp(@Nonnull final UserAccountDto accountDto) {
+	public Token signUp(@Nonnull final UserDTO accountDto) {
 		// 1. Get initial token from backend
 		final String clientToken = getInitialClientToken();
 		if (StringUtils.isEmpty(clientToken)) {
@@ -52,7 +53,7 @@ public class AuthenticatorService {
 		}
 
 		// 2. Create user using initial token, and authenticate.
-		final boolean userCreated =  createUser(accountDto, clientToken);
+		final boolean userCreated = createUser(accountDto, clientToken);
 		if (!userCreated) {
 			return null;
 		}
@@ -84,17 +85,13 @@ public class AuthenticatorService {
 		final Response tokenValidResponse;
 		try {
 			tokenValidResponse = client.newCall(request).execute();
-		} catch(final IOException e){
+		} catch (final IOException e) {
 			e.printStackTrace();
 			Log.e(TAG, "Unable to make token valid request to " + proprConfiguration.getBackendUrl());
 			return false;
 		}
 
-		if (tokenValidResponse.isSuccessful() && tokenValidResponse.code() == 200)
-		{
-			return true;
-		}
-		return false;
+		return tokenValidResponse.isSuccessful() && tokenValidResponse.code() == 200;
 	}
 
 	private String getInitialClientToken() {
@@ -121,7 +118,7 @@ public class AuthenticatorService {
 		return null;
 	}
 
-	private boolean createUser(@Nonnull final UserAccountDto accountDto, @Nonnull final String clientToken) {
+	private boolean createUser(@Nonnull final UserDTO accountDto, @Nonnull final String clientToken) {
 		final Request request = createRegisterUserRequest(accountDto, clientToken);
 		if (request == null) {
 			return false;
@@ -153,7 +150,7 @@ public class AuthenticatorService {
 		return null;
 	}
 
-	private Request createRegisterUserRequest(@Nonnull final UserAccountDto accountDto, @NonNull final String clientToken) {
+	private Request createRegisterUserRequest(@Nonnull final UserDTO accountDto, @NonNull final String clientToken) {
 		final JSONObject jsonObject = new JSONObject();
 		try {
 			jsonObject.put("username", accountDto.getUsername());
@@ -211,8 +208,7 @@ public class AuthenticatorService {
 		}
 	}
 
-	private String getClientAuthorizationHeader()
-	{
+	private String getClientAuthorizationHeader() {
 		return "Basic " + Base64.encodeToString((proprConfiguration.getClientId() + ":" + proprConfiguration.getClientSecret()).getBytes(), Base64.NO_WRAP);
 	}
 

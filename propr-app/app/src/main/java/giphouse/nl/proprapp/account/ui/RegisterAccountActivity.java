@@ -3,7 +3,6 @@ package giphouse.nl.proprapp.account.ui;
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountManager;
-import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -18,6 +17,7 @@ import android.widget.Toolbar;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.lang.ref.WeakReference;
+import java.nio.file.attribute.UserDefinedFileAttributeView;
 
 import javax.inject.Inject;
 
@@ -26,7 +26,7 @@ import giphouse.nl.proprapp.R;
 import giphouse.nl.proprapp.account.AccountUtils;
 import giphouse.nl.proprapp.account.AuthenticatorService;
 import giphouse.nl.proprapp.account.Token;
-import giphouse.nl.proprapp.account.UserAccountDto;
+import nl.giphouse.propr.dto.user.UserDTO;
 
 /**
  * @author haye
@@ -105,8 +105,7 @@ public class RegisterAccountActivity extends AccountAuthenticatorActivity {
 			return;
 		}
 
-		final UserAccountDto accountDto = new UserAccountDto(username, password, email, firstname, lastname);
-
+		final UserDTO accountDto = UserDTO.builder().username(username).password(password).email(email).firstname(firstname).lastname(lastname).build();
 		Log.d(TAG, String.format("Registering account [%s, %s]", username, email));
 
 		new RegisterTask(new WeakReference<>(this), authenticatorService).execute(accountDto);
@@ -185,7 +184,7 @@ public class RegisterAccountActivity extends AccountAuthenticatorActivity {
 		return !TextUtils.isEmpty(lastname);
 	}
 
-	private static final class RegisterTask extends AsyncTask<UserAccountDto, Void, Intent> {
+	private static final class RegisterTask extends AsyncTask<UserDTO, Void, Intent> {
 		private final WeakReference<RegisterAccountActivity> registerAccountActivityWeakReference;
 		private final AuthenticatorService authenticatorService;
 
@@ -195,11 +194,11 @@ public class RegisterAccountActivity extends AccountAuthenticatorActivity {
 		}
 
 		@Override
-		protected Intent doInBackground(final UserAccountDto... accountDtos) {
+		protected Intent doInBackground(final UserDTO... accountDtos) {
 			if (ArrayUtils.isEmpty(accountDtos) || accountDtos.length != 1) {
 				return null;
 			}
-			final UserAccountDto accountDto = accountDtos[0];
+			final UserDTO accountDto = accountDtos[0];
 
 			Log.d(TAG, "Registering account " + accountDto.getUsername());
 

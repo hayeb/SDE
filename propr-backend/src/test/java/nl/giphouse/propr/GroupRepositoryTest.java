@@ -1,6 +1,5 @@
 package nl.giphouse.propr;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 import javax.inject.Inject;
@@ -34,8 +33,18 @@ public class GroupRepositoryTest
 	@Test
 	public void findGroupsByUser()
 	{
-		final User u1 = new User("user1", "pass1", "user1@test.nl", "Henk", "van der Plas");
-		final User u2 = new User("user2", "pass2", "user2@test.nl", "Johannes", "Burg");
+		final User u1 = new User();
+		u1.setUsername("user1");
+		u1.setPassword("pass1");
+		u1.setEmail("user1@test.nl");
+		u1.setFirstname("Henk");
+		u1.setLastname("van der Plas");
+		final User u2 = new User();
+		u2.setUsername("user2");
+		u2.setPassword("pass2");
+		u2.setEmail("user2@test.nl");
+		u2.setFirstname("Johannes");
+		u2.setLastname("Burg");
 		final Group g1 = new Group("group1", "invite1", u1, Collections.singletonList(u1));
 
 		testEntityManager.persist(u1);

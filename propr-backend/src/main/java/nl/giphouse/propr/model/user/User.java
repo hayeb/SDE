@@ -62,17 +62,6 @@ public class User implements UserDetails, Serializable
 	@Column
 	private byte[] avatar;
 
-	public User(final String username, final String password, final String email, final String firstname, final String lastname)
-	{
-		this.username = username;
-		this.password = password;
-		this.enabled = true;
-		this.email = email;
-		this.firstname = firstname;
-		this.lastname = lastname;
-	}
-
-	// TODO: Goed implementeren in de database
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities()
 	{
