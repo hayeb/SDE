@@ -21,7 +21,7 @@ public class GroupTasksAdapter extends RecyclerView.Adapter<GroupTasksAdapter.Vi
 
 	private List<TaskDto> mValues = new ArrayList<>();
 	private final OnGroupTasksFragmentInteractionListener mListener;
-	private ImageService mImageService;
+	private final ImageService mImageService;
 
 	GroupTasksAdapter(final OnGroupTasksFragmentInteractionListener listener, final ImageService imageService) {
 		this.mListener = listener;
@@ -90,7 +90,7 @@ public class GroupTasksAdapter extends RecyclerView.Adapter<GroupTasksAdapter.Vi
 		}
 	}
 
-	public void updateEntries(final List<TaskDto> tasks) {
+	void updateEntries(final List<TaskDto> tasks) {
 		mValues = tasks;
 		notifyDataSetChanged();
 	}

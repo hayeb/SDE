@@ -21,7 +21,7 @@ import javax.inject.Inject;
 import giphouse.nl.proprapp.ProprApplication;
 import giphouse.nl.proprapp.R;
 import giphouse.nl.proprapp.service.group.GroupService;
-import giphouse.nl.proprapp.ui.group.TaskDefinitionActivity;
+import giphouse.nl.proprapp.ui.task.TaskDefinitionActivity;
 import nl.giphouse.propr.dto.group.GenerateScheduleDto;
 import nl.giphouse.propr.dto.task.TaskDefinitionDto;
 import nl.giphouse.propr.dto.task.TaskRepetitionType;

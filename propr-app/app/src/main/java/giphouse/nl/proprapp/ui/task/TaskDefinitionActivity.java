@@ -1,4 +1,4 @@
-package giphouse.nl.proprapp.ui.group;
+package giphouse.nl.proprapp.ui.task;
 
 import android.content.Intent;
 import android.os.Bundle;

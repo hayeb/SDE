@@ -200,13 +200,16 @@ public class GroupOverviewActivity extends AppCompatActivity implements MyTasksI
 
 	@Override
 	public void onGroupActivityFragmentInteraction(final TaskDto item) {
-		final Intent intent = new Intent(this, ShowCompletedTaskActivity.class);
-		final Bundle bundle = new Bundle();
-		bundle.putLong(ShowCompletedTaskActivity.ARG_TASK_ID, item.getTaskId());
-		bundle.putString(ShowCompletedTaskActivity.ARG_TASK_COMPLETION_NOTES, item.getCompletionNotes());
-		bundle.putBoolean(ShowCompletedTaskActivity.ARG_IS_ASSIGNEE, item.isOwned());
-		intent.putExtras(bundle);
-		startActivity(intent);
+		if (item.getCompletionDate() != null)
+		{
+			final Intent intent = new Intent(this, ShowCompletedTaskActivity.class);
+			final Bundle bundle = new Bundle();
+			bundle.putLong(ShowCompletedTaskActivity.ARG_TASK_ID, item.getTaskId());
+			bundle.putString(ShowCompletedTaskActivity.ARG_TASK_COMPLETION_NOTES, item.getCompletionNotes());
+			bundle.putBoolean(ShowCompletedTaskActivity.ARG_IS_ASSIGNEE, item.isOwned());
+			intent.putExtras(bundle);
+			startActivity(intent);
+		}
 	}
 
 	@Override

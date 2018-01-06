@@ -10,7 +10,7 @@ import giphouse.nl.proprapp.ui.group.GroupAddActivity;
 import giphouse.nl.proprapp.ui.group.GroupInfoActivity;
 import giphouse.nl.proprapp.ui.group.GroupJoinActivity;
 import giphouse.nl.proprapp.ui.group.GroupListActivity;
-import giphouse.nl.proprapp.ui.group.TaskDefinitionActivity;
+import giphouse.nl.proprapp.ui.task.TaskDefinitionActivity;
 import giphouse.nl.proprapp.ui.group.overview.GroupActivityFragment;
 import giphouse.nl.proprapp.ui.group.overview.GroupMyTasksFragment;
 import giphouse.nl.proprapp.ui.group.overview.GroupOverviewActivity;
