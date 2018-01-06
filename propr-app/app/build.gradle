@@ -5,7 +5,11 @@ apply plugin: 'com.android.application'
 
 android {
     signingConfigs {
-        config {
+        release {
+            keyAlias 'proprkey'
+            keyPassword 'proprkeywachtwoord'
+            storeFile file('/home/haye/keystores/propr.jks')
+            storePassword 'proprwachtwoord'
         }
     }
     compileSdkVersion 26
@@ -30,11 +34,11 @@ android {
         }
         release {
             buildConfigField 'String', 'BASE_URL', '"http://artificiallunacy.com:7080/propr/"'
-
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             minifyEnabled true
             shrinkResources true
             useProguard false
+            signingConfig signingConfigs.release
         }
     }
     configurations.all {

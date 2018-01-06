@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -98,9 +97,8 @@ public class ViewTaskRatingsFragment extends ListFragment {
 					final Double score = response.body();
 					if (score != null && score > 0.0)
 					{
-						averageRatingBar.setRating(score.floatValue() / 2.0f);
-					} else {
-						averageRatingBar.setVisibility(View.GONE);
+						averageRatingBar.setVisibility(View.VISIBLE);
+						averageRatingBar.setRating(score.floatValue());
 					}
 				}
 			}
