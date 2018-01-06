@@ -2,14 +2,13 @@ package giphouse.nl.proprapp.dagger;
 
 import android.accounts.AccountManager;
 import android.app.Application;
+import android.net.Uri;
 
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.jakewharton.picasso.OkHttp3Downloader;
 import com.squareup.picasso.Picasso;
-
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Singleton;
 
@@ -98,11 +97,22 @@ public class NetModule {
 
 	@Provides
 	@Singleton
-	ImageService providePicasso(final Application application, final OkHttpClient client, final ProprConfiguration proprConfiguration) {
+	Picasso providePicasso(final Application application, final OkHttpClient client) {
 		final Picasso.Builder builder = new Picasso.Builder(application);
 		builder.downloader(new OkHttp3Downloader(client));
 		builder.loggingEnabled(true);
+		builder.listener(new Picasso.Listener() {
+			@Override
+			public void onImageLoadFailed(final Picasso picasso, final Uri uri, final Exception exception) {
+				exception.printStackTrace();
+			}
+		});
+		return builder.build();
+	}
 
-		return new ImageServiceImpl(builder.build(), proprConfiguration);
+	@Provides
+	@Singleton
+	ImageService provideImageService(final Picasso picasso, final ProprConfiguration proprConfiguration) {
+		return new ImageServiceImpl(picasso, proprConfiguration);
 	}
 }

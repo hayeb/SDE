@@ -29,6 +29,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.squareup.picasso.Picasso;
+
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -60,8 +62,13 @@ public class CompleteTaskActivity extends AppCompatActivity {
 	public static String ARG_TASK_NAME = "taskName";
 	public static String ARG_TASK_DESCRIPTION = "taskDescription";
 
+	private static String ARG_PHOTO_PATH = "photoPath";
+
 	@Inject
 	TaskService taskService;
+
+	@Inject
+	Picasso picasso;
 
 	private String taskName;
 	private String taskDescription;
@@ -83,7 +90,12 @@ public class CompleteTaskActivity extends AppCompatActivity {
 		((ProprApplication) getApplication()).getComponent().inject(this);
 
 		final Bundle arguments = getIntent().getExtras();
-		if (arguments != null) {
+		if (savedInstanceState != null) {
+			taskName = savedInstanceState.getString(ARG_TASK_NAME);
+			taskId = savedInstanceState.getLong(ARG_TASK_ID);
+			taskDescription = savedInstanceState.getString(ARG_TASK_DESCRIPTION);
+			mCurrentPhotoPath = savedInstanceState.getString(ARG_PHOTO_PATH);
+		} else if (arguments != null) {
 			taskName = arguments.getString(ARG_TASK_NAME);
 			taskDescription = arguments.getString(ARG_TASK_DESCRIPTION);
 			taskId = arguments.getLong(ARG_TASK_ID);
@@ -97,6 +109,12 @@ public class CompleteTaskActivity extends AppCompatActivity {
 		bar.setTitle("Complete \'" + taskName + "\'");
 
 		imageView = findViewById(R.id.task_complete_image);
+
+		if (mCurrentPhotoPath != null)
+		{
+			imageView.setVisibility(View.VISIBLE);
+			picasso.load(new File(mCurrentPhotoPath)).into(imageView);
+		}
 		notesField = findViewById(R.id.task_completion_notes);
 		takePictureButton = findViewById(R.id.take_picture_button);
 
@@ -113,7 +131,6 @@ public class CompleteTaskActivity extends AppCompatActivity {
 					ActivityCompat.requestPermissions(CompleteTaskActivity.this,
 						new String[]{Manifest.permission.CAMERA},
 						PERMISSIONS_REQUEST_CAMERA);
-
 				} else {
 					takePicture();
 				}
@@ -125,10 +142,9 @@ public class CompleteTaskActivity extends AppCompatActivity {
 	protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
 		if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
 			Log.d(TAG, "Picture taken");
-			final Bitmap bMap = BitmapFactory.decodeFile(mCurrentPhotoPath);
-
-			imageView.setImageBitmap(bMap);
 			imageView.setVisibility(View.VISIBLE);
+
+			picasso.load(new File(mCurrentPhotoPath)).into(imageView);
 		}
 	}
 
@@ -159,6 +175,15 @@ public class CompleteTaskActivity extends AppCompatActivity {
 	public boolean onCreateOptionsMenu(final Menu menu) {
 		getMenuInflater().inflate(R.menu.activity_task_complete, menu);
 		return true;
+	}
+
+	@Override
+	protected void onSaveInstanceState(final Bundle outState) {
+		outState.putLong(ARG_TASK_ID, taskId);
+		outState.putString(ARG_TASK_NAME, taskName);
+		outState.putString(ARG_TASK_DESCRIPTION, taskDescription);
+		outState.putString(ARG_PHOTO_PATH, mCurrentPhotoPath);
+		super.onSaveInstanceState(outState);
 	}
 
 	private void completeTask() {
@@ -233,7 +258,7 @@ public class CompleteTaskActivity extends AppCompatActivity {
 
 	private File createImageFile() throws IOException {
 		// Create an image file name
-		final String timeStamp = SimpleDateFormat.getDateInstance().format(new Date());
+		final String timeStamp =new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
 		final String imageFileName = "JPEG_" + timeStamp + "_";
 		final File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
 		final File tempFile = File.createTempFile(

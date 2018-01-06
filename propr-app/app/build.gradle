@@ -25,7 +25,7 @@ android {
     }
     buildTypes {
         debug {
-            buildConfigField 'String', 'BASE_URL', '"http://10.0.2.2:8000/propr/"'
+            buildConfigField 'String', 'BASE_URL', '"http://192.168.0.100:8000/propr/"'
             debuggable true
         }
         release {
@@ -79,5 +79,4 @@ dependencies {
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.jakewharton.picasso:picasso2-okhttp3-downloader:1.1.0'
 }
-
 
