@@ -53,6 +53,7 @@ public class UserController  extends AbstractProprController
 		user.setEmail(userDto.getEmail());
 		user.setFirstname(userDto.getFirstname());
 		user.setLastname(userDto.getLastname());
+		user.setEnabled(true);
 
 		userRepository.save(user);
 
