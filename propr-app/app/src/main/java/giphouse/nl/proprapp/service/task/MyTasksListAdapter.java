@@ -85,7 +85,6 @@ public class MyTasksListAdapter extends BaseAdapter {
 		taskCompleteButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(final View v) {
-				Log.i("hue", "huehue");
 				final Bundle bundle = new Bundle();
 				bundle.putLong(CompleteTaskActivity.ARG_TASK_ID, dto.getTaskId());
 				bundle.putString(CompleteTaskActivity.ARG_TASK_NAME, dto.getName());

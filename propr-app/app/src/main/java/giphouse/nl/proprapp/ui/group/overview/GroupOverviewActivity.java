@@ -36,7 +36,7 @@ public class GroupOverviewActivity extends AppCompatActivity implements MyTasksI
 
 	private static final String TAG = "GroupOverviewActivity";
 
-	public static final String ARG_GROUP_NAME = "groupname";
+	public static final String ARG_GROUP_NAME = "groupName";
 
 	public static final String ARG_GROUP_ID = "groupId";
 
