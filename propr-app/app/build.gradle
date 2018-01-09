@@ -78,7 +78,7 @@ dependencies {
     // Provides the floating action button menu list
     compile 'com.getbase:floatingactionbutton:1.10.1'
     testCompile 'junit:junit:4.12'
-    compile 'nl.giphouse:propr-interfaces:0.0.1-SNAPSHOT'
+    compile 'nl.giphouse:propr-interfaces:1.0'
     // Picasso for fetching images, caching
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.jakewharton.picasso:picasso2-okhttp3-downloader:1.1.0'
