@@ -11,11 +11,15 @@
 	<name>propr</name>
 	<description>Propr backend</description>
 
+	<scm>
+		<developerConnection>scm:git:git://github.com/hayeb/SDE</developerConnection>
+	</scm>
+
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>1.4.0.RELEASE</version>
-		<relativePath /> <!-- lookup parent from repository -->
+		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 
 	<properties>
@@ -128,8 +132,13 @@
 		<plugins>
 			<plugin>
 				<groupId>org.flywaydb</groupId>
-		        <artifactId>flyway-maven-plugin</artifactId>
-			<version>4.2.0</version>
+				<artifactId>flyway-maven-plugin</artifactId>
+				<version>4.2.0</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.5.3</version>
 			</plugin>
 		</plugins>
 	</build>
