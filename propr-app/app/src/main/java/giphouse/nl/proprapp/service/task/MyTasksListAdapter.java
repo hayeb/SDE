@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -54,19 +55,18 @@ public class MyTasksListAdapter extends BaseAdapter {
 
 	@Override
 	public View getView(final int position, final View view, final ViewGroup parent) {
-		final ConstraintLayout itemView;
+		final LinearLayout itemView;
 		if (view == null) {
-			itemView = (ConstraintLayout) mLayoutInflater.inflate(
+			itemView = (LinearLayout) mLayoutInflater.inflate(
 				R.layout.item_task, parent, false);
 
 		} else {
-			itemView = (ConstraintLayout) view;
+			itemView = (LinearLayout) view;
 		}
 
 		final TextView taskNameTextView = itemView.findViewById(R.id.task_name);
 		final TextView descriptionTextView = itemView.findViewById(R.id.task_description);
 		final TextView dueDateTextView = itemView.findViewById(R.id.task_due_date);
-		final ImageButton taskCompleteButton = itemView.findViewById(R.id.task_complete_button);
 
 		final TaskDto dto = taskDtos.get(position);
 
@@ -82,7 +82,7 @@ public class MyTasksListAdapter extends BaseAdapter {
 			dueDateTextView.setTypeface(null, Typeface.NORMAL);
 		}
 
-		taskCompleteButton.setOnClickListener(new View.OnClickListener() {
+		itemView.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(final View v) {
 				final Bundle bundle = new Bundle();

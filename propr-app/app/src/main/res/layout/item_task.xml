@@ -1,66 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:tools="http://schemas.android.com/tools"
+	android:id="@+id/linearLayout"
 	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
-	android:background="@color/colorBackground">
+	android:layout_marginBottom="8dp"
+	android:layout_marginEnd="8dp"
+	android:layout_marginStart="8dp"
+	android:layout_marginTop="8dp"
+	android:background="@color/colorBackground"
+	android:orientation="vertical"
+	android:padding="8dp">
 
 	<LinearLayout
-		android:id="@+id/linearLayout"
-		android:layout_width="0dp"
-		android:layout_height="wrap_content"
-		android:layout_marginBottom="8dp"
-		android:layout_marginEnd="8dp"
-		android:layout_marginStart="8dp"
-		android:layout_marginTop="8dp"
-		android:orientation="vertical"
-		app:layout_constraintBottom_toBottomOf="parent"
-		app:layout_constraintEnd_toStartOf="@+id/task_due_date"
-		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toTopOf="parent">
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:orientation="horizontal">
 
 		<TextView
 			android:id="@+id/task_name"
-			android:layout_width="match_parent"
+			android:layout_width="0dp"
 			android:layout_height="wrap_content"
+			android:layout_weight="4"
 			android:includeFontPadding="false"
 			android:text="Task name text"
-			android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+			android:textAppearance="@style/TextAppearance.AppCompat.Body1"
 			android:textColor="@color/colorAccent"
 			tools:layout_editor_absoluteX="51dp"
 			tools:layout_editor_absoluteY="7dp" />
 
 		<TextView
-			android:id="@+id/task_description"
-			android:layout_width="match_parent"
+			android:id="@+id/task_due_date"
+			android:layout_width="0dp"
 			android:layout_height="wrap_content"
-			android:text="Task description text"
-			android:textAppearance="@android:style/TextAppearance.Material.Small" />
+			android:layout_weight="1.2"
+			android:text="08-12-2017"
+			android:textAlignment="textEnd"
+			android:textColor="?android:attr/textColorSecondary" />
+
 	</LinearLayout>
 
 	<TextView
-		android:id="@+id/task_due_date"
-		android:layout_width="wrap_content"
+		android:id="@+id/task_description"
+		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:layout_marginEnd="8dp"
-		android:text="08-12-2017"
-		android:textColor="?android:attr/textColorSecondary"
-		app:layout_constraintBottom_toBottomOf="parent"
-		app:layout_constraintEnd_toStartOf="@+id/task_complete_button"
-		app:layout_constraintTop_toTopOf="parent" />
+		android:layout_weight="1"
+		android:text="Task description text"
+		android:textAppearance="@android:style/TextAppearance.Material.Small"
+		tools:layout_editor_absoluteX="255dp" />
 
-	<ImageButton
-		android:id="@+id/task_complete_button"
-		android:layout_width="48dp"
-		android:layout_height="48dp"
-		android:layout_marginBottom="8dp"
-		android:layout_marginEnd="8dp"
-		android:layout_marginTop="8dp"
-		android:background="@color/colorBackground"
-		app:layout_constraintBottom_toBottomOf="parent"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintTop_toTopOf="parent"
-		app:srcCompat="@drawable/ic_check_circle_black_24dp" />
-
-</android.support.constraint.ConstraintLayout>
+</LinearLayout>

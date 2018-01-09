@@ -136,4 +136,6 @@
 	<string name="item_title_update_schedule">Update schedule</string>
 	<string name="button_cancel">Cancel</string>
 	<string name="button_save">Save</string>
+	<string name="frequency_error">Frequency should be larger than 0</string>
+	<string name="no_tasks_message">No tasks have been scheduled for you yet!</string>
 </resources>

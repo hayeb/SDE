@@ -1,0 +1,1 @@
+ALTER TABLE task_definition DROP CONSTRAINT task_definition_name_key;

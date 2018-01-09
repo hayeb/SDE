@@ -8,7 +8,6 @@ import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,6 +15,8 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.Toast;
+
+import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
 
@@ -107,19 +108,23 @@ public class TaskDefinitionActivity extends AppCompatActivity {
 		doneButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(final View v) {
-				beforeSubmit();
-				reschedule();
+				if (beforeSubmit())
+				{
+					reschedule();
+				}
+
 			}
 		});
 
 		nextButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(final View v) {
-				beforeSubmit();
-				final Intent intent = new Intent(v.getContext(), TaskDefinitionActivity.class);
-				intent.putExtra(TaskDefinitionActivity.ARG_GROUP_ID, groupId);
-				intent.putExtra(TaskDefinitionActivity.ARG_GROUP_NAME, groupName);
-				startActivity(intent);
+				if (beforeSubmit()) {
+					final Intent intent = new Intent(v.getContext(), TaskDefinitionActivity.class);
+					intent.putExtra(TaskDefinitionActivity.ARG_GROUP_ID, groupId);
+					intent.putExtra(TaskDefinitionActivity.ARG_GROUP_NAME, groupName);
+					startActivity(intent);
+				}
 			}
 		});
 
@@ -133,11 +138,13 @@ public class TaskDefinitionActivity extends AppCompatActivity {
 		saveButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(final View v) {
-				beforeSubmit();
-				if (needsRescheduling()) {
-					reschedule();
-				} else {
-					navigateToParent();
+				if (beforeSubmit())
+				{
+					if (needsRescheduling()) {
+						reschedule();
+					} else {
+						navigateToParent();
+					}
 				}
 			}
 		});
@@ -161,7 +168,7 @@ public class TaskDefinitionActivity extends AppCompatActivity {
 
 	private void fillEditData() {
 		final Intent intent = getIntent();
-		if (intent == null || !intent.hasExtra(ARG_DEFINITION_ID)) {
+		if (intent == null || intent.getExtras() == null || !intent.hasExtra(ARG_DEFINITION_ID)) {
 			return;
 		}
 		final Bundle extras = intent.getExtras();
@@ -207,7 +214,7 @@ public class TaskDefinitionActivity extends AppCompatActivity {
 		NavUtils.navigateUpTo(this, intent);
 	}
 
-	private void beforeSubmit() {
+	private boolean beforeSubmit() {
 
 		enterName.setError(null);
 		enterDescription.setError(null);
@@ -222,10 +229,10 @@ public class TaskDefinitionActivity extends AppCompatActivity {
 		final TaskRepetitionType taskRepType = TaskRepetitionType.valueOf(periodType);
 		final TaskWeight tWeight = TaskWeight.valueOf(taskWeight);
 
-		if (validateInputShowError(name, description, frequency)) {
-			Log.e(TAG, "There was an error..?");
-			return;
+		if (validateInputShowError(name, frequency)) {
+			return false;
 		}
+
 		final TaskDefinitionDto definitionDto = TaskDefinitionDto.builder()
 			.definitionId(definitionId)
 			.groupId(groupId)
@@ -237,6 +244,7 @@ public class TaskDefinitionActivity extends AppCompatActivity {
 			.build();
 
 		doSubmit(definitionDto);
+		return true;
 	}
 
 	private void doSubmit(final TaskDefinitionDto definitionDto) {
@@ -278,17 +286,18 @@ public class TaskDefinitionActivity extends AppCompatActivity {
 		});
 	}
 
-	private boolean validateInputShowError(final String name, final String description,
-	                                       final int frequency) {
-		return (checkEmpty(name, enterName) || checkEmpty(description, enterDescription)
-			|| checkEmpty(Integer.toString(frequency), enterNumber));
-	}
-
-	private boolean checkEmpty(final String text, final TextInputEditText editText) {
-		if (TextUtils.isEmpty(text)) {
-			editText.setError(getString(R.string.input_not_valid));
-			return true;
+	private boolean validateInputShowError(final String name, final int frequency) {
+		boolean error = false;
+		if (StringUtils.isEmpty(name))
+		{
+			enterName.setError(getString(R.string.input_not_valid));
+			error = true;
 		}
-		return false;
+		if (frequency == 0)
+		{
+			enterNumber.setError(getString(R.string.frequency_error));
+			error = true;
+		}
+		return error;
 	}
 }

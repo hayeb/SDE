@@ -64,7 +64,7 @@ public class GroupScheduleActivity extends AppCompatActivity {
 
 		setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
 		final ActionBar bar = getSupportActionBar();
-		if (bar != null){
+		if (bar != null) {
 			bar.setDisplayHomeAsUpEnabled(true);
 			bar.setTitle("Schedule for '" + groupName + "'");
 		}
@@ -92,6 +92,14 @@ public class GroupScheduleActivity extends AppCompatActivity {
 	}
 
 	@Override
+	protected void onSaveInstanceState(final Bundle outState) {
+		outState.putLong(ARG_GROUP_ID, groupId);
+		outState.putString(ARG_GROUP_NAME, ARG_GROUP_NAME);
+
+		super.onSaveInstanceState(outState);
+	}
+
+	@Override
 	public boolean onCreateOptionsMenu(final Menu menu) {
 		getMenuInflater().inflate(R.menu.activity_group_schedule, menu);
 		return super.onCreateOptionsMenu(menu);
@@ -109,9 +117,10 @@ public class GroupScheduleActivity extends AppCompatActivity {
 				return true;
 			case R.id.add_task:
 				intent = new Intent(this, TaskDefinitionActivity.class);
-				intent.putExtra("groupId", groupId);
-				intent.putExtra("groupName", groupName);
+				intent.putExtra(TaskDefinitionActivity.ARG_GROUP_ID, groupId);
+				intent.putExtra(TaskDefinitionActivity.ARG_GROUP_NAME, groupName);
 				startActivity(intent);
+				return true;
 			case R.id.update_schedule:
 				groupService.rescheduleGroup(groupId, new GenerateScheduleDto(365)).enqueue(new Callback<Void>() {
 					@Override
@@ -128,12 +137,12 @@ public class GroupScheduleActivity extends AppCompatActivity {
 						Toast.makeText(GroupScheduleActivity.this, "Unable to connect to server.", Toast.LENGTH_LONG).show();
 					}
 				});
+				return true;
 		}
 		return super.onOptionsItemSelected(item);
 	}
 
-	public void editTask(final TaskDefinitionDto definitionDto)
-	{
+	public void editTask(final TaskDefinitionDto definitionDto) {
 		final Intent intent = new Intent(this, TaskDefinitionActivity.class);
 		intent.putExtra(TaskDefinitionActivity.ARG_GROUP_ID, groupId);
 		intent.putExtra(TaskDefinitionActivity.ARG_GROUP_NAME, groupName);

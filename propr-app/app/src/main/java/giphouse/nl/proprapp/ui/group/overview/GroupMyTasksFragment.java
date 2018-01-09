@@ -34,10 +34,6 @@ public class GroupMyTasksFragment extends ListFragment {
 
 	private MyTasksListAdapter myTasksListAdapter;
 
-	public GroupMyTasksFragment() {
-		// Required empty public constructor
-	}
-
 	public static GroupMyTasksFragment newInstance(final String groupName) {
 		final GroupMyTasksFragment fragment = new GroupMyTasksFragment();
 		final Bundle args = new Bundle();

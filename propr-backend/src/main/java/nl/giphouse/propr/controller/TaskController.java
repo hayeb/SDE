@@ -9,6 +9,8 @@ import javax.inject.Inject;
 
 import lombok.extern.slf4j.Slf4j;
 
+import nl.giphouse.propr.controller.exception.TaskDefinitionInvalidException;
+import nl.giphouse.propr.controller.exception.TaskRatingInvalidException;
 import nl.giphouse.propr.dto.task.TaskCompletionDto;
 import nl.giphouse.propr.dto.task.TaskDefinitionDto;
 import nl.giphouse.propr.dto.task.TaskDto;
@@ -28,6 +30,8 @@ import nl.giphouse.propr.repository.TaskRepository;
 import nl.giphouse.propr.service.UserService;
 import nl.giphouse.propr.utils.ValidationUtils;
 
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.core.task.TaskRejectedException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -136,6 +140,7 @@ public class TaskController extends AbstractProprController
 		final User user = (User) userService.loadUserByUsername(principal.getName());
 		final Group group = groupRepository.findGroupById(taskDefinitionDto.getGroupId());
 		checkAuthorized(group, user);
+		validateDefinition(taskDefinitionDto);
 
 		log.debug("POST /api/task/group/add");
 
@@ -263,10 +268,7 @@ public class TaskController extends AbstractProprController
 			return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).build();
 		}
 
-		if (!validateRating(taskRatingDto))
-		{
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-		}
+		validateRating(taskRatingDto);
 
 		log.debug("POST /api/task/{taskId}/rate");
 
@@ -364,9 +366,32 @@ public class TaskController extends AbstractProprController
 			.collect(Collectors.averagingDouble(TaskRating::getScore)));
 	}
 
-	private boolean validateRating(final TaskRatingDto dto)
+	private void validateRating(final TaskRatingDto dto)
 	{
-		return dto.getScore() > 0 && dto.getScore() <= 5;
+		if (dto.getScore() == 0 || dto.getScore() > 5)
+		{
+			throw new TaskRatingInvalidException("Score should be between 1 and 5");
+		}
+	}
+
+	private void validateDefinition(final TaskDefinitionDto taskDefinitionDto)
+	{
+		if (taskDefinitionDto.getFrequency() == 0)
+		{
+			throw new TaskDefinitionInvalidException("Frequency should not be 0");
+		}
+		if (StringUtils.isEmpty(taskDefinitionDto.getName()))
+		{
+			throw new TaskDefinitionInvalidException("Name should not be empty");
+		}
+		if (taskDefinitionDto.getPeriodType() == null)
+		{
+			throw new TaskDefinitionInvalidException("Period type not set");
+		}
+		if (taskDefinitionDto.getWeight() == null)
+		{
+			throw new TaskDefinitionInvalidException("Weight should be seet");
+		}
 	}
 
 	private TaskDto setOwnedTask(final TaskDto taskDto, final User user)

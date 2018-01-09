@@ -39,6 +39,10 @@ public class GroupTasksAdapter extends RecyclerView.Adapter<GroupTasksAdapter.Vi
 	public void onBindViewHolder(final ViewHolder holder, final int position) {
 		final TaskDto task = mValues.get(position);
 		holder.mItem = task;
+		if (task.getCompletionDate() == null && !task.isOverdue())
+		{
+			holder.statusImageView.setVisibility(View.GONE);
+		}
 		holder.statusImageView.setImageResource(getImageResourceForStatus(task));
 		holder.taskTitleView.setText(task.getName());
 		holder.dueDateView.setText(task.getCompletionDate() != null ? task.getCompletionDate() : task.getDueDate());

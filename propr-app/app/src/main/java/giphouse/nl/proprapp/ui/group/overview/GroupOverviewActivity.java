@@ -50,6 +50,8 @@ public class GroupOverviewActivity extends AppCompatActivity implements MyTasksI
 
 	private Long groupId;
 
+	private Integer selectedItem;
+
 	@Override
 	protected void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -61,9 +63,15 @@ public class GroupOverviewActivity extends AppCompatActivity implements MyTasksI
 		if (savedInstanceState != null) {
 			groupName = savedInstanceState.getString(ARG_GROUP_NAME);
 			groupId = savedInstanceState.getLong(ARG_GROUP_ID);
+			selectedItem = savedInstanceState.getInt("selectedItem");
 		} else if (getIntent() != null && getIntent().getExtras() != null) {
 			groupName = getIntent().getExtras().getString(ARG_GROUP_NAME);
 			groupId = getIntent().getExtras().getLong(ARG_GROUP_ID);
+		}
+
+		if (selectedItem == null)
+		{
+			selectedItem = R.id.item_tasks;
 		}
 
 		setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
@@ -73,14 +81,15 @@ public class GroupOverviewActivity extends AppCompatActivity implements MyTasksI
 			bar.setTitle(groupName);
 		}
 
-		getSupportFragmentManager().beginTransaction()
-			.replace(R.id.group_overview_fragment_container, GroupMyTasksFragment.newInstance(groupName), null)
-			.disallowAddToBackStack()
-			.commit();
-
 		final BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
-		bottomNavigationView.getMenu().getItem(0).setChecked(true);
 		setListeners(bottomNavigationView);
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+
+		switchToItem(selectedItem);
 	}
 
 	private void setListeners(final BottomNavigationView bottomNavigationView) {
@@ -88,43 +97,52 @@ public class GroupOverviewActivity extends AppCompatActivity implements MyTasksI
 			new BottomNavigationView.OnNavigationItemSelectedListener() {
 				@Override
 				public boolean onNavigationItemSelected(@NonNull final MenuItem item) {
+					switchToItem(item.getItemId());
 					item.setChecked(true);
-					switch (item.getItemId()) {
-						case R.id.item_activity:
-							getSupportFragmentManager().beginTransaction()
-								.replace(R.id.group_overview_fragment_container, GroupActivityFragment.newInstance(groupName))
-								.disallowAddToBackStack()
-								.commit();
-							break;
-						case R.id.item_schedule:
-							getSupportFragmentManager().beginTransaction()
-								.replace(R.id.group_overview_fragment_container, GroupScheduleFragment.newInstance(groupName))
-								.disallowAddToBackStack()
-								.commit();
-							break;
-						case R.id.item_tasks:
-							getSupportFragmentManager().beginTransaction()
-								.replace(R.id.group_overview_fragment_container, GroupMyTasksFragment.newInstance(groupName))
-								.disallowAddToBackStack()
-								.commit();
-							break;
-					}
-					return false;
+					selectedItem = item.getItemId();
+					return true;
 				}
 			});
 	}
 
-	@Override
-	protected void onSaveInstanceState(final Bundle outState) {
-		outState.putString("groupname", groupName);
-		super.onSaveInstanceState(outState);
+	private void switchToItem(final Integer itemId)
+	{
+		if (itemId == null)
+		{
+			getSupportFragmentManager().beginTransaction()
+				.replace(R.id.group_overview_fragment_container, GroupMyTasksFragment.newInstance(groupName))
+				.disallowAddToBackStack()
+				.commit();
+			return;
+		}
+		switch (itemId) {
+			case R.id.item_activity:
+				getSupportFragmentManager().beginTransaction()
+					.replace(R.id.group_overview_fragment_container, GroupActivityFragment.newInstance(groupName))
+					.disallowAddToBackStack()
+					.commit();
+				break;
+			case R.id.item_schedule:
+				getSupportFragmentManager().beginTransaction()
+					.replace(R.id.group_overview_fragment_container, GroupScheduleFragment.newInstance(groupName))
+					.disallowAddToBackStack()
+					.commit();
+				break;
+			case R.id.item_tasks:
+				getSupportFragmentManager().beginTransaction()
+					.replace(R.id.group_overview_fragment_container, GroupMyTasksFragment.newInstance(groupName))
+					.disallowAddToBackStack()
+					.commit();
+				break;
+		}
 	}
 
 	@Override
-	protected void onRestoreInstanceState(final Bundle savedInstanceState) {
-		super.onRestoreInstanceState(savedInstanceState);
-
-		groupName = savedInstanceState.getString("groupname");
+	protected void onSaveInstanceState(final Bundle outState) {
+		outState.putString(ARG_GROUP_NAME, groupName);
+		outState.putLong(ARG_GROUP_ID, groupId);
+		outState.putInt("selectedItem", selectedItem);
+		super.onSaveInstanceState(outState);
 	}
 
 	@Override
