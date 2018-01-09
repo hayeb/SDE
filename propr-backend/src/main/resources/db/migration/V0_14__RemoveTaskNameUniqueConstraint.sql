@@ -1,1 +1,1 @@
-ALTER TABLE task_definition DROP CONSTRAINT task_definition_name_key;
+ALTER TABLE task_definition DROP CONSTRAINT IF EXISTS task_definition_name_key;
