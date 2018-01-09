@@ -11,7 +11,7 @@
 	<description>Propr backend</description>
 
 	<scm>
-		<developerConnection>scm:git:git://github.com/hayeb/SDE</developerConnection>
+		<developerConnection>scm:git:ssh://github.com/hayeb/SDE</developerConnection>
 	</scm>
 
 	<parent>
