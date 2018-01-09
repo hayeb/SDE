@@ -4,7 +4,7 @@
 
 	<groupId>nl.giphouse</groupId>
 	<artifactId>propr</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0</version>
 	<packaging>war</packaging>
 
 	<name>propr</name>
@@ -12,7 +12,8 @@
 
 	<scm>
 		<developerConnection>scm:git:ssh://github.com/hayeb/SDE</developerConnection>
-	</scm>
+	  <tag>propr-1.0</tag>
+  </scm>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
