@@ -33,7 +33,7 @@ android {
             debuggable true
         }
         release {
-            buildConfigField 'String', 'BASE_URL', '"http://artificiallunacy.com:7080/propr/"'
+            buildConfigField 'String', 'BASE_URL', '"https://artificiallunacy.com:8443/propr/"'
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             minifyEnabled true
             shrinkResources true
